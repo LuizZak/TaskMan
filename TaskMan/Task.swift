@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import SwiftyJSON
 
 /// Represents a Task on the system
 struct Task {
@@ -32,5 +33,39 @@ struct Task {
         self.id = id
         self.name = name
         self.description = description
+    }
+}
+
+// MARK: - Json
+extension Task: ModelObject, IDModelObject {
+    
+    init(json: JSON) throws {
+        try self.id = json[JsonKey.id].tryInt()
+        try self.name = json[JsonKey.name].tryString()
+        try self.description = json[JsonKey.description].tryString()
+    }
+    
+    func serialize() -> JSON {
+        var dict: [JsonKey: Any] = [:]
+        
+        dict[.id] = id
+        dict[.name] = name
+        dict[.description] = description
+        
+        return dict.mapToJSON()
+    }
+}
+
+extension Task {
+    
+    /// Inner enum containing the JSON key names for the model
+    enum JsonKey: String, JSONSubscriptType {
+        case id
+        case name
+        case description
+        
+        var jsonKey: JSONKey {
+            return JSONKey.key(self.rawValue)
+        }
     }
 }

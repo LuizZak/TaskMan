@@ -13,6 +13,12 @@
 		A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A022571A1D9082630030A28E /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02257191D9082630030A28E /* TimelineView.swift */; };
 		A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */; };
+		A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6501DF5C49100F84863 /* ModelObject.swift */; };
+		A0A6B6541DF5C49100F84863 /* IDModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6511DF5C49100F84863 /* IDModelObject.swift */; };
+		A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */; };
+		A0A6B6581DF5C59000F84863 /* SwiftyJSON+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6571DF5C59000F84863 /* SwiftyJSON+Extensions.swift */; };
+		A0A6B65A1DF5C60400F84863 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6591DF5C60400F84863 /* Utils.swift */; };
+		A0A6B65C1DF5CB1800F84863 /* DateFormatHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */; };
 		A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324451DF5850200308A28 /* EditDateViewController.swift */; };
 		A0B324491DF5989B00308A28 /* ChangeSegmentTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324471DF5989B00308A28 /* ChangeSegmentTaskViewController.swift */; };
 		A0B3244A1DF5989B00308A28 /* ChangeSegmentTaskViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */; };
@@ -49,6 +55,12 @@
 		A00EBEF61DF5B7D1007D740E /* TaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskList.swift; sourceTree = "<group>"; };
 		A02257191D9082630030A28E /* TimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateRangeViewController.swift; sourceTree = "<group>"; };
+		A0A6B6501DF5C49100F84863 /* ModelObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelObject.swift; sourceTree = "<group>"; };
+		A0A6B6511DF5C49100F84863 /* IDModelObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IDModelObject.swift; sourceTree = "<group>"; };
+		A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelSerialization.swift; sourceTree = "<group>"; };
+		A0A6B6571DF5C59000F84863 /* SwiftyJSON+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extensions.swift"; sourceTree = "<group>"; };
+		A0A6B6591DF5C60400F84863 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateFormatHelper.swift; sourceTree = "<group>"; };
 		A0B324451DF5850200308A28 /* EditDateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateViewController.swift; sourceTree = "<group>"; };
 		A0B324471DF5989B00308A28 /* ChangeSegmentTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeSegmentTaskViewController.swift; sourceTree = "<group>"; };
 		A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangeSegmentTaskViewController.xib; sourceTree = "<group>"; };
@@ -126,6 +138,26 @@
 			name = ViewControllers;
 			sourceTree = "<group>";
 		};
+		A0A6B64F1DF5C48700F84863 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				A0A6B6501DF5C49100F84863 /* ModelObject.swift */,
+				A0A6B6511DF5C49100F84863 /* IDModelObject.swift */,
+				A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */,
+			);
+			name = Base;
+			sourceTree = "<group>";
+		};
+		A0A6B6561DF5C57800F84863 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */,
+				A0A6B6591DF5C60400F84863 /* Utils.swift */,
+				A0A6B6571DF5C59000F84863 /* SwiftyJSON+Extensions.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
 		A0B3244D1DF59F7500308A28 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +199,7 @@
 		A0FA92991D8C6F7D00F3916D /* TaskMan */ = {
 			isa = PBXGroup;
 			children = (
+				A0A6B6561DF5C57800F84863 /* Extensions */,
 				A0B324501DF59F7A00308A28 /* CoreData */,
 				A02257181D9082560030A28E /* View */,
 				A0FA92B81D8C702800F3916D /* Model */,
@@ -201,6 +234,7 @@
 		A0FA92B81D8C702800F3916D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A0A6B64F1DF5C48700F84863 /* Base */,
 				A00EBEF61DF5B7D1007D740E /* TaskList.swift */,
 				A0FA92B91D8C703300F3916D /* Task.swift */,
 				A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */,
@@ -411,19 +445,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0A6B6581DF5C59000F84863 /* SwiftyJSON+Extensions.swift in Sources */,
 				A0FA929D1D8C6F7D00F3916D /* ViewController.swift in Sources */,
 				A0F24C121D917DEA001D4536 /* TaskView.swift in Sources */,
+				A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */,
 				A022571A1D9082630030A28E /* TimelineView.swift in Sources */,
 				A0B324491DF5989B00308A28 /* ChangeSegmentTaskViewController.swift in Sources */,
 				A0FA92BE1D8C73EF00F3916D /* TaskSegment.swift in Sources */,
 				A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */,
 				A0FA92BA1D8C703300F3916D /* Task.swift in Sources */,
 				A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */,
+				A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */,
+				A0A6B65A1DF5C60400F84863 /* Utils.swift in Sources */,
 				A0FA92BC1D8C70F000F3916D /* TaskController.swift in Sources */,
 				A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */,
 				A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */,
 				A00EBEF51DF5B7C3007D740E /* CoreDataInterface.swift in Sources */,
+				A0A6B65C1DF5CB1800F84863 /* DateFormatHelper.swift in Sources */,
 				A0B324531DF59F8800308A28 /* Model.xcdatamodeld in Sources */,
+				A0A6B6541DF5C49100F84863 /* IDModelObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

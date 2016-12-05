@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Application-->
+        <scene sceneID="JPo-4y-FX3">
+            <objects>
+                <application id="hnw-xV-0zn" sceneMemberID="viewController">
+                    <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
+                        <items>
+                            <menuItem title="TaskMan" id="1Xt-HY-uBw">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="TaskMan" systemMenu="apple" id="uQy-DD-JDr">
+                                    <items>
+                                        <menuItem title="About TaskMan" id="5kV-Vb-QxS">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
+                                        <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW"/>
+                                        <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
+                                        <menuItem title="Services" id="NMo-om-nkz">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
+                                        <menuItem title="Hide TaskMan" keyEquivalent="h" id="Olw-nP-bQN">
+                                            <connections>
+                                                <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Hide Others" keyEquivalent="h" id="Vdr-fp-XzO">
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="hideOtherApplications:" target="Ady-hI-5gd" id="VT4-aY-XCT"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Show All" id="Kd2-mp-pUS">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="unhideAllApplications:" target="Ady-hI-5gd" id="Dhg-Le-xox"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
+                                        <menuItem title="Quit TaskMan" keyEquivalent="q" id="4sb-4s-VLi">
+                                            <connections>
+                                                <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                        </items>
+                    </menu>
+                    <connections>
+                        <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
+                    </connections>
+                </application>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="TaskMan" customModuleProvider="target"/>
+                <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="75" y="0.0"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="R2V-B0-nI4">
+            <objects>
+                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="466" y="357" width="713" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <value key="minSize" type="size" width="713" height="270"/>
+                        <value key="maxSize" type="size" width="713" height="700"/>
+                    </window>
+                    <connections>
+                        <segue destination="XfG-lQ-9wD" kind="relationship" relationship="window.shadowedContentViewController" id="cq2-FE-JQM"/>
+                    </connections>
+                </windowController>
+                <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="191.5" y="250"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="hIz-AP-VOD">
+            <objects>
+                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="TaskMan" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
+                        <rect key="frame" x="0.0" y="0.0" width="713" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="7rN-Bz-EFC" customClass="TimelineView" customModule="TaskMan" customModuleProvider="target">
+                                <rect key="frame" x="20" y="35" width="676" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="2hP-2R-JvR"/>
+                                </constraints>
+                            </customView>
+                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="vL5-AN-FFa">
+                                <rect key="frame" x="20" y="73" width="676" height="177"/>
+                                <clipView key="contentView" id="abb-3o-xQR">
+                                    <rect key="frame" x="1" y="1" width="674" height="175"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view translatesAutoresizingMaskIntoConstraints="NO" id="ibX-7y-wue">
+                                            <rect key="frame" x="0.0" y="0.0" width="659" height="185"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="659" id="eIZ-wg-bUf"/>
+                                                <constraint firstAttribute="height" constant="185" id="gNt-di-m6E"/>
+                                            </constraints>
+                                        </view>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="ibX-7y-wue" secondAttribute="bottom" id="Uja-fG-bvo"/>
+                                        <constraint firstItem="ibX-7y-wue" firstAttribute="leading" secondItem="abb-3o-xQR" secondAttribute="leading" id="Xkp-N8-cnV"/>
+                                    </constraints>
+                                </clipView>
+                                <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="eaH-hu-nCy">
+                                    <rect key="frame" x="1" y="160" width="674" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.80000000000000004" horizontal="NO" id="Z3h-vg-FWj">
+                                    <rect key="frame" x="659" y="1" width="16" height="175"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bFQ-p7-nft">
+                                <rect key="frame" x="561" y="1" width="141" height="32"/>
+                                <buttonCell key="cell" type="push" title="Add and Start" bezelStyle="rounded" image="NSAddTemplate" imagePosition="right" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bpf-ni-kSJ">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapAddAndStartTaskButton:" target="XfG-lQ-9wD" id="ov4-VL-owb"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="y10-8q-d0E">
+                                <rect key="frame" x="479" y="1" width="82" height="32"/>
+                                <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" image="NSAddTemplate" imagePosition="right" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WQL-K0-fXr">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapAddTaskButton:" target="XfG-lQ-9wD" id="BSU-SI-bxg"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rJB-Gl-dIv">
+                                <rect key="frame" x="14" y="1" width="125" height="32"/>
+                                <buttonCell key="cell" type="push" title="Edit Start/End" bezelStyle="rounded" imagePosition="right" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wBg-NA-tjH">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapEditStartEndTime:" target="XfG-lQ-9wD" id="2Xu-xT-Z0F"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="vL5-AN-FFa" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="2mq-CQ-HFD"/>
+                            <constraint firstAttribute="trailing" secondItem="7rN-Bz-EFC" secondAttribute="trailing" constant="17" id="AsQ-AU-zKo"/>
+                            <constraint firstItem="7rN-Bz-EFC" firstAttribute="top" secondItem="vL5-AN-FFa" secondAttribute="bottom" constant="8" id="EAL-kq-fHD"/>
+                            <constraint firstItem="bFQ-p7-nft" firstAttribute="top" secondItem="7rN-Bz-EFC" secondAttribute="bottom" constant="6" id="Nng-RJ-aSN"/>
+                            <constraint firstItem="vL5-AN-FFa" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="U2y-c4-azQ"/>
+                            <constraint firstItem="bFQ-p7-nft" firstAttribute="leading" secondItem="y10-8q-d0E" secondAttribute="trailing" constant="12" id="UHf-ze-G84"/>
+                            <constraint firstAttribute="bottom" secondItem="bFQ-p7-nft" secondAttribute="bottom" constant="8" id="Vi6-K6-NiO"/>
+                            <constraint firstItem="rJB-Gl-dIv" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="Vj1-xi-Azd"/>
+                            <constraint firstAttribute="trailing" secondItem="vL5-AN-FFa" secondAttribute="trailing" constant="17" id="WD0-mY-wYv"/>
+                            <constraint firstAttribute="bottom" secondItem="rJB-Gl-dIv" secondAttribute="bottom" constant="8" id="YSK-Xd-YV4"/>
+                            <constraint firstItem="7rN-Bz-EFC" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="aly-ys-9K5"/>
+                            <constraint firstAttribute="bottom" secondItem="y10-8q-d0E" secondAttribute="bottom" constant="8" id="eU2-Ba-9Jm"/>
+                            <constraint firstAttribute="trailing" secondItem="bFQ-p7-nft" secondAttribute="trailing" constant="17" id="h90-qb-YjT"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tasksContainerView" destination="ibX-7y-wue" id="kFF-1D-TnM"/>
+                        <outlet property="tasksHeightConstraint" destination="gNt-di-m6E" id="P0b-86-6W1"/>
+                        <outlet property="tasksScrollView" destination="vL5-AN-FFa" id="DEF-F3-TPw"/>
+                        <outlet property="tasksTimelineView" destination="7rN-Bz-EFC" id="yhu-sG-sSE"/>
+                    </connections>
+                </viewController>
+                <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="191.5" y="655"/>
+        </scene>
+        <!--Edit Date-->
+        <scene sceneID="1zC-v8-NFb">
+            <objects>
+                <viewController title="Edit Date" storyboardIdentifier="editDateRange" id="wbC-SU-5dS" customClass="EditDateRangeViewController" customModule="TaskMan" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="31f-De-1Wj">
+                        <rect key="frame" x="0.0" y="0.0" width="250" height="130"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ECy-ux-hI2">
+                                <rect key="frame" x="94" y="90" width="140" height="27"/>
+                                <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="mtj-D9-7Hi">
+                                    <font key="font" metaFont="system"/>
+                                    <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
+                                        <!--1982-02-12 08:00:00 -0800-->
+                                        <timeZone key="timeZone" name="US/Pacific"/>
+                                    </calendarDate>
+                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
+                                </datePickerCell>
+                            </datePicker>
+                            <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hqq-ep-0Of">
+                                <rect key="frame" x="94" y="59" width="140" height="27"/>
+                                <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="3eZ-co-afT">
+                                    <font key="font" metaFont="system"/>
+                                    <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
+                                        <!--1982-02-12 08:00:00 -0800-->
+                                        <timeZone key="timeZone" name="US/Pacific"/>
+                                    </calendarDate>
+                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
+                                </datePickerCell>
+                            </datePicker>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="i8O-9F-z5O">
+                                <rect key="frame" x="18" y="93" width="70" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Start Date:" id="uaf-OU-8T1">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rPu-YE-EZR">
+                                <rect key="frame" x="180" y="6" width="57" height="32"/>
+                                <buttonCell key="cell" type="push" title="Ok" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MVs-1a-nJU">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapOk:" target="wbC-SU-5dS" id="0M9-qI-9I6"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YwO-ZK-ZUf">
+                                <rect key="frame" x="98" y="6" width="82" height="32"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2Xi-CG-j2g">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapCancel:" target="wbC-SU-5dS" id="6so-Oa-U2x"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QuP-kj-gEx">
+                                <rect key="frame" x="18" y="62" width="63" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="End Date:" id="Tpt-49-hqv">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="hqq-ep-0Of" firstAttribute="leading" secondItem="QuP-kj-gEx" secondAttribute="trailing" constant="15" id="ASq-Wo-7uj"/>
+                            <constraint firstItem="ECy-ux-hI2" firstAttribute="leading" secondItem="i8O-9F-z5O" secondAttribute="trailing" constant="8" id="Ai8-td-Y4Q"/>
+                            <constraint firstItem="hqq-ep-0Of" firstAttribute="top" secondItem="ECy-ux-hI2" secondAttribute="bottom" constant="8" id="CFe-dV-4ar"/>
+                            <constraint firstItem="rPu-YE-EZR" firstAttribute="leading" secondItem="YwO-ZK-ZUf" secondAttribute="trailing" constant="12" id="GA8-Vp-mLl"/>
+                            <constraint firstItem="QuP-kj-gEx" firstAttribute="leading" secondItem="31f-De-1Wj" secondAttribute="leading" constant="20" id="PHF-u6-xIb"/>
+                            <constraint firstAttribute="bottom" secondItem="rPu-YE-EZR" secondAttribute="bottom" constant="13" id="Qf7-eD-qMG"/>
+                            <constraint firstItem="i8O-9F-z5O" firstAttribute="leading" secondItem="31f-De-1Wj" secondAttribute="leading" constant="20" id="Qsa-ef-XHx"/>
+                            <constraint firstAttribute="bottom" secondItem="YwO-ZK-ZUf" secondAttribute="bottom" constant="13" id="Rps-Rz-GtL"/>
+                            <constraint firstItem="ECy-ux-hI2" firstAttribute="top" secondItem="31f-De-1Wj" secondAttribute="top" constant="17" id="Yvp-GT-74u"/>
+                            <constraint firstItem="i8O-9F-z5O" firstAttribute="top" secondItem="31f-De-1Wj" secondAttribute="top" constant="20" id="Z2S-SZ-Wk4"/>
+                            <constraint firstAttribute="trailing" secondItem="rPu-YE-EZR" secondAttribute="trailing" constant="19" id="ZKm-X5-dPU"/>
+                            <constraint firstItem="QuP-kj-gEx" firstAttribute="baseline" secondItem="hqq-ep-0Of" secondAttribute="baseline" id="vyz-RB-tjg"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="datePickerEnd" destination="hqq-ep-0Of" id="ZWo-46-dF5"/>
+                        <outlet property="datePickerStart" destination="ECy-ux-hI2" id="0UX-l0-qgq"/>
+                    </connections>
+                </viewController>
+                <customObject id="NEr-Hd-M3K" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-40" y="915"/>
+        </scene>
+        <!--Edit Date-->
+        <scene sceneID="Eym-nu-eNY">
+            <objects>
+                <viewController title="Edit Date" storyboardIdentifier="editDate" id="Us9-T7-Ytz" customClass="EditDateViewController" customModule="TaskMan" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="MBe-AA-a67">
+                        <rect key="frame" x="0.0" y="0.0" width="217" height="99"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="P7G-QK-15o">
+                                <rect key="frame" x="61" y="59" width="140" height="27"/>
+                                <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="Rb0-qe-9Za">
+                                    <font key="font" metaFont="system"/>
+                                    <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
+                                        <!--1982-02-12 08:00:00 -0800-->
+                                        <timeZone key="timeZone" name="US/Pacific"/>
+                                    </calendarDate>
+                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
+                                </datePickerCell>
+                            </datePicker>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HN6-Qi-bTG">
+                                <rect key="frame" x="18" y="62" width="37" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Date:" id="myx-51-Oee">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hLw-k7-Twz">
+                                <rect key="frame" x="147" y="6" width="57" height="32"/>
+                                <buttonCell key="cell" type="push" title="Ok" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SNd-Ia-qdE">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapOk:" target="Us9-T7-Ytz" id="XsS-4l-WPW"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Jr6-nh-JXC">
+                                <rect key="frame" x="65" y="6" width="82" height="32"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IZT-n3-Yx7">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didTapCancel:" target="Us9-T7-Ytz" id="Omj-l9-Iaz"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="hLw-k7-Twz" firstAttribute="leading" secondItem="Jr6-nh-JXC" secondAttribute="trailing" constant="12" id="DEq-Nf-ntC"/>
+                            <constraint firstAttribute="bottom" secondItem="Jr6-nh-JXC" secondAttribute="bottom" constant="13" id="TH7-bG-wPY"/>
+                            <constraint firstItem="P7G-QK-15o" firstAttribute="top" secondItem="MBe-AA-a67" secondAttribute="top" constant="17" id="TdA-Ed-K5c"/>
+                            <constraint firstItem="HN6-Qi-bTG" firstAttribute="top" secondItem="MBe-AA-a67" secondAttribute="top" constant="20" id="a4o-gI-3Fu"/>
+                            <constraint firstItem="HN6-Qi-bTG" firstAttribute="leading" secondItem="MBe-AA-a67" secondAttribute="leading" constant="20" id="ayF-r9-uiZ"/>
+                            <constraint firstAttribute="bottom" secondItem="hLw-k7-Twz" secondAttribute="bottom" constant="13" id="gKs-J0-HGM"/>
+                            <constraint firstAttribute="trailing" secondItem="hLw-k7-Twz" secondAttribute="trailing" constant="19" id="qhQ-1W-tL3"/>
+                            <constraint firstItem="P7G-QK-15o" firstAttribute="leading" secondItem="HN6-Qi-bTG" secondAttribute="trailing" constant="8" id="x4L-D6-EWr"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="datePicker" destination="P7G-QK-15o" id="CYU-Zz-SL7"/>
+                    </connections>
+                </viewController>
+                <customObject id="gvi-eF-XCZ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-57" y="1090"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="NSAddTemplate" width="11" height="11"/>
+    </resources>
+</document>

@@ -1,0 +1,558 @@
+//
+//  ViewController.swift
+//  TaskMan
+//
+//  Created by Luiz Fernando Silva on 16/09/16.
+//  Copyright © 2016 Luiz Fernando Silva. All rights reserved.
+//
+
+import Cocoa
+
+class ViewController: NSViewController {
+
+    @IBOutlet weak var tasksTimelineView: TimelineView!
+    @IBOutlet weak var tasksScrollView: NSScrollView!
+    @IBOutlet weak var tasksContainerView: NSView!
+    @IBOutlet weak var tasksHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var deleteSegmentItem: NSMenuItem!
+    @IBOutlet weak var editSegmentItem: NSMenuItem!
+    
+    fileprivate var startDate = Date()
+    fileprivate var endDate = Date().addingTimeInterval(8 * 60 * 60) // 8 hours
+    
+    fileprivate var secondUpdateTimer: Timer!
+    
+    fileprivate var taskController: TaskController!
+    
+    fileprivate var taskViews: [TaskView] = []
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+        let timeline = TaskTimelineManager()
+        timeline.delegate = self
+        
+        taskController = TaskController(timeline: timeline)
+        taskController.delegate = self
+        
+        tasksTimelineView.dataSource = self
+        tasksTimelineView.delegate = self
+        tasksTimelineView.userTag = -1
+        
+        for task in taskController.currentTasks {
+            addView(forTask: task)
+        }
+        
+        secondUpdateTimer = Timer(timeInterval: 0.5, target: self, selector: #selector(ViewController.timerDidFire), userInfo: nil, repeats: true)
+        
+        RunLoop.current.add(secondUpdateTimer, forMode: .defaultRunLoopMode)
+    }
+    
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        
+        if let window = self.view.window {
+            if let screenSize = window.screen?.frame.size {
+                window.setFrameOrigin(NSPoint(x: (screenSize.width - window.frame.size.width) / 2, y: (screenSize.height - window.frame.size.height) / 2))
+            }
+        }
+    }
+    
+    func timerDidFire() {
+        // Update running segment and views
+        if(taskController.runningSegment != nil) {
+            taskController.updateRunningSegment(withEndDate: Date())
+            updateTaskViews(updateType: .RuntimeLabel)
+            updateTimelineViews()
+        }
+    }
+    
+    // MARK: - Tasks View Management
+    @discardableResult
+    func addView(forTask task: Task) -> TaskView {
+        let view = TaskView(taskId: task.id, frame: NSRect(x: 0, y: 0, width: 650, height: 146))
+        
+        view.viewTimeline.dataSource = self
+        view.viewTimeline.delegate = self
+        view.viewTimeline.userTag = task.id
+        
+        view.lblRuntime.stringValue = formatTimestamp(taskController.totalTime(forTaskId: task.id))
+        
+        view.delegate = self
+        view.layer?.borderWidth = 2
+        view.layer?.borderColor = NSColor.blue.cgColor
+        view.layer?.masksToBounds = false
+        view.txtName.stringValue = task.name
+        
+        tasksContainerView.addSubview(view)
+        
+        taskViews.append(view)
+        
+        self.updateTaskViews()
+        
+        return view
+    }
+    
+    func removeViewForTask(task: Task) {
+        guard let taskView = viewForTask(task: task) else {
+            return
+        }
+        
+        for (i, view) in taskViews.enumerated() {
+            if(view.taskId == taskView.taskId) {
+                view.removeFromSuperview()
+                view.delegate = nil
+                taskViews.remove(at: i)
+            }
+        }
+        
+        NSAnimationContext.runAnimationGroup({ context in
+            context.duration = 0.20
+            context.allowsImplicitAnimation = true
+            self.updateTaskViews()
+            self.tasksContainerView.layout()
+            self.tasksScrollView.contentView.layout()
+        })
+    }
+    
+    func selectViewForTask(task: Task) {
+        guard let view = viewForTask(task: task) else {
+            return
+        }
+        selectTaskView(taskView: view)
+    }
+    
+    func selectTaskView(taskView: TaskView) {
+        NSAnimationContext.runAnimationGroup({ context in
+            context.duration = 0.20
+            context.allowsImplicitAnimation = true
+            self.tasksScrollView.contentView.scrollToVisible(taskView.frame)
+        })
+        self.view.window?.makeFirstResponder(taskView.txtDescription)
+    }
+    
+    func viewForTask(task: Task) -> TaskView? {
+        return taskViews.first { $0.taskId == task.id }
+    }
+    
+    fileprivate func updateTaskViews(updateType: TaskViewUpdateType = .Full) {
+        for (i, view) in taskViews.enumerated() {
+            if(updateType.contains(.Position)) {
+                view.frame.origin.y = CGFloat(i * 166)
+                view.frame.size.width = 650
+                view.frame.origin.x = tasksContainerView.frame.width / 2 - view.frame.width / 2
+            }
+            if(updateType.contains(.DisplayState)) {
+                view.displayState = taskController.runningTask?.id == view.taskId ? .Running : .Stopped
+            }
+            if(updateType.contains(.RuntimeLabel)) {
+                view.lblRuntime.stringValue = formatTimestamp(taskController.totalTime(forTaskId: view.taskId))
+            }
+        }
+        
+        if(updateType.contains(.Position)) {
+            tasksHeightConstraint.constant = CGFloat(taskViews.count * 166)
+            tasksContainerView.needsLayout = true
+        }
+    }
+    
+    func updateTimelineViews() {
+        for view in taskViews {
+            view.viewTimeline.needsDisplay = true
+        }
+        tasksTimelineView.needsDisplay = true
+    }
+    
+    /// Return the default palete colors
+    static func defaultColors() -> [NSColor] {
+        
+        return [
+            NSColor(red: 39.0/255.0,    green: 78.0/255.0,  blue: 192.0/255.0,  alpha: 1),
+            NSColor(red: 209.0/255.0,   green: 36.0/255.0,  blue: 17.0/255.0,   alpha: 1),
+            NSColor(red: 253.0/255.0,   green: 134.0/255.0, blue: 9.0/255.0,    alpha: 1),
+            NSColor(red: 23.0/255.0,    green: 136.0/255.0, blue: 19.0/255.0,   alpha: 1),
+            NSColor(red: 133.0/255.0,   green: 0.0/255.0,   blue: 135.0/255.0,  alpha: 1),
+            NSColor(red: 17.0/255.0,    green: 135.0/255.0, blue: 185.0/255.0,  alpha: 1),
+            NSColor(red: 210.0/255.0,   green: 43.0/255.0,  blue: 100.0/255.0,  alpha: 1),
+            NSColor(red: 86.0/255.0,    green: 157.0/255.0, blue: 5.0/255.0,    alpha: 1),
+            NSColor(red: 167.0/255.0,   green: 28.0/255.0,  blue: 35.0/255.0,   alpha: 1),
+            NSColor(red: 39.0/255.0,    green: 79.0/255.0,  blue: 139.0/255.0,  alpha: 1),
+            NSColor(red: 134.0/255.0,   green: 45.0/255.0,  blue: 134.0/255.0,  alpha: 1),
+            NSColor(red: 33.0/255.0,    green: 155.0/255.0, blue: 135.0/255.0,  alpha: 1),
+            NSColor(red: 154.0/255.0,   green: 157.0/255.0, blue: 16.0/255.0,   alpha: 1),
+            NSColor(red: 82.0/255.0,    green: 22.0/255.0,  blue: 193.0/255.0,  alpha: 1)
+        ]
+    }
+    
+    fileprivate func formatTimestamp(_ timestamp: TimeInterval) -> String {
+        let minutes = (timestamp / 60).truncatingRemainder(dividingBy: 60)
+        let seconds = timestamp.truncatingRemainder(dividingBy: 60)
+        let hours = timestamp / 60 / 60
+        
+        return String(format: "%02d:%02d:%02d", Int(hours), Int(minutes), Int(seconds))
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func didTapAddTaskButton(_ sender: NSButton) {
+        let task = taskController.createTask(startRunning: false, name: "New Task", description: "")
+        
+        addView(forTask: task)
+        
+        // Layout to update constraints before selecting the view
+        tasksScrollView.contentView.layout()
+        
+        selectViewForTask(task: task)
+    }
+    
+    @IBAction func didTapAddAndStartTaskButton(_ sender: NSButton) {
+        let task = taskController.createTask(startRunning: true, name: "New Task", description: "")
+        
+        addView(forTask: task)
+        
+        // Layout to update constraints before selecting the view
+        tasksScrollView.contentView.layout()
+        
+        selectViewForTask(task: task)
+    }
+    
+    @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
+            return
+        }
+        
+        controller.startDate = startDate
+        controller.endDate = endDate
+        
+        controller.didTapOkCallback = { (controller) -> Void in
+            self.startDate = controller.startDate
+            self.endDate = controller.endDate
+            
+            self.updateTimelineViews()
+            
+            controller.dismiss(self)
+        }
+        
+        presentViewControllerAsModalWindow(controller)
+    }
+    
+    // MARK: Segment menu buttons
+    @IBAction func didTapRemoveSegment(_ sender: NSMenuItem) {
+        guard let segment = sender.representedObject as? TaskSegment else {
+            return
+        }
+        
+        taskController.timeline.removeSegment(withId: segment.id)
+    }
+    
+    // MARK: Segment List menu buttons
+    @IBAction func didTapEditSegmentDates(_ sender: NSMenuItem) {
+        guard let segment = sender.representedObject as? TaskSegment else {
+            return
+        }
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
+            return
+        }
+        
+        controller.startDate = segment.range.startDate
+        controller.endDate = segment.range.endDate
+        
+        controller.didTapOkCallback = { (controller) -> Void in
+            self.taskController.timeline.setSegmentRange(withId: segment.id, startDate: controller.startDate, endDate: controller.endDate)
+            
+            controller.dismiss(self)
+        }
+        
+        presentViewControllerAsModalWindow(controller)
+    }
+    
+    @IBAction func didTapEditRunnignSegmentStartDate(_ sender: NSMenuItem) {
+        guard let segment = taskController.runningSegment else {
+            return
+        }
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDate") as? EditDateViewController else {
+            return
+        }
+        
+        controller.date = segment.range.startDate
+        
+        controller.didTapOkCallback = { (controller) -> Void in
+            if(controller.date > Date()) {
+                let alert = NSAlert()
+                alert.alertStyle = .informational
+                alert.messageText = "Please specify a date that is in the past for the running segment."
+                alert.runModal()
+                
+                return
+            }
+            
+            self.taskController.updateRunningSegment(withStartDate: controller.date)
+            
+            self.updateTimelineViews()
+            self.updateTaskViews(updateType: .RuntimeLabel)
+            
+            controller.dismiss(self)
+        }
+        
+        presentViewControllerAsModalWindow(controller)
+    }
+    
+    // MARK: - TaskViewUpdateType
+    fileprivate struct TaskViewUpdateType: OptionSet {
+        let rawValue: Int
+        
+        init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+        
+        static let Position = TaskViewUpdateType(rawValue: 1)
+        static let RuntimeLabel = TaskViewUpdateType(rawValue: 1 << 1)
+        static let DisplayState = TaskViewUpdateType(rawValue: 1 << 2)
+        static let Full = TaskViewUpdateType(rawValue: 0xFFFF)
+    }
+}
+
+// MARK: - Task Timeline Delegate
+extension ViewController: TaskTimelineManagerDelegate {
+    func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegment: TaskSegment) {
+        updateTimelineViews()
+    }
+    
+    func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegment: TaskSegment) {
+        updateTimelineViews()
+    }
+    
+    func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegments: [TaskSegment]) {
+        updateTimelineViews()
+    }
+    
+    func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegments: [TaskSegment]) {
+        updateTimelineViews()
+    }
+    
+    func taskTimelineManager(_ manager: TaskTimelineManager, didUpdateSegment: TaskSegment) {
+        updateTimelineViews()
+        updateTaskViews(updateType: .RuntimeLabel)
+    }
+}
+
+// MARK: - Task Timeline Controller
+extension ViewController: TaskControllerDelegate {
+    
+    func taskController(_ controller: TaskController, didStartTask task: Task) {
+        updateTaskViews()
+        updateTimelineViews()
+    }
+    
+    func taskController(_ controller: TaskController, didStopTask task: Task, newSegment: TaskSegment) {
+        updateTaskViews()
+        updateTimelineViews()
+    }
+}
+
+// MARK: - Task View Delegate
+extension ViewController: TaskViewDelegate {
+    
+    func didTapRemoveButtonOnTaskView(_ taskView: TaskView) {
+        guard let task = taskController.getTask(withId: taskView.taskId) else {
+            return
+        }
+        
+        taskController.removeTask(withId: task.id)
+        removeViewForTask(task: task)
+        updateTaskViews()
+        
+        for taskView in taskViews {
+            taskView.viewTimeline.needsDisplay = true
+        }
+        
+        tasksTimelineView.needsDisplay = true
+    }
+    
+    func didTapStartStopButtonOnTaskView(_ taskView: TaskView) {
+        // Check if task is running
+        if(taskController.runningTask?.id == taskView.taskId) {
+            taskController.stopCurrentTask()
+        } else {
+            taskController.startTask(taskId: taskView.taskId)
+            
+            // Re-order views, bringing the selected view to the top
+            if let i = taskViews.index(of: taskView) {
+                taskViews.remove(at: i)
+                taskViews.append(taskView)
+            }
+            
+            updateTaskViews()
+            
+            // Select task view
+            selectTaskView(taskView: taskView)
+        }
+    }
+    
+    func didTapSegmentListButtonOnTaskView(_ taskView: TaskView) {
+        var segments = taskController.timeline.segments(forTaskId: taskView.taskId)
+        
+        if let runningSegment = taskController.runningSegment, runningSegment.taskId == taskView.taskId {
+            segments.insert(runningSegment, at: 0)
+        }
+        
+        let listMenuView = NSMenu(title: "Segments List")
+        
+        for (i, segment) in segments.enumerated() {
+            let formatter = taskView.viewTimeline.dateTimeFormatter
+            
+            let start = formatter.string(from: segment.range.startDate)
+            let end = formatter.string(from: segment.range.endDate)
+            
+            var title = "Segment \(i + 1) \(start) to \(end)"
+            let isRunning = taskController.runningSegment?.id == segment.id
+            // Add label to segment to indicate it's currently running
+            if(isRunning) {
+                title += " - running"
+            }
+            
+            let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            item.representedObject = segment
+            
+            item.menu = createSegmentMenu(forSegment: segment)
+            
+            listMenuView.addItem(item)
+        }
+        
+        listMenuView.popUp(positioning: nil, at: NSPoint(x: taskView.btnSegmentList.frame.minX, y: taskView.btnSegmentList.frame.minY), in: taskView)
+    }
+    
+    // MARK: - Selection Menu Creation
+    func createSegmentMenu(forSegment segment: TaskSegment) -> NSMenu {
+        let isRunning = taskController.runningSegment?.id == segment.id
+        
+        // Add editing start/end dates
+        if(!isRunning) {
+            // Add delete segment
+            let delete = NSMenuItem(title: "Delete Segment", action:#selector(ViewController.didTapRemoveSegment(_:)), keyEquivalent: "")
+            delete.image = NSImage(named: "NSStopProgressFreestandingTemplate")
+            delete.representedObject = segment
+            
+            let editDate = NSMenuItem(title: "Edit start/end", action: #selector(ViewController.didTapEditSegmentDates(_:)), keyEquivalent: "")
+            editDate.image = NSImage(named: "NSActionTemplate")
+            editDate.representedObject = segment
+            editDate.target = self
+            
+            let sub = NSMenu()
+            sub.addItem(delete)
+            sub.addItem(editDate)
+            
+            return sub
+        } else {
+            // Add editing start date for running segment
+            let editDate = NSMenuItem(title: "Edit start", action: #selector(ViewController.didTapEditRunnignSegmentStartDate(_:)), keyEquivalent: "")
+            editDate.image = NSImage(named: "NSActionTemplate")
+            editDate.target = self
+            
+            let sub = NSMenu()
+            sub.addItem(editDate)
+            
+            return sub
+        }
+    }
+}
+
+// MARK: - Timeline View Data Source
+extension ViewController: TimelineViewDataSource {
+    func segmentsForTimelineView(_ timelineView: TimelineView) -> [TaskSegment] {
+        var segments = taskController.timeline.segments
+        
+        // Add running task segment, with the current date as the end date of the segment
+        if var seg = taskController.runningSegment {
+            seg.range.endDate = Date()
+            
+            segments.append(seg)
+        }
+        
+        return segments
+    }
+}
+
+// MARK: - Timeline View Delegate
+extension ViewController: TimelineViewDelegate {
+    
+    func backgroundColorForTimelineView(_ timelineView: TimelineView) -> NSColor {
+        return NSColor.white
+    }
+    
+    func timelineView(_ timelineView: TimelineView, colorForSegment segment: TaskSegment) -> NSColor {
+        let index = taskController.currentTasks.index { $0.id == segment.taskId } ?? 0
+        
+        let colors = ViewController.defaultColors()
+        
+        if(timelineView.userTag != -1) {
+            if(segment.taskId != timelineView.userTag) {
+                return colors[index % colors.count].withAlphaComponent(0.075)
+            }
+        }
+        
+        return colors[index % colors.count]
+    }
+    
+    func timelineView(_ timelineView: TimelineView, taskForSegment segment: TaskSegment) -> Task {
+        return taskController.getTask(withId: segment.taskId)!
+    }
+    
+    func timelineView(_ timelineView: TimelineView, labelForSegment segment: TaskSegment) -> String {
+        let task = taskController.getTask(withId: segment.taskId)!
+        
+        var segments = taskController.timeline.segments(forTaskId: task.id)
+        // Add running segment
+        if let running = taskController.runningSegment, running.taskId == task.id {
+            segments.append(running)
+        }
+        if let earliest = segments.earliestSegmentDate(), let latest = segments.latestSegmentDate() {
+            let start = timelineView.dateTimeFormatter.string(from: earliest)
+            let end = timelineView.dateTimeFormatter.string(from: latest)
+            
+            let segStart = timelineView.dateTimeFormatter.string(from: segment.range.startDate)
+            let segEnd = timelineView.dateTimeFormatter.string(from: segment.range.endDate)
+            
+            return "\(task.name) - \(start) to \(end)\nSegment date: \(segStart) to \(segEnd)\nSegment time: \(formatTimestamp(segment.range.timeInterval))"
+        }
+        
+        return task.name
+    }
+    
+    func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent) {
+        if(event.type == .rightMouseUp) {
+            // Do nothing if this is the currently running segment
+            if(segment.id == taskController.runningSegment?.id) {
+                return
+            }
+            
+            let windowPoint = event.locationInWindow
+            let point = timelineView.convert(windowPoint, from: nil)
+            
+            deleteSegmentItem.representedObject = segment
+            editSegmentItem.representedObject = segment
+            
+            let segmentMenu = createSegmentMenu(forSegment: segment)
+            
+            segmentMenu.popUp(positioning: nil, at: point, in: timelineView)
+            
+            return
+        }
+        
+        guard timelineView.userTag == -1, let task = taskController.getTask(withId: segment.taskId) else {
+            return
+        }
+        
+        selectViewForTask(task: task)
+    }
+    
+    func minimumStartDateForTimelineView(_ timelineView: TimelineView) -> Date? {
+        return startDate
+    }
+    
+    func minimumEndDateForTimelineView(_ timelineView: TimelineView) -> Date? {
+        return endDate
+    }
+}

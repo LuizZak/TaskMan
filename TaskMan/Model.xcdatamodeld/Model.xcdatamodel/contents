@@ -8,10 +8,10 @@
     </entity>
     <entity name="TaskList" representedClassName="TaskList" syncable="YES">
         <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="runningSegmentStart" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="updateDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <relationship name="tasks" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Task" syncable="YES"/>
+        <relationship name="tasks" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Task" syncable="YES"/>
     </entity>
     <entity name="TaskSegment" representedClassName="TaskSegment" syncable="YES">
         <attribute name="endDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>

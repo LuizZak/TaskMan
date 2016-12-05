@@ -56,6 +56,22 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="File" id="3j6-NA-HUj">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="File" id="8cY-uH-R9V">
+                                    <items>
+                                        <menuItem title="New" id="rsH-tI-e0O">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                        <menuItem title="Open..." id="v8C-l8-l4p">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                        <menuItem title="Save..." id="VS8-yb-t64">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                         </items>
                     </menu>
                     <connections>
@@ -65,7 +81,7 @@
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="TaskMan" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="-6" y="-26"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -125,7 +141,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.80000000000000004" horizontal="NO" id="Z3h-vg-FWj">
-                                    <rect key="frame" x="659" y="1" width="16" height="175"/>
+                                    <rect key="frame" x="660" y="1" width="15" height="175"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>

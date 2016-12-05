@@ -5,13 +5,14 @@
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="taskDescription" attributeType="String" syncable="YES"/>
         <relationship name="segments" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TaskSegment" inverseName="task" inverseEntity="TaskSegment" syncable="YES"/>
+        <relationship name="taskList" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TaskList" inverseName="tasks" inverseEntity="TaskList" syncable="YES"/>
     </entity>
     <entity name="TaskList" representedClassName="TaskList" syncable="YES">
         <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="runningSegmentStart" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="updateDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <relationship name="tasks" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Task" syncable="YES"/>
+        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Task" inverseName="taskList" inverseEntity="Task" syncable="YES"/>
     </entity>
     <entity name="TaskSegment" representedClassName="TaskSegment" syncable="YES">
         <attribute name="endDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -19,7 +20,7 @@
         <relationship name="task" maxCount="1" deletionRule="Nullify" destinationEntity="Task" inverseName="segments" inverseEntity="Task" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Task" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="Task" positionX="-63" positionY="-18" width="128" height="120"/>
         <element name="TaskList" positionX="-45" positionY="45" width="128" height="120"/>
         <element name="TaskSegment" positionX="-54" positionY="18" width="128" height="90"/>
     </elements>

@@ -8,6 +8,7 @@ target 'TaskMan' do
 
   # Pods for TaskMan
   pod 'AERecord'
+  pod 'SwiftyJSON'
 
   target 'TaskManTests' do
     inherit! :search_paths

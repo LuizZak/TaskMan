@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		454BAC9AC924538CE006F78A /* Pods_TaskMan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76BB6A340D7B7ADE9042579 /* Pods_TaskMan.framework */; };
 		6E943298542E0BBD29F8D930 /* Pods_TaskManTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7C1D5DB353173562033B8F9 /* Pods_TaskManTests.framework */; };
+		A00EBEF51DF5B7C3007D740E /* CoreDataInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */; };
+		A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A022571A1D9082630030A28E /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02257191D9082630030A28E /* TimelineView.swift */; };
 		A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */; };
 		A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324451DF5850200308A28 /* EditDateViewController.swift */; };
@@ -43,6 +45,8 @@
 		689915F909CD2BA97DD82503 /* Pods-TaskMan.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskMan.release.xcconfig"; path = "Pods/Target Support Files/Pods-TaskMan/Pods-TaskMan.release.xcconfig"; sourceTree = "<group>"; };
 		84CB5A7C9F40FD29EF945A3A /* Pods-TaskManTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskManTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TaskManTests/Pods-TaskManTests.release.xcconfig"; sourceTree = "<group>"; };
 		9D0FB6488662F63F3EA2316E /* Pods-TaskMan.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskMan.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TaskMan/Pods-TaskMan.debug.xcconfig"; sourceTree = "<group>"; };
+		A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataInterface.swift; sourceTree = "<group>"; };
+		A00EBEF61DF5B7D1007D740E /* TaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskList.swift; sourceTree = "<group>"; };
 		A02257191D9082630030A28E /* TimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateRangeViewController.swift; sourceTree = "<group>"; };
 		A0B324451DF5850200308A28 /* EditDateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateViewController.swift; sourceTree = "<group>"; };
@@ -189,6 +193,7 @@
 			isa = PBXGroup;
 			children = (
 				A0FA92BB1D8C70F000F3916D /* TaskController.swift */,
+				A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -196,6 +201,7 @@
 		A0FA92B81D8C702800F3916D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A00EBEF61DF5B7D1007D740E /* TaskList.swift */,
 				A0FA92B91D8C703300F3916D /* Task.swift */,
 				A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */,
 			);
@@ -412,9 +418,11 @@
 				A0FA92BE1D8C73EF00F3916D /* TaskSegment.swift in Sources */,
 				A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */,
 				A0FA92BA1D8C703300F3916D /* Task.swift in Sources */,
+				A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */,
 				A0FA92BC1D8C70F000F3916D /* TaskController.swift in Sources */,
 				A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */,
 				A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */,
+				A00EBEF51DF5B7C3007D740E /* CoreDataInterface.swift in Sources */,
 				A0B324531DF59F8800308A28 /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -13,6 +13,7 @@ This may or may not be useful to you, as well.
 
 Xcode 8.1
 MacOS 10.11 (El Capitan) or higher
+Cocoapods 1.1.1 (for package management; dependencies are already integrated in repository)
 
 Screenshot:
 

@@ -13,6 +13,15 @@ class TaskManDocument: NSDocument {
     
     var taskManState = TaskManState(range: DateRange(startDate: Date(),endDate: Date().addingTimeInterval(8 * 60 * 60)))
     
+    override func defaultDraftName() -> String {
+        let now = Date()
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMMdd", options: 0, locale: nil)
+        
+        return "\(formatter.string(from: now)) Tasks"
+    }
+    
     override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: "Document View Controller") as! NSWindowController

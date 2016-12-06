@@ -153,7 +153,7 @@ extension TaskView {
     /// Validates that this task view can receive a proper recognizable dropped format from
     /// a drag and drop operation described by a given dragging information object.
     /// Returns a value from the DragAndDropState enumeration describing the result of the
-    /// verification
+    /// verification, and the associated drag and drop state.
     fileprivate func verifyDrag(_ sender: NSDraggingInfo) -> (DragAndDropState, NSDragOperation) {
         let pasteBoard = sender.draggingPasteboard()
         if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType, NSPasteboardTypeString])) {

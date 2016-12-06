@@ -9,6 +9,8 @@
 import Cocoa
 import QuartzCore
 
+let SegmentDragItemType = "taskman.segment"
+
 /// Data source for a timeline view, which feeds task segments to the view
 protocol TimelineViewDataSource: class {
     func segmentsForTimelineView(_ timelineView: TimelineView) -> [TaskSegment]
@@ -29,6 +31,11 @@ protocol TimelineViewDelegate: class {
     func minimumStartDateForTimelineView(_ timelineView: TimelineView) -> Date?
     
     func minimumEndDateForTimelineView(_ timelineView: TimelineView) -> Date?
+    
+    /// Called to notify a segment is starting to be dragged on a timeline view.
+    /// In case the delegate returns false, the drag event is aborted.
+    /// Defaults to returning NO
+    func timelineView(_ timelineView: TimelineView, willStartDraggingSegment segment: TaskSegment) -> Bool
 }
 
 extension TimelineViewDelegate {
@@ -43,13 +50,17 @@ extension TimelineViewDelegate {
     func minimumEndDateForTimelineView(_ timelineView: TimelineView) -> Date? {
         return nil
     }
+    
+    func timelineView(_ timelineView: TimelineView, willStartDraggingSegment segment: TaskSegment) -> Bool {
+        return false
+    }
 }
 
 class TimelineView: NSView {
     
     /// Segment currently under the user's mouse
     /// Is nil, is no segment
-    private(set) var mouseSegment: TaskSegment?
+    fileprivate(set) var mouseSegment: TaskSegment?
     
     /// A simple user tag to tag the view with.
     /// Used to mostly figure out which specific task this timeline view is displaying.
@@ -105,7 +116,11 @@ class TimelineView: NSView {
     private(set) var lblStartTime = NSTextField()
     private(set) var lblEndTime = NSTextField()
     
-    private var lastTooltip: NSToolTipTag?
+    /// Dragging start point.
+    /// Is nil, if the user is not pressing down on this timeline view yet
+    fileprivate var dragStartPoint: NSPoint?
+    /// Whether the user is currently in the process of dragging a segment
+    fileprivate var dragging: Bool = false
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -175,11 +190,60 @@ class TimelineView: NSView {
         super.layout()
     }
     
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        return true
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        super.mouseDragged(with: event)
+        
+        guard let dragStartPoint = dragStartPoint, let mouseSegment = mouseSegment, let delegate = delegate else {
+            return
+        }
+        
+        let windowPoint = event.locationInWindow
+        let point = self.convert(windowPoint, from: nil)
+        
+        // Dragging event
+        if(!dragging) {
+            // Detect move distance
+            let distance = (dragStartPoint - point).magnitude
+            
+            // Ignore small drags
+            if(distance <= 3 || !delegate.timelineView(self, willStartDraggingSegment: mouseSegment)) {
+                return
+            }
+            
+            dragging = true
+            
+            let paste = NSPasteboardItem()
+            paste.setDataProvider(self, forTypes: [SegmentDragItemType, NSPasteboardTypeString])
+            
+            let item = NSDraggingItem(pasteboardWriter: paste)
+            item.draggingFrame = frameFor(segment: mouseSegment)
+            
+            let image = NSDraggingImageComponent(key: "")
+            image.contents = self.imageForSegment(segment: mouseSegment)
+            image.frame = NSRect(origin: NSPoint.zero, size: item.draggingFrame.size)
+            
+            item.imageComponentsProvider = {
+                return [image]
+            }
+            
+            let session = beginDraggingSession(with: [item], event: event, source: self)
+            
+            session.animatesToStartingPositionsOnCancelOrFail = true
+            session.draggingFormation = NSDraggingFormation.none
+        }
+    }
+    
     override func mouseMoved(with event: NSEvent) {
         super.mouseMoved(with: event)
         
         let windowPoint = event.locationInWindow
         let point = self.convert(windowPoint, from: nil)
+        
+        dragStartPoint = point
         
         let segment = segmentUnderPoint(point: point)
         
@@ -188,19 +252,23 @@ class TimelineView: NSView {
         highlightSegment(segment: segment)
         
         if let segment = segment, !isLastSegment {
-            lastTooltip = addToolTip(frameFor(segment: segment), owner: self, userData: nil)
+            addToolTip(frameFor(segment: segment), owner: self, userData: nil)
         }
     }
     
-    override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
+    override func mouseUp(with event: NSEvent) {
+        super.mouseUp(with: event)
+        
+        dragStartPoint = nil
         
         let windowPoint = event.locationInWindow
         let point = self.convert(windowPoint, from: nil)
         
-        if let segment = segmentUnderPoint(point: point) {
+        if dragging == false, let segment = segmentUnderPoint(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
         }
+        
+        dragging = false
     }
     
     override func rightMouseUp(with event: NSEvent) {
@@ -279,6 +347,35 @@ class TimelineView: NSView {
         }
     }
     
+    func imageForSegment(segment: TaskSegment) -> NSImage? {
+        let frame = frameFor(segment: segment)
+        
+        if(frame.width > 4096 || frame.height > 4096) {
+            return nil
+        }
+        
+        let image = NSImage(size: frame.size)
+        
+        image.lockFocus()
+        
+        let path = NSBezierPath()
+        
+        path.lineWidth = 2
+        
+        NSColor.clear.setStroke()
+        
+        path.appendRect(NSRect(origin: NSPoint.zero, size: frame.size))
+        
+        (delegate?.timelineView(self, colorForSegment: segment) ?? NSColor.blue)?.setFill()
+        
+        path.stroke()
+        path.fill()
+        
+        image.unlockFocus()
+        
+        return image
+    }
+    
     // MARK: - Highlighting Management
     
     func highlightSegment(segment: TaskSegment?) {
@@ -327,5 +424,33 @@ class TimelineView: NSView {
                       y: Double(boundsForSegments().origin.y),
                       width: endX - startX,
                       height: Double(boundsForSegments().height))
+    }
+}
+
+extension TimelineView : NSPasteboardItemDataProvider {
+    func pasteboard(_ pasteboard: NSPasteboard?, item: NSPasteboardItem, provideDataForType type: String) {
+        if(type == SegmentDragItemType || type == NSPasteboardTypeString) {
+            if let mouseSegment = mouseSegment {
+                item.setString(mouseSegment.serialize().rawString(), forType: type)
+            }
+        }
+    }
+}
+
+extension TimelineView : NSDraggingSource {
+    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        switch(context) {
+        case .withinApplication:
+            return NSDragOperation.move
+            
+        case .outsideApplication:
+            return NSDragOperation.copy
+        }
+    }
+    
+    func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
+        mouseSegment = nil
+        dragStartPoint = nil
+        dragging = false
     }
 }

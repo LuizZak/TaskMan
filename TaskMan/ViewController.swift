@@ -15,11 +15,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var tasksContainerView: NSView!
     @IBOutlet weak var tasksHeightConstraint: NSLayoutConstraint!
     
-    @IBOutlet weak var deleteSegmentItem: NSMenuItem!
-    @IBOutlet weak var editSegmentItem: NSMenuItem!
-    
-    fileprivate var startDate = Date()
-    fileprivate var endDate = Date().addingTimeInterval(8 * 60 * 60) // 8 hours
+    fileprivate var dateRange: DateRange = DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60))
     
     fileprivate var secondUpdateTimer: Timer!
     
@@ -145,7 +141,7 @@ class ViewController: NSViewController {
                 view.frame.origin.x = tasksContainerView.frame.width / 2 - view.frame.width / 2
             }
             if(updateType.contains(.DisplayState)) {
-                view.displayState = taskController.runningTask?.id == view.taskId ? .Running : .Stopped
+                view.displayState = taskController.runningTask?.id == view.taskId ? .running : .stopped
             }
             if(updateType.contains(.RuntimeLabel)) {
                 view.lblRuntime.stringValue = formatTimestamp(taskController.totalTime(forTaskId: view.taskId))
@@ -196,8 +192,22 @@ class ViewController: NSViewController {
     
     // MARK: - Actions
     
-    @IBAction func didTapAddTaskButton(_ sender: NSButton) {
-        let task = taskController.createTask(startRunning: false, name: "New Task", description: "")
+    func didTapAddTaskButton(_ sender: NSButton) {
+        addNewTask(running: false)
+    }
+    
+    func didTapAddAndStartTaskButton(_ sender: NSButton) {
+        addNewTask(running: true)
+    }
+    
+    private func addNewTask(running: Bool) {
+        // Figure out a unique name for the task
+        var num = 1
+        while(taskController.getTask(withName: "New Task #\(num)") != nil) {
+            num += 1
+        }
+        
+        let task = taskController.createTask(startRunning: running, name: "New Task #\(num)", description: "")
         
         addView(forTask: task)
         
@@ -207,28 +217,17 @@ class ViewController: NSViewController {
         selectViewForTask(task: task)
     }
     
-    @IBAction func didTapAddAndStartTaskButton(_ sender: NSButton) {
-        let task = taskController.createTask(startRunning: true, name: "New Task", description: "")
-        
-        addView(forTask: task)
-        
-        // Layout to update constraints before selecting the view
-        tasksScrollView.contentView.layout()
-        
-        selectViewForTask(task: task)
-    }
-    
-    @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
+    func didTapEditStartEndTime(_ sender: NSButton) {
         guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
             return
         }
         
-        controller.startDate = startDate
-        controller.endDate = endDate
+        controller.startDate = dateRange.startDate
+        controller.endDate = dateRange.endDate
         
         controller.didTapOkCallback = { (controller) -> Void in
-            self.startDate = controller.startDate
-            self.endDate = controller.endDate
+            self.dateRange.startDate = controller.startDate
+            self.dateRange.endDate = controller.endDate
             
             self.updateTimelineViews()
             
@@ -239,7 +238,7 @@ class ViewController: NSViewController {
     }
     
     // MARK: Segment menu buttons
-    @IBAction func didTapRemoveSegment(_ sender: NSMenuItem) {
+    func didTapRemoveSegment(_ sender: NSMenuItem) {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
         }
@@ -248,7 +247,7 @@ class ViewController: NSViewController {
     }
     
     // MARK: Segment List menu buttons
-    @IBAction func didTapEditSegmentDates(_ sender: NSMenuItem) {
+    func didTapEditSegmentDates(_ sender: NSMenuItem) {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
         }
@@ -268,7 +267,22 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
-    @IBAction func didTapEditRunnignSegmentStartDate(_ sender: NSMenuItem) {
+    func didTapChangeSegmentTask(_ sender: NSMenuItem) {
+        
+        guard let segment = sender.representedObject as? TaskSegment else {
+            return
+        }
+        guard let controller = ChangeSegmentTaskViewController(nibName: "ChangeSegmentTaskViewController", bundle: nil) else {
+            return
+        }
+        
+        controller.taskController = taskController
+        controller.segment = segment
+        
+        self.presentViewControllerAsModalWindow(controller)
+    }
+    
+    func didTapEditRunnignSegmentStartDate(_ sender: NSMenuItem) {
         guard let segment = taskController.runningSegment else {
             return
         }
@@ -299,6 +313,48 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
+    // MARK: - Selection Menu Creation
+    func createSegmentMenu(forSegment segment: TaskSegment) -> NSMenu {
+        let isRunning = taskController.runningSegment?.id == segment.id
+        
+        // Add editing start/end dates
+        if(!isRunning) {
+            // Delete
+            let delete = NSMenuItem(title: "Delete Segment", action:#selector(ViewController.didTapRemoveSegment(_:)), keyEquivalent: "")
+            delete.image = NSImage(named: "NSStopProgressFreestandingTemplate")
+            delete.representedObject = segment
+            
+            // Edit dates
+            let editDate = NSMenuItem(title: "Edit start/end", action: #selector(ViewController.didTapEditSegmentDates(_:)), keyEquivalent: "")
+            editDate.image = NSImage(named: "NSActionTemplate")
+            editDate.representedObject = segment
+            editDate.target = self
+            
+            // Change task
+            let changeTask = NSMenuItem(title: "Change segment's task", action: #selector(ViewController.didTapChangeSegmentTask(_:)), keyEquivalent: "")
+            changeTask.image = NSImage(named: "NSShareTemplate")
+            changeTask.representedObject = segment
+            changeTask.target = self
+            
+            let sub = NSMenu()
+            sub.addItem(delete)
+            sub.addItem(editDate)
+            sub.addItem(changeTask)
+            
+            return sub
+        } else {
+            // Add editing start date for running segment
+            let editDate = NSMenuItem(title: "Edit start", action: #selector(ViewController.didTapEditRunnignSegmentStartDate(_:)), keyEquivalent: "")
+            editDate.image = NSImage(named: "NSActionTemplate")
+            editDate.target = self
+            
+            let sub = NSMenu()
+            sub.addItem(editDate)
+            
+            return sub
+        }
+    }
+    
     // MARK: - TaskViewUpdateType
     fileprivate struct TaskViewUpdateType: OptionSet {
         let rawValue: Int
@@ -311,6 +367,54 @@ class ViewController: NSViewController {
         static let RuntimeLabel = TaskViewUpdateType(rawValue: 1 << 1)
         static let DisplayState = TaskViewUpdateType(rawValue: 1 << 2)
         static let Full = TaskViewUpdateType(rawValue: 0xFFFF)
+    }
+}
+
+// MARK: - Common Interface Methods
+extension ViewController {
+    
+    /// Shows an alert interface to confirm creation of a segment on a tasks, and create it
+    /// if the user has selected 'Yes'.
+    /// Returns whether the user has tapped the YES button to move the task segment.
+    func confirmAddSegment(_ segment: TaskSegment, toTask targetTask: Task) -> Bool {
+        let startDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.startDate)
+        let endDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.endDate)
+        
+        let alert = NSAlert()
+        alert.messageText = "Would you like to send the segment from \(startDateString) to \(endDateString) on task \(targetTask.name)?"
+        
+        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
+        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
+        
+        if(alert.runModal() == NSAlertSecondButtonReturn) {
+            return false
+        }
+        
+        // Perform the segment transfer
+        taskController.timeline.createSegment(forTaskId: targetTask.id, dateRange: segment.range)
+        
+        return true
+    }
+    
+    /// Shows an alert interface to confirm moving a segment between two tasks, and move it
+    /// if the user has selected 'Yes'.
+    /// Returns whether the user has tapped the YES button to move the task segment.
+    func confirmMoveSegment(_ segment: TaskSegment, fromTask sourceTask: Task, toTask targetTask: Task) -> Bool {
+        let alert = NSAlert()
+        alert.messageText = "Would you like to send the segment from task \(sourceTask.name) to task \(targetTask.name)?"
+        
+        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
+        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
+        
+        if(alert.runModal() == NSAlertSecondButtonReturn) {
+            return false
+        }
+        
+        // Perform the segment transfer
+        taskController.timeline.setSegmentRange(withId: segment.id, startDate: segment.range.startDate, endDate: segment.range.endDate)
+        taskController.timeline.changeTaskForSegment(segmentId: segment.id, toTaskId: targetTask.id)
+        
+        return true
     }
 }
 
@@ -416,7 +520,7 @@ extension ViewController: TaskViewDelegate {
             let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
             item.representedObject = segment
             
-            item.menu = createSegmentMenu(forSegment: segment)
+            item.submenu = createSegmentMenu(forSegment: segment)
             
             listMenuView.addItem(item)
         }
@@ -424,38 +528,38 @@ extension ViewController: TaskViewDelegate {
         listMenuView.popUp(positioning: nil, at: NSPoint(x: taskView.btnSegmentList.frame.minX, y: taskView.btnSegmentList.frame.minY), in: taskView)
     }
     
-    // MARK: - Selection Menu Creation
-    func createSegmentMenu(forSegment segment: TaskSegment) -> NSMenu {
-        let isRunning = taskController.runningSegment?.id == segment.id
-        
-        // Add editing start/end dates
-        if(!isRunning) {
-            // Add delete segment
-            let delete = NSMenuItem(title: "Delete Segment", action:#selector(ViewController.didTapRemoveSegment(_:)), keyEquivalent: "")
-            delete.image = NSImage(named: "NSStopProgressFreestandingTemplate")
-            delete.representedObject = segment
-            
-            let editDate = NSMenuItem(title: "Edit start/end", action: #selector(ViewController.didTapEditSegmentDates(_:)), keyEquivalent: "")
-            editDate.image = NSImage(named: "NSActionTemplate")
-            editDate.representedObject = segment
-            editDate.target = self
-            
-            let sub = NSMenu()
-            sub.addItem(delete)
-            sub.addItem(editDate)
-            
-            return sub
-        } else {
-            // Add editing start date for running segment
-            let editDate = NSMenuItem(title: "Edit start", action: #selector(ViewController.didTapEditRunnignSegmentStartDate(_:)), keyEquivalent: "")
-            editDate.image = NSImage(named: "NSActionTemplate")
-            editDate.target = self
-            
-            let sub = NSMenu()
-            sub.addItem(editDate)
-            
-            return sub
+    func taskView(_ taskView: TaskView, allowSegmentDrop segment: TaskSegment, withDragInfo dragInfo: NSDraggingInfo) -> (Bool, NSDragOperation) {
+        // Segment comes from an external text source - allow copying
+        if(!(dragInfo.draggingSource() is TimelineView)) {
+            return (true, .copy)
         }
+        
+        // Unrecognized source task ID
+        if(taskController.getTask(withId: segment.taskId) == nil) {
+            return (false, NSDragOperation())
+        }
+        
+        // Allow exchange only between different tasks
+        return (taskView.taskId != segment.taskId, .move)
+    }
+    
+    func taskView(_ taskView: TaskView, didDropSegment segment: TaskSegment, withDragInfo dragInfo: NSDraggingInfo) -> Bool {
+        // Fetch target task
+        guard let targetTask = taskController.getTask(withId: taskView.taskId) else {
+            return false
+        }
+        
+        // Segment comes from an external text source - copy segment data
+        if(!(dragInfo.draggingSource() is TimelineView)) {
+            return confirmAddSegment(segment, toTask: targetTask)
+        }
+        
+        // Segment comres from a timeline view - move segment data
+        guard let sourceTask = taskController.getTask(withId: segment.taskId) else {
+            return false
+        }
+        
+        return confirmMoveSegment(segment, fromTask: sourceTask, toTask: targetTask)
     }
 }
 
@@ -472,6 +576,15 @@ extension ViewController: TimelineViewDataSource {
         }
         
         return segments
+    }
+    
+    func timelineView(_ timelineView: TimelineView, willStartDraggingSegment segment: TaskSegment) -> Bool {
+        // Only allow dragging segments that are owned by a timeline view, or coming from the general timeline view
+        if(timelineView.userTag == -1) {
+            return true
+        }
+        
+        return segment.taskId == timelineView.userTag
     }
 }
 
@@ -531,9 +644,6 @@ extension ViewController: TimelineViewDelegate {
             let windowPoint = event.locationInWindow
             let point = timelineView.convert(windowPoint, from: nil)
             
-            deleteSegmentItem.representedObject = segment
-            editSegmentItem.representedObject = segment
-            
             let segmentMenu = createSegmentMenu(forSegment: segment)
             
             segmentMenu.popUp(positioning: nil, at: point, in: timelineView)
@@ -549,10 +659,10 @@ extension ViewController: TimelineViewDelegate {
     }
     
     func minimumStartDateForTimelineView(_ timelineView: TimelineView) -> Date? {
-        return startDate
+        return dateRange.startDate
     }
     
     func minimumEndDateForTimelineView(_ timelineView: TimelineView) -> Date? {
-        return endDate
+        return dateRange.endDate
     }
 }

@@ -169,6 +169,11 @@ class TaskController {
         return currentTasks.first { $0.id == id }
     }
     
+    /// Gets a task by name from this task controller
+    func getTask(withName name: String) -> Task? {
+        return currentTasks.first { $0.name == name }
+    }
+    
     fileprivate func updateTask(_ task: Task) {
         for (i, t) in currentTasks.enumerated() {
             if(t.id == task.id) {
@@ -244,7 +249,19 @@ class TaskTimelineManager {
         for (i, segment) in segments.enumerated() {
             if(segment.id == id) {
                 segments[i].range = DateRange(startDate: startDate, endDate: endDate)
-                self.delegate?.taskTimelineManager(self, didUpdateSegment: segment)
+                self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
+                break
+            }
+        }
+    }
+    
+    /// Changes a segment's task id to be of a specified task ID.
+    /// Does nothing, if the segment is unexisting, or it's task Id is already of the provided taskId
+    func changeTaskForSegment(segmentId id: TaskSegment.IDType, toTaskId taskId: Task.IDType) {
+        for (i, segment) in segments.enumerated() {
+            if(segment.id == id && segments[i].taskId != taskId) {
+                segments[i].taskId = taskId
+                self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
                 break
             }
         }

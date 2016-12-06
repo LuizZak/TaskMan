@@ -67,7 +67,7 @@ extension DateRange: Equatable {
 extension TaskSegment: ModelObject, IDModelObject {
     init(json: JSON) throws {
         try id = json[JsonKey.id].tryInt()
-        try taskId = json[JsonKey.id].tryInt()
+        try taskId = json[JsonKey.taskId].tryInt()
         try range = json[JsonKey.range].tryParseModel()
     }
     

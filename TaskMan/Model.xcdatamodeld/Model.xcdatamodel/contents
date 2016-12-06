@@ -11,6 +11,7 @@
         <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="runningSegmentStart" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="runningSegmentTaskId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="updateDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Task" inverseName="taskList" inverseEntity="Task" syncable="YES"/>
     </entity>
@@ -21,7 +22,7 @@
     </entity>
     <elements>
         <element name="Task" positionX="-63" positionY="-18" width="128" height="120"/>
-        <element name="TaskList" positionX="-45" positionY="45" width="128" height="120"/>
+        <element name="TaskList" positionX="-45" positionY="45" width="128" height="135"/>
         <element name="TaskSegment" positionX="-54" positionY="18" width="128" height="90"/>
     </elements>
 </model>

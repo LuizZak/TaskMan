@@ -20,6 +20,7 @@
 		A0A6B65A1DF5C60400F84863 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6591DF5C60400F84863 /* Utils.swift */; };
 		A0A6B65C1DF5CB1800F84863 /* DateFormatHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */; };
 		A0A6B65E1DF5D6FF00F84863 /* TaskManState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65D1DF5D6FF00F84863 /* TaskManState.swift */; };
+		A0A6B6601DF5E98D00F84863 /* CGMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65F1DF5E98D00F84863 /* CGMath.swift */; };
 		A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324451DF5850200308A28 /* EditDateViewController.swift */; };
 		A0B324491DF5989B00308A28 /* ChangeSegmentTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324471DF5989B00308A28 /* ChangeSegmentTaskViewController.swift */; };
 		A0B3244A1DF5989B00308A28 /* ChangeSegmentTaskViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */; };
@@ -63,6 +64,7 @@
 		A0A6B6591DF5C60400F84863 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateFormatHelper.swift; sourceTree = "<group>"; };
 		A0A6B65D1DF5D6FF00F84863 /* TaskManState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManState.swift; sourceTree = "<group>"; };
+		A0A6B65F1DF5E98D00F84863 /* CGMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGMath.swift; sourceTree = "<group>"; };
 		A0B324451DF5850200308A28 /* EditDateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateViewController.swift; sourceTree = "<group>"; };
 		A0B324471DF5989B00308A28 /* ChangeSegmentTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeSegmentTaskViewController.swift; sourceTree = "<group>"; };
 		A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangeSegmentTaskViewController.xib; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */,
 				A0A6B6591DF5C60400F84863 /* Utils.swift */,
 				A0A6B6571DF5C59000F84863 /* SwiftyJSON+Extensions.swift */,
+				A0A6B65F1DF5E98D00F84863 /* CGMath.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 			files = (
 				A0A6B6581DF5C59000F84863 /* SwiftyJSON+Extensions.swift in Sources */,
 				A0FA929D1D8C6F7D00F3916D /* ViewController.swift in Sources */,
+				A0A6B6601DF5E98D00F84863 /* CGMath.swift in Sources */,
 				A0F24C121D917DEA001D4536 /* TaskView.swift in Sources */,
 				A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */,
 				A022571A1D9082630030A28E /* TimelineView.swift in Sources */,

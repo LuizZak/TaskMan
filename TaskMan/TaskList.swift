@@ -23,6 +23,11 @@ struct TaskList {
     init() {
         
     }
+    
+    init(tasks: [Task], taskSegments: [TaskSegment]) {
+        self.tasks = tasks
+        self.taskSegments = taskSegments
+    }
 }
 
 // MARK: Json

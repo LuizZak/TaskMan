@@ -26,6 +26,8 @@
 		A0B3244A1DF5989B00308A28 /* ChangeSegmentTaskViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */; };
 		A0B3244F1DF59F7500308A28 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0B3244E1DF59F7500308A28 /* CoreData.framework */; };
 		A0B324531DF59F8800308A28 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A0B324511DF59F8800308A28 /* Model.xcdatamodeld */; };
+		A0C6606F1DF70DA40063385B /* TaskManDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C6606E1DF70DA40063385B /* TaskManDocument.swift */; };
+		A0C660711DF716770063385B /* TaskDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C660701DF716770063385B /* TaskDocumentController.swift */; };
 		A0F24C101D917DC4001D4536 /* TaskView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0F24C0F1D917DC4001D4536 /* TaskView.xib */; };
 		A0F24C121D917DEA001D4536 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F24C111D917DEA001D4536 /* TaskView.swift */; };
 		A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA929A1D8C6F7D00F3916D /* AppDelegate.swift */; };
@@ -70,6 +72,8 @@
 		A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangeSegmentTaskViewController.xib; sourceTree = "<group>"; };
 		A0B3244E1DF59F7500308A28 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		A0B324521DF59F8800308A28 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		A0C6606E1DF70DA40063385B /* TaskManDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManDocument.swift; sourceTree = "<group>"; };
+		A0C660701DF716770063385B /* TaskDocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskDocumentController.swift; sourceTree = "<group>"; };
 		A0F24C0F1D917DC4001D4536 /* TaskView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TaskView.xib; sourceTree = "<group>"; };
 		A0F24C111D917DEA001D4536 /* TaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		A0FA92971D8C6F7D00F3916D /* TaskMan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TaskMan.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -232,6 +236,7 @@
 			children = (
 				A0FA92BB1D8C70F000F3916D /* TaskController.swift */,
 				A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */,
+				A0C660701DF716770063385B /* TaskDocumentController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -244,6 +249,7 @@
 				A0FA92B91D8C703300F3916D /* Task.swift */,
 				A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */,
 				A0A6B65D1DF5D6FF00F84863 /* TaskManState.swift */,
+				A0C6606E1DF70DA40063385B /* TaskManDocument.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -455,12 +461,14 @@
 				A0FA929D1D8C6F7D00F3916D /* ViewController.swift in Sources */,
 				A0A6B6601DF5E98D00F84863 /* CGMath.swift in Sources */,
 				A0F24C121D917DEA001D4536 /* TaskView.swift in Sources */,
+				A0C660711DF716770063385B /* TaskDocumentController.swift in Sources */,
 				A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */,
 				A022571A1D9082630030A28E /* TimelineView.swift in Sources */,
 				A0B324491DF5989B00308A28 /* ChangeSegmentTaskViewController.swift in Sources */,
 				A0FA92BE1D8C73EF00F3916D /* TaskSegment.swift in Sources */,
 				A0A6B65E1DF5D6FF00F84863 /* TaskManState.swift in Sources */,
 				A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */,
+				A0C6606F1DF70DA40063385B /* TaskManDocument.swift in Sources */,
 				A0FA92BA1D8C703300F3916D /* Task.swift in Sources */,
 				A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */,
 				A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */,

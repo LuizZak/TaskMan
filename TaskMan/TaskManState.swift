@@ -25,6 +25,14 @@ struct TaskManState {
     /// The creation date for this state
     var creationDate: Date
     
+    /// Inits a TaskMan state with the given set of data
+    init(taskList: TaskList, runningSegment: TaskSegment, timeRange: DateRange, creationDate: Date = Date()) {
+        self.taskList = taskList
+        self.runningSegment = runningSegment
+        self.timeRange = timeRange
+        self.creationDate = creationDate
+    }
+    
     /// Inits a TaskMan state with an empty set of data, and a creation date set to this moment
     init(range: DateRange) {
         taskList = TaskList()
@@ -39,7 +47,7 @@ extension TaskManState: ModelObject {
     
     init(json: JSON) throws {
         try taskList = json[JsonKey.taskList].tryParseModel()
-        try runningSegment = json[JsonKey.runningSegment].tryParseModel(withType: TaskSegment.self)
+        runningSegment = try? json[JsonKey.runningSegment].tryParseModel()
         try timeRange = json[JsonKey.timeRange].tryParseModel()
         try creationDate = json[JsonKey.creationDate].tryParseDate(withFormatter: rfc3339DateTimeFormatter)
     }
@@ -48,7 +56,7 @@ extension TaskManState: ModelObject {
         var dict: [JsonKey: Any] = [:]
         
         dict[.taskList] = taskList.serialize().object
-        dict[.runningSegment] = runningSegment?.serialize() ?? NSNull()
+        dict[.runningSegment] = runningSegment?.serialize().object ?? NSNull()
         dict[.timeRange] = timeRange.serialize().object
         dict[.creationDate] = rfc3339StringFrom(date: creationDate)
         

@@ -16,6 +16,12 @@ protocol TaskViewDelegate: class {
     
     func didTapSegmentListButtonOnTaskView(_ taskView: TaskView)
     
+    /// Called to notify the user has changed the text of the namefield for a task view
+    func taskView(_ taskView: TaskView, didUpdateName name: String)
+    
+    /// Called to notify the user has changed the text of the description for a task view
+    func taskView(_ taskView: TaskView, didUpdateDescription description: String)
+    
     /// Called when a task view has detected a drag and drop operation with a segment over itself, and the dragging operation mask to use.
     /// Returning false blocks the drag operation.
     /// May be called multiple times during a drag operation.
@@ -32,6 +38,10 @@ extension TaskViewDelegate {
     func didTapRemoveButtonOnTaskView(_ taskView: TaskView) { }
     func didTapStartStopButtonOnTaskView(_ taskView: TaskView) { }
     func didTapSegmentListButtonOnTaskView(_ taskView: TaskView) { }
+    
+    func taskView(_ taskView: TaskView, didUpdateName name: String) { }
+    func taskView(_ taskView: TaskView, didUpdateDescription description: String) { }
+    
     func taskView(_ taskView: TaskView, allowSegmentDrop segment: TaskSegment, withDragInfo dragInfo: NSDraggingInfo) -> (Bool, NSDragOperation) {
         return (false, NSDragOperation())
     }
@@ -111,6 +121,9 @@ class TaskView: NSView {
     @IBAction func didTapSegmentListButton(_ sender: NSButton) {
         delegate?.didTapSegmentListButtonOnTaskView(self)
     }
+    @IBAction func didChangeName(_ sender: NSTextField) {
+        delegate?.taskView(self, didUpdateName: sender.stringValue)
+    }
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -145,6 +158,15 @@ class TaskView: NSView {
         
         /// The item cannot be dropped on the view
         case denied
+    }
+}
+
+// MARK: - Text View Delegate
+extension TaskView: NSTextViewDelegate {
+    
+    func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
+        self.delegate?.taskView(self, didUpdateDescription: txtDescription.string ?? "")
+        return true
     }
 }
 

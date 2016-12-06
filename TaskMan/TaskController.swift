@@ -55,6 +55,12 @@ class TaskController {
         self.timeline = timeline
     }
     
+    init(tasks: [Task], runningSegment: TaskSegment?, timeline: TaskTimelineManager) {
+        self.currentTasks = tasks
+        self.timeline = timeline
+        self.runningSegment = runningSegment
+    }
+    
     /// Creates a new task, returning the ID of the created task.
     /// A `startRunning` flag specifies whether to initiate the task as soon as it is created
     func createTask(startRunning: Bool, name: String? = nil, description: String? = nil) -> Task {
@@ -65,6 +71,8 @@ class TaskController {
         if(startRunning) {
             startTask(taskId: task.id)
         }
+        
+        delegate?.taskController(self, didCreateTask: task)
         
         return task
     }
@@ -222,6 +230,10 @@ class TaskTimelineManager {
     
     /// Notifier-delegate for this task timeline manager
     weak var delegate: TaskTimelineManagerDelegate?
+    
+    init(segments: [TaskSegment] = []) {
+        self.segments = segments
+    }
     
     /// Creates a segment for a given task ID, on a given date range on this task timeline manager
     func createSegment(forTaskId taskId: Task.IDType, dateRange: DateRange) {

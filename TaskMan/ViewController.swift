@@ -23,6 +23,36 @@ class ViewController: NSViewController {
     
     fileprivate var taskViews: [TaskView] = []
     
+    override var representedObject: Any? {
+        didSet {
+            guard let document = representedObject as? TaskManDocument else {
+                return
+            }
+            
+            let tasks = document.taskManState.taskList.tasks
+            let segments = document.taskManState.taskList.taskSegments
+            let running = document.taskManState.runningSegment
+            
+            self.taskController = TaskController(tasks: tasks, runningSegment: running, timeline: TaskTimelineManager(segments: segments))
+            self.taskController.delegate = self
+            
+            dateRange = document.taskManState.timeRange
+            
+            removeAllTaskViews()
+            
+            for task in taskController.currentTasks {
+                addView(forTask: task)
+            }
+            
+            updateTaskViews()
+            updateTimelineViews()
+        }
+    }
+    
+    var document: TaskManDocument? {
+        return self.view.window?.windowController?.document as? TaskManDocument
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,6 +80,8 @@ class ViewController: NSViewController {
         super.viewWillAppear()
         
         if let window = self.view.window {
+            representedObject = document
+            
             if let screenSize = window.screen?.frame.size {
                 window.setFrameOrigin(NSPoint(x: (screenSize.width - window.frame.size.width) / 2, y: (screenSize.height - window.frame.size.height) / 2))
             }
@@ -89,6 +121,19 @@ class ViewController: NSViewController {
         self.updateTaskViews()
         
         return view
+    }
+    
+    func removeAllTaskViews() {
+        for view in taskViews {
+            view.removeFromSuperview()
+            view.delegate = nil
+        }
+        
+        taskViews.removeAll()
+        
+        updateTaskViews()
+        tasksContainerView.layout()
+        tasksScrollView.contentView.layout()
     }
     
     func removeViewForTask(task: Task) {
@@ -192,11 +237,11 @@ class ViewController: NSViewController {
     
     // MARK: - Actions
     
-    func didTapAddTaskButton(_ sender: NSButton) {
+    @IBAction func didTapAddTaskButton(_ sender: NSButton) {
         addNewTask(running: false)
     }
     
-    func didTapAddAndStartTaskButton(_ sender: NSButton) {
+    @IBAction func didTapAddAndStartTaskButton(_ sender: NSButton) {
         addNewTask(running: true)
     }
     
@@ -217,7 +262,7 @@ class ViewController: NSViewController {
         selectViewForTask(task: task)
     }
     
-    func didTapEditStartEndTime(_ sender: NSButton) {
+    @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
         guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
             return
         }
@@ -228,6 +273,7 @@ class ViewController: NSViewController {
         controller.didTapOkCallback = { (controller) -> Void in
             self.dateRange.startDate = controller.startDate
             self.dateRange.endDate = controller.endDate
+            self.markChangesPending()
             
             self.updateTimelineViews()
             
@@ -303,6 +349,7 @@ class ViewController: NSViewController {
             }
             
             self.taskController.updateRunningSegment(withStartDate: controller.date)
+            self.markChangesPending()
             
             self.updateTimelineViews()
             self.updateTaskViews(updateType: .RuntimeLabel)
@@ -353,6 +400,18 @@ class ViewController: NSViewController {
             
             return sub
         }
+    }
+    
+    override func commitEditing() -> Bool {
+        return super.commitEditing()
+    }
+    
+    func markChangesPending() {
+        document?.taskManState.runningSegment = taskController.runningSegment
+        document?.taskManState.taskList = TaskList(tasks: taskController.currentTasks, taskSegments: taskController.timeline.segments)
+        document?.taskManState.timeRange = dateRange
+        
+        document?.updateChangeCount(.changeDone)
     }
     
     // MARK: - TaskViewUpdateType
@@ -421,22 +480,32 @@ extension ViewController {
 // MARK: - Task Timeline Delegate
 extension ViewController: TaskTimelineManagerDelegate {
     func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegment: TaskSegment) {
+        markChangesPending()
+        
         updateTimelineViews()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegment: TaskSegment) {
+        markChangesPending()
+        
         updateTimelineViews()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegments: [TaskSegment]) {
+        markChangesPending()
+        
         updateTimelineViews()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegments: [TaskSegment]) {
+        markChangesPending()
+        
         updateTimelineViews()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didUpdateSegment: TaskSegment) {
+        markChangesPending()
+        
         updateTimelineViews()
         updateTaskViews(updateType: .RuntimeLabel)
     }
@@ -445,12 +514,24 @@ extension ViewController: TaskTimelineManagerDelegate {
 // MARK: - Task Timeline Controller
 extension ViewController: TaskControllerDelegate {
     
+    func taskController(_ controller: TaskController, didCreateTask task: Task) {
+        markChangesPending()
+    }
+    
+    func taskController(_ controller: TaskController, didRemoveTask task: Task) {
+        markChangesPending()
+    }
+    
     func taskController(_ controller: TaskController, didStartTask task: Task) {
+        markChangesPending()
+        
         updateTaskViews()
         updateTimelineViews()
     }
     
     func taskController(_ controller: TaskController, didStopTask task: Task, newSegment: TaskSegment) {
+        markChangesPending()
+        
         updateTaskViews()
         updateTimelineViews()
     }
@@ -458,6 +539,14 @@ extension ViewController: TaskControllerDelegate {
 
 // MARK: - Task View Delegate
 extension ViewController: TaskViewDelegate {
+    
+    func taskView(_ taskView: TaskView, didUpdateName name: String) {
+        markChangesPending()
+    }
+    
+    func taskView(_ taskView: TaskView, didUpdateDescription description: String) {
+        markChangesPending()
+    }
     
     func didTapRemoveButtonOnTaskView(_ taskView: TaskView) {
         guard let task = taskController.getTask(withId: taskView.taskId) else {

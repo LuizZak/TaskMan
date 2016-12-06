@@ -10,8 +10,6 @@ import Cocoa
 
 class TaskDocumentController: NSDocumentController {
     override func makeUntitledDocument(ofType typeName: String) throws -> NSDocument {
-        let doc = TaskManDocument()
-        
-        return doc
+        return TaskManDocument()
     }
 }

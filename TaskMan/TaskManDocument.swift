@@ -25,21 +25,64 @@ class TaskManDocument: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        return try taskManState.serialize().rawData()
+        var json = JSON([:])
+        let state = taskManState.serialize()
+        
+        json["state"].object = state.object
+        json["version"].int = FileFormatVersion
+        
+        return try json.rawData()
     }
     
     override func read(from data: Data, ofType typeName: String) throws {
         var error: NSError? = nil
-        let json = JSON(data: data, error: &error)
+        var json = JSON(data: data, error: &error)
         if let error = error {
             throw error
         }
         
-        self.taskManState = try TaskManState(json: json)
+        guard let version = json["version"].int else {
+            throw ReadError.InvalidFormat
+        }
+        
+        // Check conversion
+        if(version != FileFormatVersion) {
+            let converter = TaskManStateConverter()
+            
+            if(!converter.canConvertFrom(version: version)) {
+                throw ReadError.InvalidVersion
+            }
+            
+            json = try converter.convert(json: json, fromVersion: version)
+        }
+        
+        self.taskManState = try TaskManState(json: json["state"])
     }
-
+    
     override class func autosavesInPlace() -> Bool {
         return true
     }
+    
+    /// Errors raised during file format reading
+    enum ReadError: Error {
+        /// Thrown when the file is in an incorrectly formatted type
+        case InvalidFormat
+        
+        /// Thrown when the file is from an unsuported/future/dated version of TaskMan
+        case InvalidVersion
+    }
+}
 
+/// Private helper class used to help convert files from previous versions of TaskMan
+private class TaskManStateConverter {
+    
+    /// Returns whether the given file version can be converted to the newest compatible format
+    func canConvertFrom(version: Int) -> Bool {
+        return version == FileFormatVersion
+    }
+    
+    /// Converts the given JSON structure to the newest compatible format
+    func convert(json: JSON, fromVersion version: Int) throws -> JSON {
+        return json
+    }
 }

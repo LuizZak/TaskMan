@@ -180,7 +180,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.80000000000000004" horizontal="NO" id="Z3h-vg-FWj">
-                                    <rect key="frame" x="660" y="1" width="15" height="175"/>
+                                    <rect key="frame" x="659" y="1" width="16" height="175"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -247,45 +247,11 @@
             <objects>
                 <viewController title="Edit Date" storyboardIdentifier="editDateRange" id="wbC-SU-5dS" customClass="EditDateRangeViewController" customModule="TaskMan" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="31f-De-1Wj">
-                        <rect key="frame" x="0.0" y="0.0" width="250" height="130"/>
+                        <rect key="frame" x="0.0" y="0.0" width="280" height="180"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ECy-ux-hI2">
-                                <rect key="frame" x="94" y="90" width="140" height="27"/>
-                                <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="mtj-D9-7Hi">
-                                    <font key="font" metaFont="system"/>
-                                    <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
-                                        <!--1982-02-12 08:00:00 -0800-->
-                                        <timeZone key="timeZone" name="US/Pacific"/>
-                                    </calendarDate>
-                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
-                                </datePickerCell>
-                            </datePicker>
-                            <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hqq-ep-0Of">
-                                <rect key="frame" x="94" y="59" width="140" height="27"/>
-                                <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="3eZ-co-afT">
-                                    <font key="font" metaFont="system"/>
-                                    <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
-                                        <!--1982-02-12 08:00:00 -0800-->
-                                        <timeZone key="timeZone" name="US/Pacific"/>
-                                    </calendarDate>
-                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
-                                </datePickerCell>
-                            </datePicker>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="i8O-9F-z5O">
-                                <rect key="frame" x="18" y="93" width="70" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Start Date:" id="uaf-OU-8T1">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rPu-YE-EZR">
-                                <rect key="frame" x="180" y="6" width="57" height="32"/>
+                                <rect key="frame" x="210" y="6" width="57" height="32"/>
                                 <buttonCell key="cell" type="push" title="Ok" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MVs-1a-nJU">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -298,7 +264,7 @@ DQ
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YwO-ZK-ZUf">
-                                <rect key="frame" x="98" y="6" width="82" height="32"/>
+                                <rect key="frame" x="128" y="6" width="82" height="32"/>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2Xi-CG-j2g">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -310,38 +276,166 @@ Gw
                                     <action selector="didTapCancel:" target="wbC-SU-5dS" id="6so-Oa-U2x"/>
                                 </connections>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QuP-kj-gEx">
-                                <rect key="frame" x="18" y="62" width="63" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="End Date:" id="Tpt-49-hqv">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
+                            <tabView translatesAutoresizingMaskIntoConstraints="NO" id="Vgb-F5-JIE">
+                                <rect key="frame" x="13" y="42" width="254" height="124"/>
+                                <font key="font" metaFont="system"/>
+                                <tabViewItems>
+                                    <tabViewItem label="Start/End" identifier="1" id="oWI-Qq-DbU">
+                                        <view key="view" id="Aea-T3-rkU">
+                                            <rect key="frame" x="10" y="33" width="234" height="78"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ECy-ux-hI2">
+                                                    <rect key="frame" x="86" y="48" width="140" height="27"/>
+                                                    <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="mtj-D9-7Hi">
+                                                        <font key="font" metaFont="system"/>
+                                                        <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
+                                                            <!--1982-02-12 08:00:00 -0800-->
+                                                            <timeZone key="timeZone" name="US/Pacific"/>
+                                                        </calendarDate>
+                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                        <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
+                                                    </datePickerCell>
+                                                    <connections>
+                                                        <action selector="didUpdatePickerDate:" target="wbC-SU-5dS" id="qC0-Un-aM3"/>
+                                                    </connections>
+                                                </datePicker>
+                                                <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hqq-ep-0Of">
+                                                    <rect key="frame" x="86" y="17" width="140" height="27"/>
+                                                    <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="3eZ-co-afT">
+                                                        <font key="font" metaFont="system"/>
+                                                        <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
+                                                            <!--1982-02-12 08:00:00 -0800-->
+                                                            <timeZone key="timeZone" name="US/Pacific"/>
+                                                        </calendarDate>
+                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                        <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
+                                                    </datePickerCell>
+                                                    <connections>
+                                                        <action selector="didUpdatePickerDate:" target="wbC-SU-5dS" id="URt-hw-Fhr"/>
+                                                    </connections>
+                                                </datePicker>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="i8O-9F-z5O">
+                                                    <rect key="frame" x="10" y="51" width="70" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Start Date:" id="uaf-OU-8T1">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QuP-kj-gEx">
+                                                    <rect key="frame" x="10" y="20" width="63" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="End Date:" id="Tpt-49-hqv">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="ECy-ux-hI2" firstAttribute="leading" secondItem="i8O-9F-z5O" secondAttribute="trailing" constant="8" id="DMb-Hr-9Un"/>
+                                                <constraint firstItem="ECy-ux-hI2" firstAttribute="top" secondItem="Aea-T3-rkU" secondAttribute="top" constant="7" id="Psv-Mo-f5n"/>
+                                                <constraint firstItem="hqq-ep-0Of" firstAttribute="leading" secondItem="QuP-kj-gEx" secondAttribute="trailing" constant="15" id="c87-r3-fVc"/>
+                                                <constraint firstItem="hqq-ep-0Of" firstAttribute="top" secondItem="ECy-ux-hI2" secondAttribute="bottom" constant="8" id="ewb-Cy-RT4"/>
+                                                <constraint firstItem="i8O-9F-z5O" firstAttribute="leading" secondItem="Aea-T3-rkU" secondAttribute="leading" constant="12" id="h5Y-Bs-ekq"/>
+                                                <constraint firstItem="QuP-kj-gEx" firstAttribute="leading" secondItem="Aea-T3-rkU" secondAttribute="leading" constant="12" id="msr-jw-yhr"/>
+                                                <constraint firstItem="QuP-kj-gEx" firstAttribute="baseline" secondItem="hqq-ep-0Of" secondAttribute="baseline" id="oy9-iB-GVb"/>
+                                                <constraint firstItem="i8O-9F-z5O" firstAttribute="top" secondItem="Aea-T3-rkU" secondAttribute="top" constant="10" id="sHo-yu-dsC"/>
+                                            </constraints>
+                                        </view>
+                                    </tabViewItem>
+                                    <tabViewItem label="Start/Duration" identifier="2" id="I6G-go-MJ5">
+                                        <view key="view" id="Qvr-50-eiw">
+                                            <rect key="frame" x="10" y="33" width="234" height="78"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6OE-Cr-eZt">
+                                                    <rect key="frame" x="86" y="48" width="140" height="27"/>
+                                                    <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="aT3-UI-he1">
+                                                        <font key="font" metaFont="system"/>
+                                                        <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
+                                                            <!--1982-02-12 08:00:00 -0800-->
+                                                            <timeZone key="timeZone" name="US/Pacific"/>
+                                                        </calendarDate>
+                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                        <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
+                                                    </datePickerCell>
+                                                    <connections>
+                                                        <action selector="didUpdatePickerDate:" target="wbC-SU-5dS" id="9KY-oh-O8z"/>
+                                                    </connections>
+                                                </datePicker>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6fX-vY-Z96">
+                                                    <rect key="frame" x="10" y="51" width="70" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Start Date:" id="6iP-KG-eF7">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ygp-m6-qmz">
+                                                    <rect key="frame" x="10" y="20" width="60" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Duration:" id="VSo-n8-zGC">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dYU-6z-Rev">
+                                                    <rect key="frame" x="86" y="18" width="131" height="22"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="xhX-V1-7PP">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+                                                    </textFieldCell>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="wbC-SU-5dS" id="jqr-T9-O5i"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Ygp-m6-qmz" firstAttribute="leading" secondItem="Qvr-50-eiw" secondAttribute="leading" constant="12" id="0V5-mp-3Mj"/>
+                                                <constraint firstItem="6fX-vY-Z96" firstAttribute="leading" secondItem="Qvr-50-eiw" secondAttribute="leading" constant="12" id="8Mw-ZS-i1r"/>
+                                                <constraint firstItem="6OE-Cr-eZt" firstAttribute="top" secondItem="Qvr-50-eiw" secondAttribute="top" constant="7" id="8Rz-Uc-Icp"/>
+                                                <constraint firstItem="dYU-6z-Rev" firstAttribute="leading" secondItem="Ygp-m6-qmz" secondAttribute="trailing" constant="18" id="B9v-NW-q5J"/>
+                                                <constraint firstItem="Ygp-m6-qmz" firstAttribute="top" secondItem="6fX-vY-Z96" secondAttribute="bottom" constant="14" id="J7k-1T-806"/>
+                                                <constraint firstItem="6fX-vY-Z96" firstAttribute="top" secondItem="Qvr-50-eiw" secondAttribute="top" constant="10" id="Nf7-NV-ITi"/>
+                                                <constraint firstItem="6OE-Cr-eZt" firstAttribute="leading" secondItem="6fX-vY-Z96" secondAttribute="trailing" constant="8" id="Nmz-k3-PxD"/>
+                                                <constraint firstItem="dYU-6z-Rev" firstAttribute="top" secondItem="6OE-Cr-eZt" secondAttribute="bottom" constant="8" id="xMc-rP-faW"/>
+                                                <constraint firstAttribute="trailing" secondItem="dYU-6z-Rev" secondAttribute="trailing" constant="17" id="yiw-kH-kFG"/>
+                                            </constraints>
+                                        </view>
+                                    </tabViewItem>
+                                </tabViewItems>
+                                <connections>
+                                    <outlet property="delegate" destination="wbC-SU-5dS" id="zDu-km-Aei"/>
+                                </connections>
+                            </tabView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="hqq-ep-0Of" firstAttribute="leading" secondItem="QuP-kj-gEx" secondAttribute="trailing" constant="15" id="ASq-Wo-7uj"/>
-                            <constraint firstItem="ECy-ux-hI2" firstAttribute="leading" secondItem="i8O-9F-z5O" secondAttribute="trailing" constant="8" id="Ai8-td-Y4Q"/>
-                            <constraint firstItem="hqq-ep-0Of" firstAttribute="top" secondItem="ECy-ux-hI2" secondAttribute="bottom" constant="8" id="CFe-dV-4ar"/>
                             <constraint firstItem="rPu-YE-EZR" firstAttribute="leading" secondItem="YwO-ZK-ZUf" secondAttribute="trailing" constant="12" id="GA8-Vp-mLl"/>
-                            <constraint firstItem="QuP-kj-gEx" firstAttribute="leading" secondItem="31f-De-1Wj" secondAttribute="leading" constant="20" id="PHF-u6-xIb"/>
+                            <constraint firstItem="rPu-YE-EZR" firstAttribute="top" secondItem="Vgb-F5-JIE" secondAttribute="bottom" constant="18" id="KxP-L9-Z6o"/>
                             <constraint firstAttribute="bottom" secondItem="rPu-YE-EZR" secondAttribute="bottom" constant="13" id="Qf7-eD-qMG"/>
-                            <constraint firstItem="i8O-9F-z5O" firstAttribute="leading" secondItem="31f-De-1Wj" secondAttribute="leading" constant="20" id="Qsa-ef-XHx"/>
                             <constraint firstAttribute="bottom" secondItem="YwO-ZK-ZUf" secondAttribute="bottom" constant="13" id="Rps-Rz-GtL"/>
-                            <constraint firstItem="ECy-ux-hI2" firstAttribute="top" secondItem="31f-De-1Wj" secondAttribute="top" constant="17" id="Yvp-GT-74u"/>
-                            <constraint firstItem="i8O-9F-z5O" firstAttribute="top" secondItem="31f-De-1Wj" secondAttribute="top" constant="20" id="Z2S-SZ-Wk4"/>
                             <constraint firstAttribute="trailing" secondItem="rPu-YE-EZR" secondAttribute="trailing" constant="19" id="ZKm-X5-dPU"/>
-                            <constraint firstItem="QuP-kj-gEx" firstAttribute="baseline" secondItem="hqq-ep-0Of" secondAttribute="baseline" id="vyz-RB-tjg"/>
+                            <constraint firstAttribute="trailing" secondItem="Vgb-F5-JIE" secondAttribute="trailing" constant="20" id="cIT-Ad-dBu"/>
+                            <constraint firstItem="Vgb-F5-JIE" firstAttribute="top" secondItem="31f-De-1Wj" secondAttribute="top" constant="20" id="ehN-gx-nEZ"/>
+                            <constraint firstItem="Vgb-F5-JIE" firstAttribute="leading" secondItem="31f-De-1Wj" secondAttribute="leading" constant="20" id="mk8-XZ-H1R"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="datePickerEnd" destination="hqq-ep-0Of" id="ZWo-46-dF5"/>
                         <outlet property="datePickerStart" destination="ECy-ux-hI2" id="0UX-l0-qgq"/>
+                        <outlet property="datePickerStartRange" destination="6OE-Cr-eZt" id="nKW-Hb-4G2"/>
+                        <outlet property="tabView" destination="Vgb-F5-JIE" id="Qgf-U1-Fip"/>
+                        <outlet property="txtDuration" destination="dYU-6z-Rev" id="I6G-kb-XnS"/>
                     </connections>
                 </viewController>
                 <customObject id="NEr-Hd-M3K" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-40" y="915"/>
+            <point key="canvasLocation" x="-25" y="940"/>
         </scene>
         <!--Edit Date-->
         <scene sceneID="Eym-nu-eNY">
@@ -416,7 +510,7 @@ Gw
                 </viewController>
                 <customObject id="gvi-eF-XCZ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-57" y="1090"/>
+            <point key="canvasLocation" x="-57" y="1199"/>
         </scene>
     </scenes>
     <resources>

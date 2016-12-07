@@ -235,14 +235,6 @@ class ViewController: NSViewController {
         ]
     }
     
-    fileprivate func formatTimestamp(_ timestamp: TimeInterval) -> String {
-        let minutes = (timestamp / 60).truncatingRemainder(dividingBy: 60)
-        let seconds = timestamp.truncatingRemainder(dividingBy: 60)
-        let hours = timestamp / 60 / 60
-        
-        return String(format: "%02d:%02d:%02d", Int(hours), Int(minutes), Int(seconds))
-    }
-    
     // MARK: - Actions
     
     @IBAction func didTapAddTaskButton(_ sender: NSButton) {
@@ -275,8 +267,7 @@ class ViewController: NSViewController {
             return
         }
         
-        controller.startDate = dateRange.startDate
-        controller.endDate = dateRange.endDate
+        controller.setDateRange(dateRange: dateRange)
         
         controller.didTapOkCallback = { (controller) -> Void in
             self.dateRange.startDate = controller.startDate
@@ -309,8 +300,7 @@ class ViewController: NSViewController {
             return
         }
         
-        controller.startDate = Date()
-        controller.endDate = Date().addingTimeInterval(60 * 60)
+        controller.setDateRange(dateRange: DateRange(startDate: Date(), endDate: Date().addingTimeInterval(60 * 60)))
         
         controller.didTapOkCallback = { (controller) -> Void in
             let range = DateRange(startDate: controller.startDate, endDate: controller.endDate)
@@ -333,8 +323,7 @@ class ViewController: NSViewController {
             return
         }
         
-        controller.startDate = segment.range.startDate
-        controller.endDate = segment.range.endDate
+        controller.setDateRange(dateRange: segment.range)
         
         controller.didTapOkCallback = { (controller) -> Void in
             self.taskController.timeline.setSegmentRange(withId: segment.id, startDate: controller.startDate, endDate: controller.endDate)

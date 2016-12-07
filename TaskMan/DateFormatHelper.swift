@@ -28,3 +28,41 @@ func dateTimeFromRFC3339(string: String) -> Date? {
 func rfc3339StringFrom(date: Date) -> String {
     return rfc3339DateTimeFormatter.string(from: date)
 }
+
+func formatTimestamp(_ timestamp: TimeInterval) -> String {
+    let minutes = (timestamp / 60).truncatingRemainder(dividingBy: 60)
+    let seconds = timestamp.truncatingRemainder(dividingBy: 60)
+    let hours = timestamp / 60 / 60
+    
+    return String(format: "%02d:%02d:%02d", Int(hours), Int(minutes), Int(seconds))
+}
+
+/// Formats a timestamp with hours, minutes and components only if these components are present.
+/// Eg:
+/// 3600 -> '01h'
+/// 3601 -> '01h01s'
+/// 4600 -> '01h16m40s'
+func formatTimestampCompact(_ timestamp: TimeInterval) -> String {
+    let minutes = Int((timestamp / 60).truncatingRemainder(dividingBy: 60))
+    let seconds = Int(timestamp.truncatingRemainder(dividingBy: 60))
+    let hours = Int(timestamp / 60 / 60)
+    
+    var output = ""
+    
+    if(hours > 0) {
+        output += String(format: "%02dh", hours)
+    }
+    if(minutes > 0) {
+        output += String(format: "%02dm", minutes)
+    }
+    if(seconds > 0) {
+        output += String(format: "%02ds", seconds)
+    }
+    
+    // Empty time - return 0s string
+    if(output == "") {
+        output = "0s"
+    }
+    
+    return output
+}

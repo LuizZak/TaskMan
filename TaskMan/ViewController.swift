@@ -33,7 +33,10 @@ class ViewController: NSViewController {
             let segments = document.taskManState.taskList.taskSegments
             let running = document.taskManState.runningSegment
             
-            self.taskController = TaskController(tasks: tasks, runningSegment: running, timeline: TaskTimelineManager(segments: segments))
+            let timeline = TaskTimelineManager(segments: segments)
+            timeline.delegate = self
+            
+            self.taskController = TaskController(tasks: tasks, runningSegment: running, timeline: timeline)
             self.taskController.delegate = self
             
             dateRange = document.taskManState.timeRange

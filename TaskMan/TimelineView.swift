@@ -116,6 +116,50 @@ class TimelineView: NSView {
     private(set) var lblStartTime = NSTextField()
     private(set) var lblEndTime = NSTextField()
     
+    
+    /// Current zoom level.
+    /// Must be between 1 and 5
+    var zoomLevel: CGFloat = 1 {
+        didSet {
+            if(zoomLevel < 1) {
+                zoomLevel = 1
+            }
+            if(zoomLevel > 10) {
+                zoomLevel = 10
+            }
+            
+            needsLayout = true
+            needsDisplay = true
+        }
+    }
+    
+    /// Offset of the contents of this view. This offsets the timeline contents and labels
+    /// by the set ammount.
+    /// y axis is ignored, x axis is locked to be > 0 && < bounds.width
+    var contentOffset: NSPoint = NSPoint.zero {
+        didSet {
+            if(contentOffset.x > 0) {
+                contentOffset.x = 0
+            }
+            let segBounds = boundsForSegments()
+            if(contentOffset.x < -(segBounds.width - bounds.width)) {
+                contentOffset.x = -(segBounds.width - bounds.width)
+            }
+            
+            needsLayout = true
+            needsDisplay = true
+        }
+    }
+    
+    /// Point at which the zoom started being performed.
+    /// Represented as a value between 0-1, with 0 being the start
+    /// date, and 1 the end date of this view's date range.
+    fileprivate var zoomStartLocation: CGFloat = 0
+    /// Used to trap scrolling wheel after the user has started scrolling horizontally
+    /// even if the user starts moving vertically.
+    /// This allows smooth use even inside scroll views
+    fileprivate var scrollLocked = false
+    
     /// Dragging start point.
     /// Is nil, if the user is not pressing down on this timeline view yet
     fileprivate var dragStartPoint: NSPoint?
@@ -176,16 +220,19 @@ class TimelineView: NSView {
     }
     
     override func layout() {
+        let bounds = boundsForSegments()
+        
         lblStartTime.stringValue = dateTimeFormatter.string(from: startDate)
         lblStartTime.sizeToFit()
         lblStartTime.frame = lblStartTime.frame.insetBy(dx: -1, dy: -1)
-        lblStartTime.frame.origin = NSPoint.zero
+        lblStartTime.frame.origin.y = 0
+        lblStartTime.frame.origin.x = bounds.origin.x
         
         lblEndTime.stringValue = dateTimeFormatter.string(from: endDate)
         lblEndTime.sizeToFit()
         lblEndTime.frame = lblEndTime.frame.insetBy(dx: -1, dy: -1)
         lblEndTime.frame.origin.y = 0
-        lblEndTime.frame.origin.x = bounds.width - lblEndTime.frame.width
+        lblEndTime.frame.origin.x = bounds.origin.x + bounds.width - lblEndTime.frame.width
         
         super.layout()
     }
@@ -287,6 +334,47 @@ class TimelineView: NSView {
         
         // De-select current segment
         highlightSegment(segment: nil)
+    }
+    
+    
+    override func magnify(with event: NSEvent) {
+        super.magnify(with: event)
+        
+        let windowPoint = event.locationInWindow
+        let point = self.convert(windowPoint, from: nil)
+        
+        let segmentBounds = boundsForSegments()
+        
+        // Change offset depending on location of touch before/after magnification
+        switch(event.phase) {
+        case NSEventPhase.began:
+            let absoluteX = point.x - segmentBounds.minX
+            
+            zoomStartLocation = absoluteX / segmentBounds.width
+        case NSEventPhase.changed:
+            zoomLevel += event.magnification
+            
+            let afterBounds = boundsForSegments()
+            let absoluteX = point.x - afterBounds.minX
+            contentOffset.x += absoluteX - (afterBounds.width * zoomStartLocation)
+        default:
+            break
+        }
+    }
+    
+    override func scrollWheel(with event: NSEvent) {
+        // Vertical scroll - ignore
+        if(!scrollLocked && abs(event.scrollingDeltaX) < abs(event.scrollingDeltaY)) {
+            super.scrollWheel(with: event)
+            return
+        }
+        // Lock scroll so we don't ignore vertical scrolls after the user has started scrolling this timeline view
+        scrollLocked = true
+        if(event.phase == .changed) {
+            contentOffset.x += event.scrollingDeltaX
+        } else if(event.phase == .ended || event.phase == .cancelled) {
+            scrollLocked = false
+        }
     }
     
     override func view(_ view: NSView, stringForToolTip tag: NSToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
@@ -409,7 +497,7 @@ class TimelineView: NSView {
     }
     
     func boundsForSegments() -> NSRect {
-        return NSRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
+        return NSRect(origin: contentOffset, size: NSSize(width: bounds.width * zoomLevel, height: bounds.height))
     }
     
     func frameFor(segment: TaskSegment) -> NSRect {
@@ -417,13 +505,17 @@ class TimelineView: NSView {
         let start = segment.range.startDate.timeIntervalSince(startDate)
         let end = segment.range.endDate.timeIntervalSince(startDate)
         
-        let startX = (start / interval) * Double(boundsForSegments().width)
-        let endX = (end / interval) * Double(boundsForSegments().width)
+        let bounds = boundsForSegments()
         
-        return NSRect(x: startX + Double(boundsForSegments().origin.x),
-                      y: Double(boundsForSegments().origin.y),
-                      width: endX - startX,
-                      height: Double(boundsForSegments().height))
+        let startX = (start / interval) * Double(bounds.width)
+        let endX = (end / interval) * Double(bounds.width)
+        
+        let frame = NSRect(x: startX + Double(bounds.origin.x),
+                           y: Double(bounds.origin.y),
+                           width: endX - startX,
+                           height: Double(bounds.height))
+        
+        return self.bounds.intersection(frame) // Clip rect to be within this view's visible bounding frame
     }
 }
 

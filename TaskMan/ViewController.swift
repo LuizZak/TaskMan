@@ -25,13 +25,17 @@ class ViewController: NSViewController {
     
     override var representedObject: Any? {
         didSet {
-            guard let document = representedObject as? TaskManDocument else {
-                return
-            }
+            var tasks: [Task] = []
+            var segments: [TaskSegment] = []
+            var running: TaskSegment?
+            var dateRange: DateRange = DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60))
             
-            let tasks = document.taskManState.taskList.tasks
-            let segments = document.taskManState.taskList.taskSegments
-            let running = document.taskManState.runningSegment
+            if let document = representedObject as? TaskManDocument {
+                tasks = document.taskManState.taskList.tasks
+                segments = document.taskManState.taskList.taskSegments
+                running = document.taskManState.runningSegment
+                dateRange = document.taskManState.timeRange
+            }
             
             let timeline = TaskTimelineManager(segments: segments)
             timeline.delegate = self
@@ -39,7 +43,7 @@ class ViewController: NSViewController {
             self.taskController = TaskController(tasks: tasks, runningSegment: running, timeline: timeline)
             self.taskController.delegate = self
             
-            dateRange = document.taskManState.timeRange
+            self.dateRange = dateRange
             
             removeAllTaskViews()
             
@@ -60,15 +64,15 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        tasksTimelineView.dataSource = self
+        tasksTimelineView.delegate = self
+        tasksTimelineView.userTag = -1
+        
         let timeline = TaskTimelineManager()
         timeline.delegate = self
         
         taskController = TaskController(timeline: timeline)
         taskController.delegate = self
-        
-        tasksTimelineView.dataSource = self
-        tasksTimelineView.delegate = self
-        tasksTimelineView.userTag = -1
         
         for task in taskController.currentTasks {
             addView(forTask: task)
@@ -82,9 +86,10 @@ class ViewController: NSViewController {
     override func viewWillAppear() {
         super.viewWillAppear()
         
+        // Update represented object
+        representedObject = document
+        
         if let window = self.view.window {
-            representedObject = document
-            
             if let screenSize = window.screen?.frame.size {
                 window.setFrameOrigin(NSPoint(x: (screenSize.width - window.frame.size.width) / 2, y: (screenSize.height - window.frame.size.height) / 2))
             }

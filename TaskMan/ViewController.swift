@@ -336,7 +336,7 @@ class ViewController: NSViewController {
     
     func didTapChangeSegmentTask(_ sender: NSMenuItem) {
         
-        guard let segment = sender.representedObject as? TaskSegment else {
+        guard let segment = sender.representedObject as? TaskSegment, let sourceTask = taskController.getTask(withId: segment.taskId) else {
             return
         }
         guard let controller = ChangeSegmentTaskViewController(nibName: "ChangeSegmentTaskViewController", bundle: nil) else {
@@ -345,6 +345,16 @@ class ViewController: NSViewController {
         
         controller.taskController = taskController
         controller.segment = segment
+        
+        controller.callback = { [weak self] (controller) in
+            guard let sSelf = self, let task = controller.selectedTask else {
+                return
+            }
+            
+            if(sSelf.confirmMoveSegment(segment, fromTask: sourceTask, toTask: task)) {
+                controller.dismiss(sSelf)
+            }
+        }
         
         self.presentViewControllerAsModalWindow(controller)
     }

@@ -8,6 +8,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ChangeSegmentTaskViewController" customModule="TaskMan" customModuleProvider="target">
             <connections>
+                <outlet property="btnOk" destination="6uk-b2-jgX" id="TbQ-Zl-GLE"/>
+                <outlet property="tableView" destination="fvA-Ye-0j7" id="C3e-9y-eCf"/>
+                <outlet property="txtTaskName" destination="Jts-Z0-WFZ" id="BfB-ua-hR8"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -109,6 +112,9 @@
 DQ
 </string>
                     </buttonCell>
+                    <connections>
+                        <action selector="didTapOk:" target="-2" id="1Mz-6H-CRz"/>
+                    </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="M2d-yb-jHU">
                     <rect key="frame" x="303" y="13" width="82" height="32"/>
@@ -119,6 +125,9 @@ DQ
 Gw
 </string>
                     </buttonCell>
+                    <connections>
+                        <action selector="didTapCancel:" target="-2" id="19K-XV-V9T"/>
+                    </connections>
                 </button>
             </subviews>
             <constraints>

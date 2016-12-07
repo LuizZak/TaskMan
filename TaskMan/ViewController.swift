@@ -463,7 +463,28 @@ class ViewController: NSViewController {
 // MARK: - Common Interface Methods
 extension ViewController {
     
-    /// Shows an alert interface to confirm creation of a segment on a tasks, and create it
+    /// Shows an alert interface to confirm removal of a task, and removes it 
+    /// if the user has selected 'Yes'.
+    /// Returns whether the user has tapped the YES button.
+    func confirmRemoveTask(_ task: Task) -> Bool {
+        let alert = NSAlert()
+        alert.messageText = "Are you sure you want to remove the task '\(task.name)'?"
+        
+        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
+        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
+        
+        if(alert.runModal() == NSAlertSecondButtonReturn) {
+            return false
+        }
+        
+        // Perform the segment transfer
+        taskController.removeTask(withId: task.id)
+        removeViewForTask(task: task)
+        
+        return true
+    }
+    
+    /// Shows an alert interface to confirm creation of a segment on a tasks, and creates it
     /// if the user has selected 'Yes'.
     /// Returns whether the user has tapped the YES button to move the task segment.
     func confirmAddSegment(_ segment: TaskSegment, toTask targetTask: Task) -> Bool {
@@ -583,16 +604,8 @@ extension ViewController: TaskViewDelegate {
         guard let task = taskController.getTask(withId: taskView.taskId) else {
             return
         }
-        
-        taskController.removeTask(withId: task.id)
-        removeViewForTask(task: task)
-        updateTaskViews()
-        
-        for taskView in taskViews {
-            taskView.viewTimeline.needsDisplay = true
-        }
-        
-        tasksTimelineView.needsDisplay = true
+
+        _=confirmRemoveTask(task)
     }
     
     func didTapStartStopButtonOnTaskView(_ taskView: TaskView) {

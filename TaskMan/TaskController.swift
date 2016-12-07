@@ -314,6 +314,11 @@ class TaskTimelineManager {
         return segments.filter { $0.taskId == taskId }
     }
     
+    /// Gets all segments within a given date range
+    func segments(inRange range: DateRange) -> [TaskSegment] {
+        return segments.filter { $0.range.intersects(with: range) }
+    }
+    
     /// Returns a task segment with a given ID
     func segment(withId id: TaskSegment.IDType) -> TaskSegment? {
         return segments.first { $0.id == id }

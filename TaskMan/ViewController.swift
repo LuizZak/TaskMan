@@ -301,6 +301,30 @@ class ViewController: NSViewController {
     }
     
     // MARK: Segment List menu buttons
+    func didTapAddSegmentOnTaskView(_ sender: NSMenuItem) {
+        guard let taskView = sender.representedObject as? TaskView else {
+            return
+        }
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
+            return
+        }
+        
+        controller.startDate = Date()
+        controller.endDate = Date().addingTimeInterval(60 * 60)
+        
+        controller.didTapOkCallback = { (controller) -> Void in
+            let range = DateRange(startDate: controller.startDate, endDate: controller.endDate)
+            self.taskController.timeline.createSegment(forTaskId: taskView.taskId, dateRange: range)
+            
+            self.updateTimelineViews()
+            self.updateTaskViews(updateType: .RuntimeLabel)
+            
+            controller.dismiss(self)
+        }
+        
+        presentViewControllerAsModalWindow(controller)
+    }
+    
     func didTapEditSegmentDates(_ sender: NSMenuItem) {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
@@ -600,6 +624,13 @@ extension ViewController: TaskViewDelegate {
         }
         
         let listMenuView = NSMenu(title: "Segments List")
+        
+        // Add 'Add Segment' button
+        let addSegment = NSMenuItem(title: "Add Segment", action: #selector(ViewController.didTapAddSegmentOnTaskView(_:)), keyEquivalent: "")
+        addSegment.target = self
+        addSegment.representedObject = taskView
+        
+        listMenuView.addItem(addSegment)
         
         for (i, segment) in segments.enumerated() {
             let formatter = taskView.viewTimeline.dateTimeFormatter

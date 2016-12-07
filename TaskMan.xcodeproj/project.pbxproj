@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		454BAC9AC924538CE006F78A /* Pods_TaskMan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76BB6A340D7B7ADE9042579 /* Pods_TaskMan.framework */; };
 		6E943298542E0BBD29F8D930 /* Pods_TaskManTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7C1D5DB353173562033B8F9 /* Pods_TaskManTests.framework */; };
-		A00EBEF51DF5B7C3007D740E /* CoreDataInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */; };
 		A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93971DF861D60080FF14 /* DateRangeTests.swift */; };
 		A01F939C1DF862440080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
@@ -28,8 +27,6 @@
 		A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324451DF5850200308A28 /* EditDateViewController.swift */; };
 		A0B324491DF5989B00308A28 /* ChangeSegmentTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B324471DF5989B00308A28 /* ChangeSegmentTaskViewController.swift */; };
 		A0B3244A1DF5989B00308A28 /* ChangeSegmentTaskViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */; };
-		A0B3244F1DF59F7500308A28 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0B3244E1DF59F7500308A28 /* CoreData.framework */; };
-		A0B324531DF59F8800308A28 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A0B324511DF59F8800308A28 /* Model.xcdatamodeld */; };
 		A0C6606F1DF70DA40063385B /* TaskManDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C6606E1DF70DA40063385B /* TaskManDocument.swift */; };
 		A0C660711DF716770063385B /* TaskDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C660701DF716770063385B /* TaskDocumentController.swift */; };
 		A0F24C101D917DC4001D4536 /* TaskView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0F24C0F1D917DC4001D4536 /* TaskView.xib */; };
@@ -60,7 +57,6 @@
 		689915F909CD2BA97DD82503 /* Pods-TaskMan.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskMan.release.xcconfig"; path = "Pods/Target Support Files/Pods-TaskMan/Pods-TaskMan.release.xcconfig"; sourceTree = "<group>"; };
 		84CB5A7C9F40FD29EF945A3A /* Pods-TaskManTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskManTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TaskManTests/Pods-TaskManTests.release.xcconfig"; sourceTree = "<group>"; };
 		9D0FB6488662F63F3EA2316E /* Pods-TaskMan.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskMan.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TaskMan/Pods-TaskMan.debug.xcconfig"; sourceTree = "<group>"; };
-		A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataInterface.swift; sourceTree = "<group>"; };
 		A00EBEF61DF5B7D1007D740E /* TaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskList.swift; sourceTree = "<group>"; };
 		A01F93971DF861D60080FF14 /* DateRangeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRangeTests.swift; sourceTree = "<group>"; };
 		A01F93991DF862030080FF14 /* DateRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRange.swift; sourceTree = "<group>"; };
@@ -79,7 +75,6 @@
 		A0B324471DF5989B00308A28 /* ChangeSegmentTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeSegmentTaskViewController.swift; sourceTree = "<group>"; };
 		A0B324481DF5989B00308A28 /* ChangeSegmentTaskViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangeSegmentTaskViewController.xib; sourceTree = "<group>"; };
 		A0B3244E1DF59F7500308A28 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		A0B324521DF59F8800308A28 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		A0C6606E1DF70DA40063385B /* TaskManDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManDocument.swift; sourceTree = "<group>"; };
 		A0C660701DF716770063385B /* TaskDocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskDocumentController.swift; sourceTree = "<group>"; };
 		A0F24C0F1D917DC4001D4536 /* TaskView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TaskView.xib; sourceTree = "<group>"; };
@@ -106,7 +101,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0B3244F1DF59F7500308A28 /* CoreData.framework in Frameworks */,
 				454BAC9AC924538CE006F78A /* Pods_TaskMan.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -186,14 +180,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		A0B324501DF59F7A00308A28 /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				A0B324511DF59F8800308A28 /* Model.xcdatamodeld */,
-			);
-			name = CoreData;
-			sourceTree = "<group>";
-		};
 		A0FA928E1D8C6F7C00F3916D = {
 			isa = PBXGroup;
 			children = (
@@ -218,7 +204,6 @@
 			isa = PBXGroup;
 			children = (
 				A0A6B6561DF5C57800F84863 /* Extensions */,
-				A0B324501DF59F7A00308A28 /* CoreData */,
 				A02257181D9082560030A28E /* View */,
 				A0FA92B81D8C702800F3916D /* Model */,
 				A0FA92B71D8C702200F3916D /* Controller */,
@@ -246,7 +231,6 @@
 			isa = PBXGroup;
 			children = (
 				A0FA92BB1D8C70F000F3916D /* TaskController.swift */,
-				A00EBEF41DF5B7C3007D740E /* CoreDataInterface.swift */,
 				A0C660701DF716770063385B /* TaskDocumentController.swift */,
 			);
 			name = Controller;
@@ -491,9 +475,7 @@
 				A01F93A21DF8632D0080FF14 /* DateRange+Serialization.swift in Sources */,
 				A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */,
 				A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */,
-				A00EBEF51DF5B7C3007D740E /* CoreDataInterface.swift in Sources */,
 				A0A6B65C1DF5CB1800F84863 /* DateFormatHelper.swift in Sources */,
-				A0B324531DF59F8800308A28 /* Model.xcdatamodeld in Sources */,
 				A0A6B6541DF5C49100F84863 /* IDModelObject.swift in Sources */,
 				A0F7B1081DF73D7400B99E1E /* Constants.swift in Sources */,
 			);
@@ -716,19 +698,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		A0B324511DF59F8800308A28 /* Model.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				A0B324521DF59F8800308A28 /* Model.xcdatamodel */,
-			);
-			currentVersion = A0B324521DF59F8800308A28 /* Model.xcdatamodel */;
-			path = Model.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = A0FA928F1D8C6F7C00F3916D /* Project object */;
 }

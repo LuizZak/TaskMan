@@ -7,7 +7,6 @@ target 'TaskMan' do
   use_frameworks!
 
   # Pods for TaskMan
-  pod 'AERecord'
   pod 'SwiftyJSON'
 
   target 'TaskManTests' do

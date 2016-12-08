@@ -18,6 +18,6 @@ This may or may not be useful to you, as well.
 
 Screenshot:
 
-![](http://i.imgur.com/YZZ9zLY.png)
+![](http://i.imgur.com/3CAqCbK.png)
 
 I accept issues and pull requests, if they feel like they contribute to the goal of the project state above.

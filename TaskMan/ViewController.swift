@@ -352,6 +352,12 @@ class ViewController: NSViewController {
                 return
             }
             
+            // No change detected
+            if(task.id == sourceTask.id) {
+                controller.dismiss(sSelf)
+                return
+            }
+            
             if(sSelf.confirmMoveSegment(segment, fromTask: sourceTask, toTask: task)) {
                 controller.dismiss(sSelf)
             }

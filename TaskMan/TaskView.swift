@@ -121,8 +121,10 @@ class TaskView: NSView {
     @IBAction func didTapSegmentListButton(_ sender: NSButton) {
         delegate?.didTapSegmentListButtonOnTaskView(self)
     }
-    @IBAction func didChangeName(_ sender: NSTextField) {
-        delegate?.taskView(self, didUpdateName: sender.stringValue)
+    override func controlTextDidChange(_ obj: Notification) {
+        if let object = obj.object as? NSTextField, object == txtName {
+            delegate?.taskView(self, didUpdateName: txtName.stringValue)
+        }
     }
     
     override func draw(_ dirtyRect: NSRect) {

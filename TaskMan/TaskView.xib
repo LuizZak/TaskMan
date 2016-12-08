@@ -77,7 +77,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <action selector="didChangeName:" target="-2" id="ZEb-Km-GE6"/>
+                        <outlet property="delegate" destination="-2" id="xCb-zj-9HH"/>
                     </connections>
                 </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="riM-UX-3IU">

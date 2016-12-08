@@ -16,6 +16,11 @@ protocol TaskControllerDelegate: class {
     /// Called to notify a task will be removed from a task controller
     func taskController(_ controller: TaskController, didRemoveTask task: Task)
     
+    /// Called to notify a task's inner properties (name, description, etc.) where updated.
+    /// This delegate method is not called when the task's associated segments are updated, only
+    /// the immediate properties of the task.
+    func taskController(_ controller: TaskController, didUpdateTask task: Task)
+    
     /// Called to notify a task has started execution
     func taskController(_ controller: TaskController, didStartTask task: Task)
     
@@ -26,6 +31,7 @@ protocol TaskControllerDelegate: class {
 extension TaskControllerDelegate {
     func taskController(_ controller: TaskController, didCreateTask task: Task) { }
     func taskController(_ controller: TaskController, didRemoveTask task: Task) { }
+    func taskController(_ controller: TaskController, didUpdateTask task: Task) { }
     func taskController(_ controller: TaskController, didStartTask task: Task) { }
     func taskController(_ controller: TaskController, didStopTask task: Task, newSegment: TaskSegment) { }
 }
@@ -150,11 +156,18 @@ class TaskController {
             return
         }
         
+        let original = task
+        
         if let description = description {
             task.description = description
         }
         if let name = name {
             task.name = name
+        }
+        
+        // Check if the task has not changed its properties
+        if(task == original) {
+            return
         }
         
         updateTask(task)
@@ -186,6 +199,8 @@ class TaskController {
         for (i, t) in currentTasks.enumerated() {
             if(t.id == task.id) {
                 currentTasks[i] = task
+                self.delegate?.taskController(self, didUpdateTask: currentTasks[i])
+                break
             }
         }
     }

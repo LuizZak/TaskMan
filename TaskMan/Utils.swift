@@ -49,21 +49,9 @@ enum SequenceError: Error {
 extension Sequence {
     // MARK: Helper collection searching methods
     
-    /// Returns the first item in the sequence that when passed through `compute` returns true.
-    /// In case an item is not found, SequenceError.NotFound is thrown
-    func first(compute: (Iterator.Element) throws -> Bool) throws -> Iterator.Element {
-        for item in self {
-            if(try compute(item)) {
-                return item
-            }
-        }
-        
-        throw SequenceError.NotFound
-    }
-    
     /// Returns the last item in the sequence that when passed through `compute` returns true.
     /// In case an item is not found, SequenceError.NotFound is thrown
-    func last(compute: (Iterator.Element) throws -> Bool) throws -> Iterator.Element {
+    func last(where compute: (Iterator.Element) throws -> Bool) throws -> Iterator.Element {
         var last: Iterator.Element?
         for item in self {
             if(try compute(item)) {

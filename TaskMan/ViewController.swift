@@ -499,7 +499,7 @@ extension ViewController {
         let endDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.endDate)
         
         let alert = NSAlert()
-        alert.messageText = "Would you like to send the segment from \(startDateString) to \(endDateString) on task \(targetTask.name)?"
+        alert.messageText = "Would you like to add the segment from \(startDateString) to \(endDateString) to task \(targetTask.name)?"
         
         alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
         alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc

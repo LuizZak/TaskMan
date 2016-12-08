@@ -78,6 +78,9 @@ class TimelineView: NSView {
     /// Delegate for presentation of this task timeline view
     weak var delegate: TimelineViewDelegate?
     
+    /// Whether to draw the current time on the timeline, as a red/white vertical bar
+    var drawCurrentTime: Bool = true
+    
     /// Whether to display a tooltip when the user hovers over a task
     var showTooltip: Bool = true
     
@@ -433,6 +436,47 @@ class TimelineView: NSView {
             path.stroke()
             path.fill()
         }
+        
+        // Draw current time
+        if(drawCurrentTime) {
+            guard let context = NSGraphicsContext.current()?.cgContext else {
+                return
+            }
+            
+            let offset = offsetFor(date: Date())
+            let bounds = boundsForSegments()
+            
+            // Add stripped red line
+            context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
+            
+            let t: CGFloat = CGFloat(CACurrentMediaTime().truncatingRemainder(dividingBy: 8))
+            
+            NSColor.red.setStroke()
+            context.setLineDash(phase: t, lengths: [4, 4])
+            context.strokePath()
+            
+            // Add stripped white line
+            context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
+            NSColor.white.setStroke()
+            context.setLineDash(phase: 4 + t, lengths: [4, 4])
+            context.strokePath()
+            
+            var ellipseRect = CGRect(x: offset, y: bounds.minY + 1, width: 4, height: 4)
+            ellipseRect = ellipseRect.offsetBy(dx: -ellipseRect.width / 2, dy: -ellipseRect.height / 2)
+            
+            context.setLineDash(phase: 0, lengths: [])
+            NSColor.white.setStroke()
+            
+            // Top ellipse
+            NSColor.red.setFill()
+            context.addEllipse(in: ellipseRect)
+            context.drawPath(using: CGPathDrawingMode.fillStroke)
+            
+            // Bottom ellipse
+            NSColor.red.setFill()
+            context.addEllipse(in: ellipseRect.offsetBy(dx: 0, dy: bounds.height - 2))
+            context.drawPath(using: CGPathDrawingMode.fillStroke)
+        }
     }
     
     func imageForSegment(segment: TaskSegment) -> NSImage? {
@@ -495,27 +539,50 @@ class TimelineView: NSView {
         
         return nil
     }
-    
+}
+
+// MARK: Sizings
+extension TimelineView {
     func boundsForSegments() -> NSRect {
-        return NSRect(origin: contentOffset, size: NSSize(width: bounds.width * zoomLevel, height: bounds.height))
+        return NSRect(origin: contentOffset, size: NSSize(width: boundWidth(), height: bounds.height))
+    }
+    
+    func boundX() -> CGFloat {
+        return contentOffset.x
+    }
+    
+    func boundWidth() -> CGFloat {
+        return bounds.width * zoomLevel
     }
     
     func frameFor(segment: TaskSegment) -> NSRect {
-        let interval = endDate.timeIntervalSince(startDate)
         let start = segment.range.startDate.timeIntervalSince(startDate)
         let end = segment.range.endDate.timeIntervalSince(startDate)
         
         let bounds = boundsForSegments()
         
-        let startX = (start / interval) * Double(bounds.width)
-        let endX = (end / interval) * Double(bounds.width)
+        let startX = offsetFor(interval: start)
+        let endX = offsetFor(interval: end)
         
-        let frame = NSRect(x: startX + Double(bounds.origin.x),
-                           y: Double(bounds.origin.y),
+        let frame = NSRect(x: startX + bounds.origin.x,
+                           y: bounds.origin.y,
                            width: endX - startX,
-                           height: Double(bounds.height))
+                           height: bounds.height)
         
         return self.bounds.intersection(frame) // Clip rect to be within this view's visible bounding frame
+    }
+    
+    func offsetFor(date: Date) -> CGFloat {
+        let timelineInterval = endDate.timeIntervalSince(startDate)
+        let dateOffset = date.timeIntervalSince(startDate)
+        
+        return boundX() + CGFloat(dateOffset / timelineInterval) * boundWidth()
+    }
+    
+    func offsetFor(interval: TimeInterval) -> CGFloat {
+        let timelineInterval = endDate.timeIntervalSince(startDate)
+        
+        return CGFloat(interval / timelineInterval) * boundWidth()
     }
 }
 

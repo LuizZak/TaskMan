@@ -768,10 +768,6 @@ extension ViewController: TimelineViewDelegate {
         return colors[index % colors.count]
     }
     
-    func timelineView(_ timelineView: TimelineView, taskForSegment segment: TaskSegment) -> Task {
-        return taskController.getTask(withId: segment.taskId)!
-    }
-    
     func timelineView(_ timelineView: TimelineView, labelForSegment segment: TaskSegment) -> String {
         let task = taskController.getTask(withId: segment.taskId)!
         

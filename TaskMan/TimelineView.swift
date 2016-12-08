@@ -22,8 +22,6 @@ protocol TimelineViewDelegate: class {
     
     func timelineView(_ timelineView: TimelineView, colorForSegment segment: TaskSegment) -> NSColor
     
-    func timelineView(_ timelineView: TimelineView, taskForSegment segment: TaskSegment) -> Task
-    
     func timelineView(_ timelineView: TimelineView, labelForSegment segment: TaskSegment) -> String
     
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent)
@@ -585,12 +583,6 @@ extension TimelineView {
         let dateOffset = date.timeIntervalSince(sDate)
         
         return contentOffset.x + CGFloat(dateOffset / timelineInterval) * boundWidth()
-    }
-    
-    func offsetFor(interval: TimeInterval) -> CGFloat {
-        let timelineInterval = endDate.timeIntervalSince(startDate)
-        
-        return CGFloat(interval / timelineInterval) * boundWidth()
     }
 }
 

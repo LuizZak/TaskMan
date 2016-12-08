@@ -121,6 +121,7 @@ class ViewController: NSViewController {
         view.layer?.borderColor = NSColor.blue.cgColor
         view.layer?.masksToBounds = false
         view.txtName.stringValue = task.name
+        view.txtDescription.string = task.description
         
         tasksContainerView.addSubview(view)
         
@@ -574,6 +575,10 @@ extension ViewController: TaskControllerDelegate {
         markChangesPending()
     }
     
+    func taskController(_ controller: TaskController, didUpdateTask task: Task) {
+        markChangesPending()
+    }
+    
     func taskController(_ controller: TaskController, didStartTask task: Task) {
         markChangesPending()
         
@@ -593,11 +598,11 @@ extension ViewController: TaskControllerDelegate {
 extension ViewController: TaskViewDelegate {
     
     func taskView(_ taskView: TaskView, didUpdateName name: String) {
-        markChangesPending()
+        taskController.updateTask(withId: taskView.taskId, name: name)
     }
     
     func taskView(_ taskView: TaskView, didUpdateDescription description: String) {
-        markChangesPending()
+        taskController.updateTask(withId: taskView.taskId, description: description)
     }
     
     func didTapRemoveButtonOnTaskView(_ taskView: TaskView) {

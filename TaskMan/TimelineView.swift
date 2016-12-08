@@ -407,9 +407,13 @@ class TimelineView: NSView {
             return
         }
         
+        let boundsForSegs = boundsForSegments()
+        let start = startDate
+        let end = endDate
+        
         for segment in segments {
             // Draw each segment
-            let frame = frameFor(segment: segment)
+            let frame = frameFor(segment: segment, withStartDate: start, endDate: end, inBounds: boundsForSegs)
             
             // Ignore if not visible
             if(!dirtyRect.intersects(frame)) {
@@ -439,12 +443,16 @@ class TimelineView: NSView {
         
         // Draw current time
         if(drawCurrentTime) {
-            guard let context = NSGraphicsContext.current()?.cgContext else {
+            let offset = offsetFor(date: Date())
+            
+            // Time is not within the dirty region to redraw
+            if(!dirtyRect.contains(CGPoint(x: offset, y: dirtyRect.midY))) {
                 return
             }
             
-            let offset = offsetFor(date: Date())
-            let bounds = boundsForSegments()
+            guard let context = NSGraphicsContext.current()?.cgContext else {
+                return
+            }
             
             // Add stripped red line
             context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
@@ -547,22 +555,21 @@ extension TimelineView {
         return NSRect(origin: contentOffset, size: NSSize(width: boundWidth(), height: bounds.height))
     }
     
-    func boundX() -> CGFloat {
-        return contentOffset.x
-    }
-    
     func boundWidth() -> CGFloat {
         return bounds.width * zoomLevel
     }
     
     func frameFor(segment: TaskSegment) -> NSRect {
+        return frameFor(segment: segment, withStartDate: startDate, endDate: endDate, inBounds: boundsForSegments())
+    }
+    
+    func frameFor(segment: TaskSegment, withStartDate startDate: Date, endDate: Date, inBounds bounds: NSRect) -> NSRect {
+        let interval = endDate.timeIntervalSince(startDate)
         let start = segment.range.startDate.timeIntervalSince(startDate)
         let end = segment.range.endDate.timeIntervalSince(startDate)
         
-        let bounds = boundsForSegments()
-        
-        let startX = offsetFor(interval: start)
-        let endX = offsetFor(interval: end)
+        let startX = CGFloat(start / interval) * bounds.width
+        let endX = CGFloat(end / interval) * bounds.width
         
         let frame = NSRect(x: startX + bounds.origin.x,
                            y: bounds.origin.y,
@@ -573,10 +580,11 @@ extension TimelineView {
     }
     
     func offsetFor(date: Date) -> CGFloat {
-        let timelineInterval = endDate.timeIntervalSince(startDate)
-        let dateOffset = date.timeIntervalSince(startDate)
+        let sDate = startDate
+        let timelineInterval = endDate.timeIntervalSince(sDate)
+        let dateOffset = date.timeIntervalSince(sDate)
         
-        return boundX() + CGFloat(dateOffset / timelineInterval) * boundWidth()
+        return contentOffset.x + CGFloat(dateOffset / timelineInterval) * boundWidth()
     }
     
     func offsetFor(interval: TimeInterval) -> CGFloat {

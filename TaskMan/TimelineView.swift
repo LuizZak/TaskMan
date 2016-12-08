@@ -409,6 +409,8 @@ class TimelineView: NSView {
         let start = startDate
         let end = endDate
         
+        NSColor.clear.setStroke()
+        
         for segment in segments {
             // Draw each segment
             let frame = frameFor(segment: segment, withStartDate: start, endDate: end, inBounds: boundsForSegs)
@@ -423,20 +425,28 @@ class TimelineView: NSView {
             path.lineWidth = 2
             
             // Selected or not
-            if(segment.id == self.mouseSegment?.id) {
-                NSColor.black.setStroke()
-                
-                path.appendRect(frame.insetBy(dx: 0, dy: 1))
-            } else {
-                NSColor.clear.setStroke()
-                
-                path.appendRect(frame)
-            }
+            path.appendRect(frame)
             
             (delegate?.timelineView(self, colorForSegment: segment) ?? NSColor.blue)?.setFill()
             
-            path.stroke()
             path.fill()
+        }
+        
+        // Draw selected mouse segment
+        if let mouseSeg = segments.first(where: { $0.id == mouseSegment?.id }) {
+            let frame = frameFor(segment: mouseSeg, withStartDate: start, endDate: end, inBounds: boundsForSegs)
+            
+            if(dirtyRect.intersects(frame)) {
+                NSColor.black.setStroke()
+                
+                path.removeAllPoints()
+                
+                path.lineWidth = 2
+                
+                path.appendRect(frame.insetBy(dx: 0, dy: 2))
+                
+                path.stroke()
+            }
         }
         
         // Draw current time

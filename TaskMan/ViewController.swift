@@ -51,6 +51,14 @@ class ViewController: NSViewController {
                 addView(forTask: task)
             }
             
+            // Move task for the currently running segment, if any, to the top
+            if let running = running, let task = taskController.getTask(withId: running.taskId), let taskView = viewForTask(task: task) {
+                if let i = taskViews.index(of: taskView) {
+                    taskViews.remove(at: i)
+                    taskViews.append(taskView)
+                }
+            }
+            
             updateTaskViews()
             updateTimelineViews()
         }

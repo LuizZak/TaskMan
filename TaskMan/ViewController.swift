@@ -254,7 +254,7 @@ class ViewController: NSViewController {
         addNewTask(running: true)
     }
     
-    private func addNewTask(running: Bool) {
+    private func addNewTask(running: Bool) -> Task {
         // Figure out a unique name for the task
         var num = 1
         while(taskController.getTask(withName: "New Task #\(num)") != nil) {
@@ -269,6 +269,8 @@ class ViewController: NSViewController {
         tasksScrollView.contentView.layout()
         
         selectViewForTask(task: task)
+        
+        return task
     }
     
     @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
@@ -404,6 +406,30 @@ class ViewController: NSViewController {
         }
         
         presentViewControllerAsModalWindow(controller)
+    }
+    
+    func didTapFillTaskWithSegment(_ sender: NSMenuItem) {
+        guard let (task, date) = sender.representedObject as? (Task, Date) else {
+            return
+        }
+        
+        let start = taskController.timeline.segments(endingBefore: date).latestSegmentDate() ?? dateRange.startDate
+        let end = taskController.timeline.segments(startingAfter: date).earliestSegmentDate() ?? dateRange.endDate
+        
+        taskController.timeline.createSegment(forTaskId: task.id, dateRange: DateRange(startDate: start, endDate: end))
+    }
+    
+    func didTapFillWithTask(_ sender: NSMenuItem) {
+        guard let date = sender.representedObject as? Date else {
+            return
+        }
+        
+        let start = taskController.timeline.segments(endingBefore: date).latestSegmentDate() ?? dateRange.startDate
+        let end = taskController.timeline.segments(startingAfter: date).earliestSegmentDate() ?? dateRange.endDate
+        
+        let task = addNewTask(running: false)
+        
+        taskController.timeline.createSegment(forTaskId: task.id, dateRange: DateRange(startDate: start, endDate: end))
     }
     
     // MARK: - Selection Menu Creation
@@ -811,6 +837,31 @@ extension ViewController: TimelineViewDelegate {
         }
         
         selectViewForTask(task: task)
+    }
+    
+    func timelineView(_ timelineView: TimelineView, didTapEmptyDate date: Date, with event: NSEvent) {
+        if(event.type == .rightMouseUp) {
+            let menu = NSMenu(title: "TestMenu")
+            
+            if let task = taskController.getTask(withId: timelineView.userTag) {
+                let item = NSMenuItem(title: "Insert Segment in Empty Space", action: #selector(ViewController.didTapFillTaskWithSegment(_:)), keyEquivalent: "")
+                item.target = self
+                item.representedObject = (task, date)
+                
+                menu.addItem(item)
+            } else {
+                let item = NSMenuItem(title: "Create Task in Empty Space", action: #selector(ViewController.didTapFillWithTask(_:)), keyEquivalent: "")
+                item.target = self
+                item.representedObject = date
+                
+                menu.addItem(item)
+            }
+            
+            let windowPoint = event.locationInWindow
+            let point = timelineView.convert(windowPoint, from: nil)
+            
+            menu.popUp(positioning: nil, at: point, in: timelineView)
+        }
     }
     
     func minimumStartDateForTimelineView(_ timelineView: TimelineView) -> Date? {

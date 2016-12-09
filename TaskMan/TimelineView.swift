@@ -26,6 +26,9 @@ protocol TimelineViewDelegate: class {
     
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent)
     
+    /// Called when the user has tapped a portion of the timeline view with no segments on
+    func timelineView(_ timelineView: TimelineView, didTapEmptyDate date: Date, with event: NSEvent)
+    
     func minimumStartDateForTimelineView(_ timelineView: TimelineView) -> Date?
     
     func minimumEndDateForTimelineView(_ timelineView: TimelineView) -> Date?
@@ -38,6 +41,10 @@ protocol TimelineViewDelegate: class {
 
 extension TimelineViewDelegate {
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent) {
+        
+    }
+    
+    func timelineView(_ timelineView: TimelineView, didTapEmptyDate date: Date, with event: NSEvent) {
         
     }
     
@@ -314,6 +321,10 @@ class TimelineView: NSView {
         
         if dragging == false, let segment = segmentUnderPoint(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
+        } else if(dragging == false) {
+            if(self.bounds.contains(point)) {
+                delegate?.timelineView(self, didTapEmptyDate: dateForOffset(at: point.x), with: event)
+            }
         }
         
         dragging = false
@@ -327,6 +338,10 @@ class TimelineView: NSView {
         
         if let segment = segmentUnderPoint(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
+        } else {
+            if(self.bounds.contains(point)) {
+                delegate?.timelineView(self, didTapEmptyDate: dateForOffset(at: point.x), with: event)
+            }
         }
     }
     
@@ -593,6 +608,16 @@ extension TimelineView {
         let dateOffset = date.timeIntervalSince(sDate)
         
         return contentOffset.x + CGFloat(dateOffset / timelineInterval) * boundWidth()
+    }
+    
+    func dateForOffset(at point: CGFloat) -> Date {
+        let off = point - contentOffset.x
+        let ratio = off / boundWidth()
+        
+        let sDate = startDate
+        let timeInterval = endDate.timeIntervalSince(sDate)
+        
+        return sDate.addingTimeInterval(TimeInterval(ratio) * timeInterval)
     }
 }
 

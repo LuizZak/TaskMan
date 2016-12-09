@@ -261,8 +261,8 @@
 			isa = PBXGroup;
 			children = (
 				A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */,
-				A0FA92AE1D8C6F7D00F3916D /* Info.plist */,
 				A01F93971DF861D60080FF14 /* DateRangeTests.swift */,
+				A0FA92AE1D8C6F7D00F3916D /* Info.plist */,
 			);
 			path = TaskManTests;
 			sourceTree = "<group>";

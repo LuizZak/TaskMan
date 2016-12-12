@@ -1,5 +1,5 @@
 //
-//  DateRange+Serialization.swift
+//  DateRange+JSON.swift
 //  TaskMan
 //
 //  Created by Luiz Fernando Silva on 07/12/16.

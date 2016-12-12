@@ -22,11 +22,12 @@ protocol TimelineViewDelegate: class {
     
     func timelineView(_ timelineView: TimelineView, colorForSegment segment: TaskSegment) -> NSColor
     
-    func timelineView(_ timelineView: TimelineView, taskForSegment segment: TaskSegment) -> Task
-    
     func timelineView(_ timelineView: TimelineView, labelForSegment segment: TaskSegment) -> String
     
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent)
+    
+    /// Called when the user has tapped a portion of the timeline view with no segments on
+    func timelineView(_ timelineView: TimelineView, didTapEmptyDate date: Date, with event: NSEvent)
     
     func minimumStartDateForTimelineView(_ timelineView: TimelineView) -> Date?
     
@@ -40,6 +41,10 @@ protocol TimelineViewDelegate: class {
 
 extension TimelineViewDelegate {
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent) {
+        
+    }
+    
+    func timelineView(_ timelineView: TimelineView, didTapEmptyDate date: Date, with event: NSEvent) {
         
     }
     
@@ -77,6 +82,9 @@ class TimelineView: NSView {
     
     /// Delegate for presentation of this task timeline view
     weak var delegate: TimelineViewDelegate?
+    
+    /// Whether to draw the current time on the timeline, as a red/white vertical bar
+    var drawCurrentTime: Bool = true
     
     /// Whether to display a tooltip when the user hovers over a task
     var showTooltip: Bool = true
@@ -313,6 +321,10 @@ class TimelineView: NSView {
         
         if dragging == false, let segment = segmentUnderPoint(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
+        } else if(dragging == false) {
+            if(self.bounds.contains(point)) {
+                delegate?.timelineView(self, didTapEmptyDate: dateForOffset(at: point.x), with: event)
+            }
         }
         
         dragging = false
@@ -326,6 +338,10 @@ class TimelineView: NSView {
         
         if let segment = segmentUnderPoint(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
+        } else {
+            if(self.bounds.contains(point)) {
+                delegate?.timelineView(self, didTapEmptyDate: dateForOffset(at: point.x), with: event)
+            }
         }
     }
     
@@ -404,9 +420,15 @@ class TimelineView: NSView {
             return
         }
         
+        let boundsForSegs = boundsForSegments()
+        let start = startDate
+        let end = endDate
+        
+        NSColor.clear.setStroke()
+        
         for segment in segments {
             // Draw each segment
-            let frame = frameFor(segment: segment)
+            let frame = frameFor(segment: segment, withStartDate: start, endDate: end, inBounds: boundsForSegs)
             
             // Ignore if not visible
             if(!dirtyRect.intersects(frame)) {
@@ -418,20 +440,73 @@ class TimelineView: NSView {
             path.lineWidth = 2
             
             // Selected or not
-            if(segment.id == self.mouseSegment?.id) {
-                NSColor.black.setStroke()
-                
-                path.appendRect(frame.insetBy(dx: 0, dy: 1))
-            } else {
-                NSColor.clear.setStroke()
-                
-                path.appendRect(frame)
-            }
+            path.appendRect(frame)
             
             (delegate?.timelineView(self, colorForSegment: segment) ?? NSColor.blue)?.setFill()
             
-            path.stroke()
             path.fill()
+        }
+        
+        // Draw selected mouse segment
+        if let mouseSeg = segments.first(where: { $0.id == mouseSegment?.id }) {
+            let frame = frameFor(segment: mouseSeg, withStartDate: start, endDate: end, inBounds: boundsForSegs)
+            
+            if(dirtyRect.intersects(frame)) {
+                NSColor.black.setStroke()
+                
+                path.removeAllPoints()
+                
+                path.lineWidth = 2
+                
+                path.appendRect(frame.insetBy(dx: 0, dy: 2))
+                
+                path.stroke()
+            }
+        }
+        
+        // Draw current time
+        if(drawCurrentTime) {
+            let offset = offsetFor(date: Date())
+            
+            // Time is not within the dirty region to redraw
+            if(!dirtyRect.contains(CGPoint(x: offset, y: dirtyRect.midY))) {
+                return
+            }
+            
+            guard let context = NSGraphicsContext.current()?.cgContext else {
+                return
+            }
+            
+            // Add stripped red line
+            context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
+            
+            let t: CGFloat = CGFloat(CACurrentMediaTime().truncatingRemainder(dividingBy: 8))
+            
+            NSColor.red.setStroke()
+            context.setLineDash(phase: t, lengths: [4, 4])
+            context.strokePath()
+            
+            // Add stripped white line
+            context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
+            NSColor.white.setStroke()
+            context.setLineDash(phase: 4 + t, lengths: [4, 4])
+            context.strokePath()
+            
+            var ellipseRect = CGRect(x: offset, y: bounds.minY + 1, width: 4, height: 4)
+            ellipseRect = ellipseRect.offsetBy(dx: -ellipseRect.width / 2, dy: -ellipseRect.height / 2)
+            
+            context.setLineDash(phase: 0, lengths: [])
+            NSColor.white.setStroke()
+            
+            // Top ellipse
+            NSColor.red.setFill()
+            context.addEllipse(in: ellipseRect)
+            context.drawPath(using: CGPathDrawingMode.fillStroke)
+            
+            // Bottom ellipse
+            NSColor.red.setFill()
+            context.addEllipse(in: ellipseRect.offsetBy(dx: 0, dy: bounds.height - 2))
+            context.drawPath(using: CGPathDrawingMode.fillStroke)
         }
     }
     
@@ -495,27 +570,54 @@ class TimelineView: NSView {
         
         return nil
     }
-    
+}
+
+// MARK: Sizings
+extension TimelineView {
     func boundsForSegments() -> NSRect {
-        return NSRect(origin: contentOffset, size: NSSize(width: bounds.width * zoomLevel, height: bounds.height))
+        return NSRect(origin: contentOffset, size: NSSize(width: boundWidth(), height: bounds.height))
+    }
+    
+    func boundWidth() -> CGFloat {
+        return bounds.width * zoomLevel
     }
     
     func frameFor(segment: TaskSegment) -> NSRect {
+        return frameFor(segment: segment, withStartDate: startDate, endDate: endDate, inBounds: boundsForSegments())
+    }
+    
+    func frameFor(segment: TaskSegment, withStartDate startDate: Date, endDate: Date, inBounds bounds: NSRect) -> NSRect {
         let interval = endDate.timeIntervalSince(startDate)
         let start = segment.range.startDate.timeIntervalSince(startDate)
         let end = segment.range.endDate.timeIntervalSince(startDate)
         
-        let bounds = boundsForSegments()
+        let startX = CGFloat(start / interval) * bounds.width
+        let endX = CGFloat(end / interval) * bounds.width
         
-        let startX = (start / interval) * Double(bounds.width)
-        let endX = (end / interval) * Double(bounds.width)
-        
-        let frame = NSRect(x: startX + Double(bounds.origin.x),
-                           y: Double(bounds.origin.y),
+        let frame = NSRect(x: startX + bounds.origin.x,
+                           y: bounds.origin.y,
                            width: endX - startX,
-                           height: Double(bounds.height))
+                           height: bounds.height)
         
         return self.bounds.intersection(frame) // Clip rect to be within this view's visible bounding frame
+    }
+    
+    func offsetFor(date: Date) -> CGFloat {
+        let sDate = startDate
+        let timelineInterval = endDate.timeIntervalSince(sDate)
+        let dateOffset = date.timeIntervalSince(sDate)
+        
+        return contentOffset.x + CGFloat(dateOffset / timelineInterval) * boundWidth()
+    }
+    
+    func dateForOffset(at point: CGFloat) -> Date {
+        let off = point - contentOffset.x
+        let ratio = off / boundWidth()
+        
+        let sDate = startDate
+        let timeInterval = endDate.timeIntervalSince(sDate)
+        
+        return sDate.addingTimeInterval(TimeInterval(ratio) * timeInterval)
     }
 }
 

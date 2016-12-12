@@ -339,6 +339,16 @@ class TaskTimelineManager {
         return segments.first { $0.id == id }
     }
     
+    /// Gets a list of all segments that end before a given date
+    func segments(endingBefore date: Date) -> [TaskSegment] {
+        return segments.filter { $0.range.endDate < date }
+    }
+    
+    /// Gets a list of all segments that start after a given date
+    func segments(startingAfter date: Date) -> [TaskSegment] {
+        return segments.filter { $0.range.startDate > date }
+    }
+    
     /// Gets the total time interval for a given task ID on this timeline manager
     func totalTime(forTaskId taskId: Task.IDType) -> TimeInterval {
         return segments(forTaskId: taskId).reduce(0) { $0 + $1.range.timeInterval }

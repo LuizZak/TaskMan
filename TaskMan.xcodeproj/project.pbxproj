@@ -14,11 +14,14 @@
 		A009563C1DF8818500F30194 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956381DF8818500F30194 /* Parser.swift */; };
 		A009563D1DF8818500F30194 /* TypeResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956391DF8818500F30194 /* TypeResolver.swift */; };
 		A009563F1DF881B700F30194 /* ASTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = A009563E1DF881B700F30194 /* ASTree.swift */; };
+		A00956411DF98F5700F30194 /* Task+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956401DF98F5700F30194 /* Task+JSON.swift */; };
+		A00956431DF98F7700F30194 /* TaskSegment+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */; };
+		A00956451DF98F9600F30194 /* TaskManState+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956441DF98F9600F30194 /* TaskManState+JSON.swift */; };
 		A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93971DF861D60080FF14 /* DateRangeTests.swift */; };
 		A01F939C1DF862440080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
 		A01F939D1DF862450080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
-		A01F93A21DF8632D0080FF14 /* DateRange+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+Serialization.swift */; };
+		A01F93A21DF8632D0080FF14 /* DateRange+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */; };
 		A022571A1D9082630030A28E /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02257191D9082630030A28E /* TimelineView.swift */; };
 		A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */; };
 		A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6501DF5C49100F84863 /* ModelObject.swift */; };
@@ -67,10 +70,13 @@
 		A00956381DF8818500F30194 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		A00956391DF8818500F30194 /* TypeResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeResolver.swift; sourceTree = "<group>"; };
 		A009563E1DF881B700F30194 /* ASTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASTree.swift; sourceTree = "<group>"; };
+		A00956401DF98F5700F30194 /* Task+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Task+JSON.swift"; sourceTree = "<group>"; };
+		A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskSegment+JSON.swift"; sourceTree = "<group>"; };
+		A00956441DF98F9600F30194 /* TaskManState+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskManState+JSON.swift"; sourceTree = "<group>"; };
 		A00EBEF61DF5B7D1007D740E /* TaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskList.swift; sourceTree = "<group>"; };
 		A01F93971DF861D60080FF14 /* DateRangeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRangeTests.swift; sourceTree = "<group>"; };
 		A01F93991DF862030080FF14 /* DateRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRange.swift; sourceTree = "<group>"; };
-		A01F93A11DF8632D0080FF14 /* DateRange+Serialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DateRange+Serialization.swift"; sourceTree = "<group>"; };
+		A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DateRange+JSON.swift"; sourceTree = "<group>"; };
 		A02257191D9082630030A28E /* TimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateRangeViewController.swift; sourceTree = "<group>"; };
 		A0A6B6501DF5C49100F84863 /* ModelObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelObject.swift; sourceTree = "<group>"; };
@@ -147,6 +153,17 @@
 				A00956391DF8818500F30194 /* TypeResolver.swift */,
 			);
 			name = TimeCalc;
+			sourceTree = "<group>";
+		};
+		A00956461DF98FAB00F30194 /* Serialization */ = {
+			isa = PBXGroup;
+			children = (
+				A00956401DF98F5700F30194 /* Task+JSON.swift */,
+				A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */,
+				A00956441DF98F9600F30194 /* TaskManState+JSON.swift */,
+				A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */,
+			);
+			name = Serialization;
 			sourceTree = "<group>";
 		};
 		A02257181D9082560030A28E /* View */ = {
@@ -244,8 +261,8 @@
 			isa = PBXGroup;
 			children = (
 				A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */,
-				A0FA92AE1D8C6F7D00F3916D /* Info.plist */,
 				A01F93971DF861D60080FF14 /* DateRangeTests.swift */,
+				A0FA92AE1D8C6F7D00F3916D /* Info.plist */,
 			);
 			path = TaskManTests;
 			sourceTree = "<group>";
@@ -263,13 +280,13 @@
 			isa = PBXGroup;
 			children = (
 				A0A6B64F1DF5C48700F84863 /* Base */,
+				A00956461DF98FAB00F30194 /* Serialization */,
 				A00EBEF61DF5B7D1007D740E /* TaskList.swift */,
 				A0FA92B91D8C703300F3916D /* Task.swift */,
 				A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */,
 				A0A6B65D1DF5D6FF00F84863 /* TaskManState.swift */,
-				A0C6606E1DF70DA40063385B /* TaskManDocument.swift */,
 				A01F93991DF862030080FF14 /* DateRange.swift */,
-				A01F93A11DF8632D0080FF14 /* DateRange+Serialization.swift */,
+				A0C6606E1DF70DA40063385B /* TaskManDocument.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -485,7 +502,9 @@
 				A0F24C121D917DEA001D4536 /* TaskView.swift in Sources */,
 				A01F939C1DF862440080FF14 /* DateRange.swift in Sources */,
 				A009563A1DF8818500F30194 /* Evaluator.swift in Sources */,
+				A00956451DF98F9600F30194 /* TaskManState+JSON.swift in Sources */,
 				A0C660711DF716770063385B /* TaskDocumentController.swift in Sources */,
+				A00956411DF98F5700F30194 /* Task+JSON.swift in Sources */,
 				A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */,
 				A022571A1D9082630030A28E /* TimelineView.swift in Sources */,
 				A009563D1DF8818500F30194 /* TypeResolver.swift in Sources */,
@@ -499,8 +518,9 @@
 				A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */,
 				A0A6B65A1DF5C60400F84863 /* Utils.swift in Sources */,
 				A0FA92BC1D8C70F000F3916D /* TaskController.swift in Sources */,
-				A01F93A21DF8632D0080FF14 /* DateRange+Serialization.swift in Sources */,
+				A01F93A21DF8632D0080FF14 /* DateRange+JSON.swift in Sources */,
 				A009563B1DF8818500F30194 /* Lexer.swift in Sources */,
+				A00956431DF98F7700F30194 /* TaskSegment+JSON.swift in Sources */,
 				A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */,
 				A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */,
 				A009563C1DF8818500F30194 /* Parser.swift in Sources */,

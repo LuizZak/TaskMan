@@ -11,7 +11,7 @@ import SwiftyJSON
 
 class TaskManDocument: NSDocument {
     
-    var taskManState = TaskManState(range: DateRange(startDate: Date(),endDate: Date().addingTimeInterval(8 * 60 * 60)))
+    var taskManState = TaskManState(range: DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60)))
     
     override func defaultDraftName() -> String {
         let now = Date()
@@ -28,11 +28,6 @@ class TaskManDocument: NSDocument {
         self.addWindowController(windowController)
     }
 
-    override func windowControllerDidLoadNib(_ aController: NSWindowController) {
-        super.windowControllerDidLoadNib(aController)
-        // Add any code here that needs to be executed once the windowController has loaded the document's window.
-    }
-
     override func data(ofType typeName: String) throws -> Data {
         var json = JSON([:])
         let state = taskManState.serialize()
@@ -40,7 +35,7 @@ class TaskManDocument: NSDocument {
         json["state"].object = state.object
         json["version"].int = FileFormatVersion
         
-        return try json.rawData()
+        return try json.rawData(options: .prettyPrinted)
     }
     
     override func read(from data: Data, ofType typeName: String) throws {

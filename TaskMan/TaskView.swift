@@ -166,9 +166,8 @@ class TaskView: NSView {
 // MARK: - Text View Delegate
 extension TaskView: NSTextViewDelegate {
     
-    func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
+    func textDidChange(_ notification: Notification) {
         self.delegate?.taskView(self, didUpdateDescription: txtDescription.string ?? "")
-        return true
     }
 }
 

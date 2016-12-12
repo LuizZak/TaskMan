@@ -108,6 +108,12 @@
                                                 <action selector="paste:" target="Ady-hI-5gd" id="6bI-jO-Iec"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="YQ0-Wu-eus"/>
+                                        <menuItem title="Select All" keyEquivalent="a" id="P7G-13-8i2">
+                                            <connections>
+                                                <action selector="selectAll:" target="Ady-hI-5gd" id="c6k-hg-MMy"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -180,7 +186,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.80000000000000004" horizontal="NO" id="Z3h-vg-FWj">
-                                    <rect key="frame" x="659" y="1" width="16" height="175"/>
+                                    <rect key="frame" x="660" y="1" width="15" height="175"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>

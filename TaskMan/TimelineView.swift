@@ -300,7 +300,7 @@ class TimelineView: NSView {
         
         dragStartPoint = point
         
-        let segment = segmentUnderPoint(point: point)
+        let segment = segmentUnder(point: point)
         
         let isLastSegment = mouseSegment?.id == segment?.id
         
@@ -319,7 +319,7 @@ class TimelineView: NSView {
         let windowPoint = event.locationInWindow
         let point = self.convert(windowPoint, from: nil)
         
-        if dragging == false, let segment = segmentUnderPoint(point: point) {
+        if dragging == false, let segment = segmentUnder(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
         } else if(dragging == false) {
             if(self.bounds.contains(point)) {
@@ -336,7 +336,7 @@ class TimelineView: NSView {
         let windowPoint = event.locationInWindow
         let point = self.convert(windowPoint, from: nil)
         
-        if let segment = segmentUnderPoint(point: point) {
+        if let segment = segmentUnder(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
         } else {
             if(self.bounds.contains(point)) {
@@ -556,14 +556,19 @@ class TimelineView: NSView {
     }
     
     // MARK: - Positioning
-    func segmentUnderPoint(point: NSPoint) -> TaskSegment? {
+    func segmentUnder(point: NSPoint) -> TaskSegment? {
         // Reverse so search finds the top-most segment always
         guard let segments = dataSource?.segmentsForTimelineView(self).reversed() else {
             return nil
         }
         
+        let startDate = self.startDate
+        let endDate = self.endDate
+        let bounds = self.boundsForSegments()
+        
         for segment in segments {
-            if(frameFor(segment: segment).contains(point)) {
+            let frame = frameFor(segment: segment, withStartDate: startDate, endDate: endDate, inBounds: bounds)
+            if(frame.contains(point)) {
                 return segment
             }
         }

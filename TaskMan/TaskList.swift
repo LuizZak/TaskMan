@@ -19,12 +19,7 @@ struct TaskList {
     /// List of task segments registered for the tasks above
     var taskSegments: [TaskSegment] = []
     
-    /// Convenience initializer that inits all fields of this model empty
-    init() {
-        
-    }
-    
-    init(tasks: [Task], taskSegments: [TaskSegment]) {
+    init(tasks: [Task] = [], taskSegments: [TaskSegment] = []) {
         self.tasks = tasks
         self.taskSegments = taskSegments
     }

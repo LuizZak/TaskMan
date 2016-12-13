@@ -23,6 +23,18 @@ class ViewController: NSViewController {
     
     fileprivate var taskViews: [TaskView] = []
     
+    /// Flag used to keep track of change state locking while UI-related operations are performed.
+    ///
+    /// This flag affects updateTaskViews() and updateTimelineViews() to not fire while this flag is `true`.
+    private var uiUpdatesLocked = false
+    
+    /// Flags that where called on updateTaskViews() during uiUpdateLocked `true` states.
+    /// An empty option set signals no changes where made
+    private var uiTaskViewUpdates: TaskViewUpdateType = []
+    
+    /// Flag used to track updateTimelineViews() calls during uiUpdateLocked `true` states.
+    private var uiTimelineUpdatePending = false
+    
     override var representedObject: Any? {
         didSet {
             var tasks: [Task] = []
@@ -196,6 +208,11 @@ class ViewController: NSViewController {
     }
     
     fileprivate func updateTaskViews(updateType: TaskViewUpdateType = .Full) {
+        if(uiUpdatesLocked) {
+            uiTaskViewUpdates.formUnion(updateType)
+            return
+        }
+        
         for (i, view) in taskViews.enumerated() {
             if(updateType.contains(.Position)) {
                 view.frame.origin.y = CGFloat(i * 166)
@@ -217,43 +234,18 @@ class ViewController: NSViewController {
     }
     
     func updateTimelineViews() {
+        if(uiUpdatesLocked) {
+            uiTimelineUpdatePending = true
+            return
+        }
+        
         for view in taskViews {
             view.viewTimeline.needsDisplay = true
         }
         tasksTimelineView.needsDisplay = true
     }
     
-    /// Return the default palete colors
-    static func defaultColors() -> [NSColor] {
-        
-        return [
-            NSColor(red: 39.0/255.0,    green: 78.0/255.0,  blue: 192.0/255.0,  alpha: 1),
-            NSColor(red: 209.0/255.0,   green: 36.0/255.0,  blue: 17.0/255.0,   alpha: 1),
-            NSColor(red: 253.0/255.0,   green: 134.0/255.0, blue: 9.0/255.0,    alpha: 1),
-            NSColor(red: 23.0/255.0,    green: 136.0/255.0, blue: 19.0/255.0,   alpha: 1),
-            NSColor(red: 133.0/255.0,   green: 0.0/255.0,   blue: 135.0/255.0,  alpha: 1),
-            NSColor(red: 17.0/255.0,    green: 135.0/255.0, blue: 185.0/255.0,  alpha: 1),
-            NSColor(red: 210.0/255.0,   green: 43.0/255.0,  blue: 100.0/255.0,  alpha: 1),
-            NSColor(red: 86.0/255.0,    green: 157.0/255.0, blue: 5.0/255.0,    alpha: 1),
-            NSColor(red: 167.0/255.0,   green: 28.0/255.0,  blue: 35.0/255.0,   alpha: 1),
-            NSColor(red: 39.0/255.0,    green: 79.0/255.0,  blue: 139.0/255.0,  alpha: 1),
-            NSColor(red: 134.0/255.0,   green: 45.0/255.0,  blue: 134.0/255.0,  alpha: 1),
-            NSColor(red: 33.0/255.0,    green: 155.0/255.0, blue: 135.0/255.0,  alpha: 1),
-            NSColor(red: 154.0/255.0,   green: 157.0/255.0, blue: 16.0/255.0,   alpha: 1),
-            NSColor(red: 82.0/255.0,    green: 22.0/255.0,  blue: 193.0/255.0,  alpha: 1)
-        ]
-    }
-    
-    // MARK: - Actions
-    
-    @IBAction func didTapAddTaskButton(_ sender: NSButton) {
-        addNewTask(running: false)
-    }
-    
-    @IBAction func didTapAddAndStartTaskButton(_ sender: NSButton) {
-        addNewTask(running: true)
-    }
-    
+    @discardableResult
     private func addNewTask(running: Bool) -> Task {
         // Figure out a unique name for the task
         var num = 1
@@ -261,9 +253,13 @@ class ViewController: NSViewController {
             num += 1
         }
         
-        let task = taskController.createTask(startRunning: running, name: "New Task #\(num)", description: "")
-        
-        addView(forTask: task)
+        let task: Task = delayUiUpdates {
+            let task = taskController.createTask(startRunning: running, name: "New Task #\(num)", description: "")
+            
+            addView(forTask: task)
+            
+            return task
+        }
         
         // Layout to update constraints before selecting the view
         tasksScrollView.contentView.layout()
@@ -271,6 +267,15 @@ class ViewController: NSViewController {
         selectViewForTask(task: task)
         
         return task
+    }
+    
+    // MARK: - Actions
+    @IBAction func didTapAddTaskButton(_ sender: NSButton) {
+        addNewTask(running: false)
+    }
+    
+    @IBAction func didTapAddAndStartTaskButton(_ sender: NSButton) {
+        addNewTask(running: true)
     }
     
     @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
@@ -486,6 +491,36 @@ class ViewController: NSViewController {
         document?.updateChangeCount(.changeDone)
     }
     
+    /// Method used to temporarely lock/unlock UI update calls while a closure is running.
+    /// Used to avoid unecessary/redundant UI update calls while performing multiple calls that may all
+    /// make their own UI update calls. 
+    /// Sending `updateAfter` to `true` flushes UI updates that where made while the lock was on place automtically
+    /// before returning. Setting to `false` ignores updates during and after the call.
+    ///
+    /// - parameter updateAfter: Whether to automatically perform the UI update calls performed while
+    /// the UI update was locked
+    /// - parameter changes: The closure containing possible UI-update calls to perform while locked
+    func delayUiUpdates<T>(updateAfter: Bool = true, changes: () -> (T)) -> T {
+        uiUpdatesLocked = true
+        defer {
+            uiUpdatesLocked = false
+            
+            // Flush updates
+            if(updateAfter) {
+                if(uiTaskViewUpdates != []) {
+                    updateTaskViews(updateType: uiTaskViewUpdates)
+                }
+                if(uiTimelineUpdatePending) {
+                    updateTimelineViews()
+                }
+            }
+            
+            uiTaskViewUpdates = []
+            uiTimelineUpdatePending = false
+        }
+        return changes()
+    }
+    
     // MARK: - TaskViewUpdateType
     fileprivate struct TaskViewUpdateType: OptionSet {
         let rawValue: Int
@@ -494,10 +529,32 @@ class ViewController: NSViewController {
             self.rawValue = rawValue
         }
         
+        static let None = TaskViewUpdateType(rawValue: 0)
         static let Position = TaskViewUpdateType(rawValue: 1)
         static let RuntimeLabel = TaskViewUpdateType(rawValue: 1 << 1)
         static let DisplayState = TaskViewUpdateType(rawValue: 1 << 2)
         static let Full = TaskViewUpdateType(rawValue: 0xFFFF)
+    }
+    
+    /// Return the default palete colors
+    static func defaultColors() -> [NSColor] {
+        
+        return [
+            NSColor(red: 39.0/255.0,    green: 78.0/255.0,  blue: 192.0/255.0,  alpha: 1),
+            NSColor(red: 209.0/255.0,   green: 36.0/255.0,  blue: 17.0/255.0,   alpha: 1),
+            NSColor(red: 253.0/255.0,   green: 134.0/255.0, blue: 9.0/255.0,    alpha: 1),
+            NSColor(red: 23.0/255.0,    green: 136.0/255.0, blue: 19.0/255.0,   alpha: 1),
+            NSColor(red: 133.0/255.0,   green: 0.0/255.0,   blue: 135.0/255.0,  alpha: 1),
+            NSColor(red: 17.0/255.0,    green: 135.0/255.0, blue: 185.0/255.0,  alpha: 1),
+            NSColor(red: 210.0/255.0,   green: 43.0/255.0,  blue: 100.0/255.0,  alpha: 1),
+            NSColor(red: 86.0/255.0,    green: 157.0/255.0, blue: 5.0/255.0,    alpha: 1),
+            NSColor(red: 167.0/255.0,   green: 28.0/255.0,  blue: 35.0/255.0,   alpha: 1),
+            NSColor(red: 39.0/255.0,    green: 79.0/255.0,  blue: 139.0/255.0,  alpha: 1),
+            NSColor(red: 134.0/255.0,   green: 45.0/255.0,  blue: 134.0/255.0,  alpha: 1),
+            NSColor(red: 33.0/255.0,    green: 155.0/255.0, blue: 135.0/255.0,  alpha: 1),
+            NSColor(red: 154.0/255.0,   green: 157.0/255.0, blue: 16.0/255.0,   alpha: 1),
+            NSColor(red: 82.0/255.0,    green: 22.0/255.0,  blue: 193.0/255.0,  alpha: 1)
+        ]
     }
 }
 

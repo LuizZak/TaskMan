@@ -949,11 +949,6 @@ extension ViewController: TimelineViewDelegate {
     
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent) {
         if(event.type == .rightMouseUp) {
-            // Do nothing if this is the currently running segment
-            if(segment.id == taskController.runningSegment?.id) {
-                return
-            }
-            
             let windowPoint = event.locationInWindow
             let point = timelineView.convert(windowPoint, from: nil)
             

@@ -78,6 +78,11 @@ class ViewController: NSViewController {
                 }
             }
             
+            // Update current date of running task, if there's any task running
+            lockFileChangedFlag {
+                taskController.updateRunningSegment(withEndDate: Date())
+            }
+            
             updateTaskViews()
             updateTimelineViews()
         }
@@ -130,8 +135,6 @@ class ViewController: NSViewController {
                 taskController.updateRunningSegment(withEndDate: Date())
                 updateTaskViews(updateType: .RuntimeLabel)
                 updateTimelineViews()
-                
-                markChangesPending()
             }
         }
     }

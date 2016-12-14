@@ -719,7 +719,7 @@ extension ViewController: TaskViewDelegate {
         taskController.updateTask(withId: taskView.taskId, description: description)
     }
     
-    func didTapRemoveButtonOnTaskView(_ taskView: TaskView) {
+    func didTapRemoveButton(onTaskView taskView: TaskView) {
         guard let task = taskController.getTask(withId: taskView.taskId) else {
             return
         }
@@ -727,7 +727,7 @@ extension ViewController: TaskViewDelegate {
         _=confirmRemoveTask(task)
     }
     
-    func didTapStartStopButtonOnTaskView(_ taskView: TaskView) {
+    func didTapStartStopButton(onTaskView taskView: TaskView) {
         // Check if task is running
         if(taskController.runningTask?.id == taskView.taskId) {
             taskController.stopCurrentTask()
@@ -747,7 +747,7 @@ extension ViewController: TaskViewDelegate {
         }
     }
     
-    func didTapSegmentListButtonOnTaskView(_ taskView: TaskView) {
+    func didTapSegmentListButton(onTaskView taskView: TaskView) {
         var segments = taskController.timeline.segments(forTaskId: taskView.taskId)
         
         if let runningSegment = taskController.runningSegment, runningSegment.taskId == taskView.taskId {
@@ -787,6 +787,30 @@ extension ViewController: TaskViewDelegate {
         listMenuView.popUp(positioning: nil, at: NSPoint(x: taskView.btnSegmentList.frame.minX, y: taskView.btnSegmentList.frame.minY), in: taskView)
     }
     
+    func didRightClickRuntimeLabel(onTaskView taskView: TaskView, withGesture gesture: NSClickGestureRecognizer) {
+        let menu = NSMenu(title: "Runtime")
+        
+        let copyItem = NSMenuItem(title: "Copy runtime", action: nil, keyEquivalent: "")
+        let copyMenu = NSMenu(title: "")
+        copyItem.submenu = copyMenu
+        
+        let copy1 = NSMenuItem(title: "Copy as 'hh:mm'", action: #selector(ViewController.didSelectCopyRuntime(_:)), keyEquivalent: "")
+        copy1.target = self
+        copy1.representedObject = (taskView, TimestampMode.hoursMinutes)
+        
+        copyMenu.addItem(copy1)
+        
+        let copy2 = NSMenuItem(title: "Copy as 'hh:mm:ss'", action: #selector(ViewController.didSelectCopyRuntime(_:)), keyEquivalent: "")
+        copy2.target = self
+        copy2.representedObject = (taskView, TimestampMode.hoursMinutesSeconds)
+        
+        copyMenu.addItem(copy2)
+        
+        menu.addItem(copyItem)
+        
+        menu.popUp(positioning: nil, at: gesture.location(in: taskView), in: taskView)
+    }
+    
     func taskView(_ taskView: TaskView, allowSegmentDrop segment: TaskSegment, withDragInfo dragInfo: NSDraggingInfo) -> (Bool, NSDragOperation) {
         // Segment comes from an external text source - allow copying
         if(!(dragInfo.draggingSource() is TimelineView)) {
@@ -819,6 +843,18 @@ extension ViewController: TaskViewDelegate {
         }
         
         return confirmMoveSegment(segment, fromTask: sourceTask, toTask: targetTask)
+    }
+    
+    @objc private func didSelectCopyRuntime(_ item: NSMenuItem) {
+        guard let (taskView, mode) = item.representedObject as? (TaskView, TimestampMode) else {
+            return
+        }
+        
+        let time = taskController.totalTime(forTaskId: taskView.taskId)
+        let timestamp = formatTimestamp(time, withMode: mode)
+        
+        NSPasteboard.general().clearContents()
+        NSPasteboard.general().setString(timestamp, forType: NSPasteboardTypeString)
     }
 }
 

@@ -27,6 +27,11 @@ struct DateRange {
         self.endDate = endDate
     }
     
+    /// Returns whether the given date is located within this date range's start and end dates
+    func contains(date: Date) -> Bool {
+        return self.startDate <= date && self.endDate >= date
+    }
+    
     /// Returns whether this date range intersects with another date range, in inclusive fashion.
     func intersects(with range: DateRange) -> Bool {
         return self.startDate <= range.endDate && range.startDate <= self.endDate

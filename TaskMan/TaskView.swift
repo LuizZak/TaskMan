@@ -10,11 +10,13 @@ import Cocoa
 import SwiftyJSON
 
 protocol TaskViewDelegate: class {
-    func didTapRemoveButtonOnTaskView(_ taskView: TaskView)
+    func didTapRemoveButton(onTaskView taskView: TaskView)
     
-    func didTapStartStopButtonOnTaskView(_ taskView: TaskView)
+    func didTapStartStopButton(onTaskView taskView: TaskView)
     
-    func didTapSegmentListButtonOnTaskView(_ taskView: TaskView)
+    func didTapSegmentListButton(onTaskView taskView: TaskView)
+    
+    func didRightClickRuntimeLabel(onTaskView taskView: TaskView, withGesture gesture: NSClickGestureRecognizer)
     
     /// Called to notify the user has changed the text of the namefield for a task view
     func taskView(_ taskView: TaskView, didUpdateName name: String)
@@ -35,9 +37,10 @@ protocol TaskViewDelegate: class {
 }
 
 extension TaskViewDelegate {
-    func didTapRemoveButtonOnTaskView(_ taskView: TaskView) { }
-    func didTapStartStopButtonOnTaskView(_ taskView: TaskView) { }
-    func didTapSegmentListButtonOnTaskView(_ taskView: TaskView) { }
+    func didTapRemoveButton(onTaskView taskView: TaskView) { }
+    func didTapStartStopButton(onTaskView taskView: TaskView) { }
+    func didTapSegmentListButton(onTaskView taskView: TaskView) { }
+    func didRightClickRuntimeLabel(onTaskView taskView: TaskView, withGesture gesture: NSClickGestureRecognizer) { }
     
     func taskView(_ taskView: TaskView, didUpdateName name: String) { }
     func taskView(_ taskView: TaskView, didUpdateDescription description: String) { }
@@ -102,6 +105,10 @@ class TaskView: NSView {
         self.addSubview(view)
         
         self.register(forDraggedTypes: [SegmentDragItemType, NSPasteboardTypeString])
+        
+        let clickGesture = NSClickGestureRecognizer(target: self, action: #selector(TaskView.didClickRuntimeLabel(_:)))
+        clickGesture.buttonMask = 0x2
+        lblRuntime.addGestureRecognizer(clickGesture)
     }
     
     required init?(coder: NSCoder) {
@@ -111,16 +118,20 @@ class TaskView: NSView {
     }
     
     @IBAction func didTapStartStopButton(_ sender: NSButton) {
-        delegate?.didTapStartStopButtonOnTaskView(self)
+        delegate?.didTapStartStopButton(onTaskView: self)
     }
     
     @IBAction func didTapRemoveButton(_ sender: NSButton) {
-        delegate?.didTapRemoveButtonOnTaskView(self)
+        delegate?.didTapRemoveButton(onTaskView: self)
     }
     
     @IBAction func didTapSegmentListButton(_ sender: NSButton) {
-        delegate?.didTapSegmentListButtonOnTaskView(self)
+        delegate?.didTapSegmentListButton(onTaskView: self)
     }
+    func didClickRuntimeLabel(_ gesture: NSClickGestureRecognizer) {
+        delegate?.didRightClickRuntimeLabel(onTaskView: self, withGesture: gesture)
+    }
+    
     override func controlTextDidChange(_ obj: Notification) {
         if let object = obj.object as? NSTextField, object == txtName {
             delegate?.taskView(self, didUpdateName: txtName.stringValue)

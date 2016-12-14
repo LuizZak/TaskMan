@@ -25,6 +25,11 @@ class ViewController: NSViewController {
     
     fileprivate var taskViews: [TaskView] = []
     
+    /// Flag used to stop calls to markUnsavedChanges() from updating the unsaved state of the current document
+    ///
+    /// This flag affects markUnsavedChanges() to not fire while this flag is `true`.
+    private var fileChangedLocked = false
+    
     /// Flag used to keep track of change state locking while UI-related operations are performed.
     ///
     /// This flag affects updateTaskViews() and updateTimelineViews() to not fire while this flag is `true`.
@@ -41,20 +46,20 @@ class ViewController: NSViewController {
         didSet {
             var tasks: [Task] = []
             var segments: [TaskSegment] = []
-            var running: TaskSegment?
+            var runningId: TaskSegment.IDType?
             var dateRange: DateRange = DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60))
             
             if let document = representedObject as? TaskManDocument {
                 tasks = document.taskManState.taskList.tasks
                 segments = document.taskManState.taskList.taskSegments
-                running = document.taskManState.runningSegment
+                runningId = document.taskManState.runningSegmentId
                 dateRange = document.taskManState.timeRange
             }
             
             let timeline = TaskTimelineManager(segments: segments)
             timeline.delegate = self
             
-            self.taskController = TaskController(tasks: tasks, runningSegment: running, timeline: timeline)
+            self.taskController = TaskController(tasks: tasks, runningSegmentId: runningId, timeline: timeline)
             self.taskController.delegate = self
             
             self.dateRange = dateRange
@@ -66,7 +71,7 @@ class ViewController: NSViewController {
             }
             
             // Move task for the currently running segment, if any, to the top
-            if let running = running, let task = taskController.getTask(withId: running.taskId), let taskView = viewForTask(task: task) {
+            if let task = taskController.runningTask, let taskView = viewForTask(task: task) {
                 if let i = taskViews.index(of: taskView) {
                     taskViews.remove(at: i)
                     taskViews.append(taskView)
@@ -121,9 +126,13 @@ class ViewController: NSViewController {
     func timerDidFire() {
         // Update running segment and views
         if(taskController.runningSegment != nil) {
-            taskController.updateRunningSegment(withEndDate: Date())
-            updateTaskViews(updateType: .RuntimeLabel)
-            updateTimelineViews()
+            lockFileChangedFlag {
+                taskController.updateRunningSegment(withEndDate: Date())
+                updateTaskViews(updateType: .RuntimeLabel)
+                updateTimelineViews()
+                
+                markChangesPending()
+            }
         }
     }
     
@@ -359,7 +368,7 @@ class ViewController: NSViewController {
         controller.setDateRange(dateRange: segment.range)
         
         controller.didTapOkCallback = { (controller) -> Void in
-            self.taskController.timeline.setSegmentRange(withId: segment.id, startDate: controller.startDate, endDate: controller.endDate)
+            self.taskController.timeline.setSegmentDates(withId: segment.id, startDate: controller.startDate, endDate: controller.endDate)
             
             controller.dismiss(self)
         }
@@ -435,10 +444,9 @@ class ViewController: NSViewController {
             return
         }
         
-        let start = taskController.timeline.segments(endingBefore: date).latestSegmentDate() ?? dateRange.startDate
-        let end = taskController.timeline.segments(startingAfter: date).earliestSegmentDate() ?? dateRange.endDate
+        let range = emptyRangeOnDate(date)
         
-        taskController.timeline.createSegment(forTaskId: task.id, dateRange: DateRange(startDate: start, endDate: end))
+        taskController.timeline.createSegment(forTaskId: task.id, dateRange: range)
     }
     
     func didTapFillWithTask(_ sender: NSMenuItem) {
@@ -446,17 +454,32 @@ class ViewController: NSViewController {
             return
         }
         
-        let start = taskController.timeline.segments(endingBefore: date).latestSegmentDate() ?? dateRange.startDate
-        let end = taskController.timeline.segments(startingAfter: date).earliestSegmentDate() ?? dateRange.endDate
+        let range = emptyRangeOnDate(date)
         
         let task = addNewTask(running: false)
         
-        taskController.timeline.createSegment(forTaskId: task.id, dateRange: DateRange(startDate: start, endDate: end))
+        taskController.timeline.createSegment(forTaskId: task.id, dateRange: range)
+    }
+    
+    /// Returns a date range that is able to fill the current timeline void on top of a given date
+    private func emptyRangeOnDate(_ date: Date) -> DateRange {
+        var segments = taskController.timeline.segments
+        if let running = taskController.runningSegment {
+            segments.append(running)
+        }
+        
+        // Create a temporary manager to use as a temporary controller with all available segments
+        let tempManager = TaskTimelineManager(segments: segments)
+        
+        let start = tempManager.segments(endingBefore: date).latestSegmentDate() ?? dateRange.startDate
+        let end = tempManager.segments(startingAfter: date).earliestSegmentDate() ?? dateRange.endDate
+        
+        return DateRange(startDate: start, endDate: end)
     }
     
     // MARK: - Selection Menu Creation
     func createSegmentMenu(forSegment segment: TaskSegment) -> NSMenu {
-        let isRunning = taskController.runningSegment?.id == segment.id
+        let isRunning = taskController.isSegmentRunning(segmentId: segment.id)
         
         // Add editing start/end dates
         if(!isRunning) {
@@ -501,11 +524,26 @@ class ViewController: NSViewController {
     }
     
     func markChangesPending() {
-        document?.taskManState.runningSegment = taskController.runningSegment
+        if(fileChangedLocked) {
+            return
+        }
+        
+        document?.taskManState.runningSegmentId = taskController.runningSegment?.id
         document?.taskManState.taskList = TaskList(tasks: taskController.currentTasks, taskSegments: taskController.timeline.segments)
         document?.taskManState.timeRange = dateRange
         
         document?.updateChangeCount(.changeDone)
+    }
+    
+    /// Method used to temporarely lock unsaved state changes to the current document.
+    ///
+    /// - parameter changes: The closure containing possible mark unsaved-calls to perform while locked
+    func lockFileChangedFlag<T>(changes: () -> (T)) -> T {
+        fileChangedLocked = true
+        defer {
+            fileChangedLocked = false
+        }
+        return changes()
     }
     
     /// Method used to temporarely lock/unlock UI update calls while a closure is running.
@@ -637,7 +675,7 @@ extension ViewController {
         }
         
         // Perform the segment transfer
-        taskController.timeline.setSegmentRange(withId: segment.id, startDate: segment.range.startDate, endDate: segment.range.endDate)
+        taskController.timeline.setSegmentDates(withId: segment.id, startDate: segment.range.startDate, endDate: segment.range.endDate)
         taskController.timeline.changeTaskForSegment(segmentId: segment.id, toTaskId: targetTask.id)
         
         return true
@@ -748,11 +786,7 @@ extension ViewController: TaskViewDelegate {
     }
     
     func didTapSegmentListButton(onTaskView taskView: TaskView) {
-        var segments = taskController.timeline.segments(forTaskId: taskView.taskId)
-        
-        if let runningSegment = taskController.runningSegment, runningSegment.taskId == taskView.taskId {
-            segments.insert(runningSegment, at: 0)
-        }
+        let segments = taskController.timeline.segments(forTaskId: taskView.taskId)
         
         let listMenuView = NSMenu(title: "Segments List")
         
@@ -770,7 +804,7 @@ extension ViewController: TaskViewDelegate {
             let end = formatter.string(from: segment.range.endDate)
             
             var title = "Segment \(i + 1) \(start) to \(end)"
-            let isRunning = taskController.runningSegment?.id == segment.id
+            let isRunning = taskController.isSegmentRunning(segmentId: segment.id)
             // Add label to segment to indicate it's currently running
             if(isRunning) {
                 title += " - running"
@@ -861,16 +895,7 @@ extension ViewController: TaskViewDelegate {
 // MARK: - Timeline View Data Source
 extension ViewController: TimelineViewDataSource {
     func segmentsForTimelineView(_ timelineView: TimelineView) -> [TaskSegment] {
-        var segments = taskController.timeline.segments
-        
-        // Add running task segment, with the current date as the end date of the segment
-        if var seg = taskController.runningSegment {
-            seg.range.endDate = Date()
-            
-            segments.append(seg)
-        }
-        
-        return segments
+        return taskController.timeline.segments
     }
     
     func timelineView(_ timelineView: TimelineView, willStartDraggingSegment segment: TaskSegment) -> Bool {
@@ -907,11 +932,8 @@ extension ViewController: TimelineViewDelegate {
     func timelineView(_ timelineView: TimelineView, labelForSegment segment: TaskSegment) -> String {
         let task = taskController.getTask(withId: segment.taskId)!
         
-        var segments = taskController.timeline.segments(forTaskId: task.id)
-        // Add running segment
-        if let running = taskController.runningSegment, running.taskId == task.id {
-            segments.append(running)
-        }
+        let segments = taskController.timeline.segments(forTaskId: task.id)
+        
         if let earliest = segments.earliestSegmentDate(), let latest = segments.latestSegmentDate() {
             let start = timelineView.dateTimeFormatter.string(from: earliest)
             let end = timelineView.dateTimeFormatter.string(from: latest)

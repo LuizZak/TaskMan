@@ -44,13 +44,13 @@ extension JSON {
     }
 }
 
-enum JSONError: Error, CustomStringConvertible, CustomDebugStringConvertible {
+public enum JSONError: Error, CustomStringConvertible, CustomDebugStringConvertible {
     case InvalidType(message: String)
     case UnexpectedType(expected: Type, received: Type)
     case ModelInitializeError(message: String, error: Error?, file: String, line: Int)
     case ComposedError(error: Error, file: String, line: Int)
     
-    var description: String {
+    public var description: String {
         switch (self) {
         case .InvalidType(let msg):
             return "InvalidType: \(msg)"
@@ -67,16 +67,16 @@ enum JSONError: Error, CustomStringConvertible, CustomDebugStringConvertible {
         }
     }
     
-    var debugDescription: String {
+    public var debugDescription: String {
         return description
     }
 }
 
 // Extension for performing error-throwing JSON parsing.
 // Used mostly for failing during model creations nicely using do { } catch { } statements
-extension JSON {
+public extension JSON {
     
-    func tryString(file: String = #file, line: Int = #line) throws -> String {
+    public func tryString(file: String = #file, line: Int = #line) throws -> String {
         if let value = self.string {
             return value
         }
@@ -96,7 +96,7 @@ extension JSON {
     ///
     /// would infer T to be `SomeEnum`, without the need to specify the `type` parameter explicitly, because the required
     /// return type is `SomeEnum` since we are intializing a `SomeEnum`-typed variable.
-    func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == String {
+    public func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == String {
         guard let value = self.string else {
             throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.string, received: self.type), file: file, line: line)
         }
@@ -120,7 +120,7 @@ extension JSON {
     ///
     /// would infer T to be `SomeEnum`, without the need to specify the `type` parameter explicitly, because the required
     /// return type is `SomeEnum` since we are intializing a `SomeEnum`-typed variable.
-    func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == Int {
+    public func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == Int {
         guard let value = self.int else {
             throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.number, received: self.type), file: file, line: line)
         }
@@ -132,7 +132,7 @@ extension JSON {
         throw composeError(self.error ?? JSONError.InvalidType(message: "Could not parse enum \(T.self) out of value \(value)"), file: file, line: line)
     }
     
-    func tryInt(file: String = #file, line: Int = #line) throws -> Int {
+    public func tryInt(file: String = #file, line: Int = #line) throws -> Int {
         if let value = self.intConvertible {
             return value
         }
@@ -140,7 +140,7 @@ extension JSON {
         throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.number, received: self.type), file: file, line: line)
     }
     
-    func tryDouble(file: String = #file, line: Int = #line) throws -> Double {
+    public func tryDouble(file: String = #file, line: Int = #line) throws -> Double {
         if let value = self.doubleConvertible {
             return value
         }
@@ -148,7 +148,7 @@ extension JSON {
         throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.number, received: self.type), file: file, line: line)
     }
     
-    func tryBool(file: String = #file, line: Int = #line) throws -> Bool {
+    public func tryBool(file: String = #file, line: Int = #line) throws -> Bool {
         if let value = self.bool {
             return value
         }
@@ -156,7 +156,7 @@ extension JSON {
         throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.bool, received: self.type), file: file, line: line)
     }
     
-    func tryParseDate(withFormatter formatter: DateFormatter, file: String = #file, line: Int = #line) throws -> Date {
+    public func tryParseDate(withFormatter formatter: DateFormatter, file: String = #file, line: Int = #line) throws -> Date {
         guard let string = self.string else {
             throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.string, received: self.type), file: file, line: line)
         }
@@ -167,6 +167,9 @@ extension JSON {
         
         throw composeError(self.error ?? JSONError.InvalidType(message: "Could not parse '\(formatter.dateFormat)' date out of value '\(string)'"), file: file, line: line)
     }
+}
+
+extension JSON {
     
     /// Tries to parse the contents of this JSON object into an instance of a JsonInitializable object.
     ///

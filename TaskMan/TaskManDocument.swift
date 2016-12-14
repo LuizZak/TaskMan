@@ -76,17 +76,3 @@ class TaskManDocument: NSDocument {
         case InvalidVersion
     }
 }
-
-/// Private helper class used to help convert files from previous versions of TaskMan
-private class TaskManStateConverter {
-    
-    /// Returns whether the given file version can be converted to the newest compatible format
-    func canConvertFrom(version: Int) -> Bool {
-        return version == FileFormatVersion
-    }
-    
-    /// Converts the given JSON structure to the newest compatible format
-    func convert(json: JSON, fromVersion version: Int) throws -> JSON {
-        return json
-    }
-}

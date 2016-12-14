@@ -48,9 +48,11 @@ class TaskTimelineManager {
     }
     
     /// Creates a segment for a given task ID, on a given date range on this task timeline manager
-    func createSegment(forTaskId taskId: Task.IDType, dateRange: DateRange) {
+    @discardableResult
+    func createSegment(forTaskId taskId: Task.IDType, dateRange: DateRange) -> TaskSegment {
         let segment = TaskSegment(id: getUniqueSegmentId(), taskId: taskId, range: dateRange)
         add(segment: segment)
+        return segment
     }
     
     /// Adds a given task segment to this timeline manager
@@ -68,11 +70,23 @@ class TaskTimelineManager {
     }
     
     /// Sets the start/end dates of the segment with a given ID.
+    /// Can pass nil, to not update the field.
     /// Does nothing, if no segment with a matching ID is found
-    func setSegmentRange(withId id: TaskSegment.IDType, startDate: Date, endDate: Date) {
+    func setSegmentDates(withId id: TaskSegment.IDType, startDate: Date? = nil, endDate: Date? = nil) {
+        // If no fields are to be updated, quit early
+        if startDate == nil && endDate == nil {
+            return
+        }
+        
         for (i, segment) in segments.enumerated() {
             if(segment.id == id) {
-                segments[i].range = DateRange(startDate: startDate, endDate: endDate)
+                if let startDate = startDate {
+                    segments[i].range.startDate = startDate
+                }
+                if let endDate = endDate {
+                    segments[i].range.endDate = endDate
+                }
+                
                 self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
                 break
             }

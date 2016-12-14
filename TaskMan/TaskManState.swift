@@ -16,7 +16,7 @@ struct TaskManState {
     var taskList: TaskList
     
     /// A currently running segment, if any.
-    var runningSegment: TaskSegment?
+    var runningSegmentId: TaskSegment.IDType?
     
     /// The date range for displaying the default timeline with
     var timeRange: DateRange
@@ -25,9 +25,9 @@ struct TaskManState {
     var creationDate: Date
     
     /// Inits a TaskMan state with the given set of data
-    init(taskList: TaskList, runningSegment: TaskSegment, timeRange: DateRange, creationDate: Date = Date()) {
+    init(taskList: TaskList, runningSegmentId: TaskSegment.IDType, timeRange: DateRange, creationDate: Date = Date()) {
         self.taskList = taskList
-        self.runningSegment = runningSegment
+        self.runningSegmentId = runningSegmentId
         self.timeRange = timeRange
         self.creationDate = creationDate
     }

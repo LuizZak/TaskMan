@@ -50,7 +50,16 @@ class TaskController {
     
     /// Currently running task segment.
     /// Is nil, if no task is running.
-    private(set) var runningSegment: TaskSegment?
+    var runningSegment: TaskSegment? {
+        if let segmentId = runningSegmentId {
+            return timeline.segment(withId: segmentId)
+        }
+        return nil
+    }
+    
+    /// Identifier for the segment currently running.
+    /// Is nil, if no task is running
+    private(set) var runningSegmentId: TaskSegment.IDType?
     
     /// Gets the currently running task, if any.
     var runningTask: Task? {
@@ -61,10 +70,20 @@ class TaskController {
         self.timeline = timeline
     }
     
-    init(tasks: [Task], runningSegment: TaskSegment?, timeline: TaskTimelineManager) {
+    init(tasks: [Task], runningSegmentId: TaskSegment.IDType?, timeline: TaskTimelineManager) {
         self.currentTasks = tasks
         self.timeline = timeline
-        self.runningSegment = runningSegment
+        self.runningSegmentId = runningSegmentId
+    }
+    
+    /// Returns whether the segment with a given ID is currently running
+    func isSegmentRunning(segmentId: Int) -> Bool {
+        return runningSegmentId == segmentId
+    }
+    
+    /// Returns whether the task with a given ID is currently running
+    func isTaskRunning(taskId: Int) -> Bool {
+        return runningTask?.id == taskId
     }
     
     /// Creates a new task, returning the ID of the created task.
@@ -96,9 +115,7 @@ class TaskController {
         
         let range = DateRange(startDate: last?.range.endDate ?? Date(), endDate: Date())
         
-        runningSegment = TaskSegment(id: timeline.getUniqueSegmentId(),
-                                     taskId: task.id,
-                                     range: range)
+        runningSegmentId = timeline.createSegment(forTaskId: task.id, dateRange: range).id
         
         delegate?.taskController(self, didStartTask: task)
     }
@@ -107,16 +124,14 @@ class TaskController {
     /// Returns the task segment saved, or nil, if no task is currently running
     @discardableResult
     func stopCurrentTask() -> TaskSegment? {
-        guard var segment = runningSegment, let task = getTask(withId: segment.taskId) else {
+        guard let segmentId = runningSegmentId, let segment = timeline.segment(withId: segmentId), let task = getTask(withId: segment.taskId) else {
             return nil
         }
         
         // Add an end date and store
-        segment.range.endDate = Date()
+        timeline.setSegmentDates(withId: segmentId, endDate: Date())
         
-        timeline.add(segment: segment)
-        
-        runningSegment = nil
+        runningSegmentId = nil
         
         delegate?.taskController(self, didStopTask: task, newSegment: segment)
         
@@ -125,12 +140,7 @@ class TaskController {
     
     /// Gets the total runtime for a given task, including any currently running task segments, for a given task id
     func totalTime(forTaskId id: Task.IDType) -> TimeInterval {
-        var total = timeline.totalTime(forTaskId: id)
-        if let runningSegment = runningSegment, runningSegment.taskId == id {
-            total += runningSegment.range.timeInterval
-        }
-        
-        return total
+        return timeline.totalTime(forTaskId: id)
     }
     
     /// Removes a task with a given id from this task controller
@@ -176,13 +186,17 @@ class TaskController {
     /// Updates the end date of the currently running segment.
     /// Does nothing, if there are no tasks currently running
     func updateRunningSegment(withEndDate date: Date = Date()) {
-        runningSegment?.range.endDate = date
+        if let id = runningSegmentId {
+            timeline.setSegmentDates(withId: id, endDate: date)
+        }
     }
     
     /// Updates the start date of the currently running segment.
     /// Does nothing, if there are no tasks currently running
     func updateRunningSegment(withStartDate date: Date = Date()) {
-        runningSegment?.range.startDate = date
+        if let id = runningSegmentId {
+            timeline.setSegmentDates(withId: id, startDate: date)
+        }
     }
     
     /// Gets a task by ID from this task controller

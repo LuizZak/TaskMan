@@ -64,8 +64,12 @@ extension TimelineViewDelegate {
 class TimelineView: NSView {
     
     /// Segment currently under the user's mouse
-    /// Is nil, is no segment
+    /// Is nil, if no segment is under the mouse currently.
     fileprivate(set) var mouseSegment: TaskSegment?
+    
+    /// Date the mouse is currently pointing at on this timeline view.
+    /// Is nil, if the mouse is not within the bounds of this timeline view.
+    fileprivate(set) var mouseDate: Date?
     
     /// A simple user tag to tag the view with.
     /// Used to mostly figure out which specific task this timeline view is displaying.
@@ -295,20 +299,7 @@ class TimelineView: NSView {
     override func mouseMoved(with event: NSEvent) {
         super.mouseMoved(with: event)
         
-        let windowPoint = event.locationInWindow
-        let point = self.convert(windowPoint, from: nil)
-        
-        dragStartPoint = point
-        
-        let segment = segmentUnder(point: point)
-        
-        let isLastSegment = mouseSegment?.id == segment?.id
-        
-        highlightSegment(segment: segment)
-        
-        if let segment = segment, !isLastSegment {
-            addToolTip(frameFor(segment: segment), owner: self, userData: nil)
-        }
+        updateMouseDisplay(withEvent: event)
     }
     
     override func mouseUp(with event: NSEvent) {
@@ -345,11 +336,25 @@ class TimelineView: NSView {
         }
     }
     
+    override func mouseEntered(with event: NSEvent) {
+        super.mouseEntered(with: event)
+        
+        let windowPoint = event.locationInWindow
+        let point = self.convert(windowPoint, from: nil)
+        
+        mouseDate = dateForOffset(at: point.x)
+        
+        needsDisplay = true
+    }
+    
     override func mouseExited(with event: NSEvent) {
         super.mouseExited(with: event)
         
         // De-select current segment
+        mouseDate = nil
         highlightSegment(segment: nil)
+        
+        needsDisplay = true
     }
     
     
@@ -376,6 +381,8 @@ class TimelineView: NSView {
         default:
             break
         }
+        
+        updateMouseDisplay(withEvent: event)
     }
     
     override func scrollWheel(with event: NSEvent) {
@@ -391,6 +398,8 @@ class TimelineView: NSView {
         } else if(event.phase == .ended || event.phase == .cancelled) {
             scrollLocked = false
         }
+        
+        updateMouseDisplay(withEvent: event)
     }
     
     override func view(_ view: NSView, stringForToolTip tag: NSToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
@@ -437,12 +446,13 @@ class TimelineView: NSView {
             
             path.removeAllPoints()
             
-            path.lineWidth = 2
+            path.lineWidth = 0
             
             // Selected or not
             path.appendRect(frame)
             
-            (delegate?.timelineView(self, colorForSegment: segment) ?? NSColor.blue)?.setFill()
+            let color = (delegate?.timelineView(self, colorForSegment: segment) ?? NSColor.blue)
+            color.setFill()
             
             path.fill()
         }
@@ -458,8 +468,20 @@ class TimelineView: NSView {
                 
                 path.lineWidth = 2
                 
-                path.appendRect(frame.insetBy(dx: 0, dy: 2))
+                path.appendRect(frame.insetBy(dx: 1, dy: 2))
                 
+                path.stroke()
+            }
+        } else if let mouseDate = mouseDate, let range = emptyRangeUnderDate(date: mouseDate), range.timeInterval > 0 {
+            // Draw empty space, if mouse is over one
+            let frame = frameForDateRange(dateRange: range, withStartDate: start, endDate: end, inBounds: boundsForSegs)
+            
+            if(dirtyRect.intersects(frame)) {
+                path.removeAllPoints()
+                
+                NSColor.selectedControlColor.highlight(withLevel: 0.3)?.setStroke()
+                path.lineWidth = 2
+                path.appendRect(frame.insetBy(dx: 1, dy: 2))
                 path.stroke()
             }
         }
@@ -510,6 +532,29 @@ class TimelineView: NSView {
         }
     }
     
+    /// Updates currently hovered over segment and empty dates based on the given event
+    func updateMouseDisplay(withEvent event: NSEvent) {
+        let windowPoint = event.locationInWindow
+        let point = self.convert(windowPoint, from: nil)
+        
+        mouseDate = dateForOffset(at: point.x)
+        
+        dragStartPoint = point
+        
+        let segment = segmentUnder(point: point)
+        
+        let isLastSegment = mouseSegment?.id == segment?.id
+        if(!isLastSegment && (mouseSegment == nil || segment == nil)) {
+            needsDisplay = true
+        }
+        
+        highlightSegment(segment: segment)
+        
+        if let segment = segment, !isLastSegment {
+            addToolTip(frameFor(segment: segment), owner: self, userData: nil)
+        }
+    }
+    
     func imageForSegment(segment: TaskSegment) -> NSImage? {
         let frame = frameFor(segment: segment)
         
@@ -540,18 +585,17 @@ class TimelineView: NSView {
     }
     
     // MARK: - Highlighting Management
-    
     func highlightSegment(segment: TaskSegment?) {
         if let previous = mouseSegment {
             let frame = frameFor(segment: previous)
-            setNeedsDisplay(frame.insetBy(dx: -2, dy: -2))
+            setNeedsDisplay(frame)
         }
         
         mouseSegment = segment
         
         if let new = segment {
             let frame = frameFor(segment: new)
-            setNeedsDisplay(frame.insetBy(dx: -2, dy: -2))
+            setNeedsDisplay(frame)
         }
     }
     
@@ -575,6 +619,33 @@ class TimelineView: NSView {
         
         return nil
     }
+    
+    /// Returns a date range that fills the empty space on top of the given date, if any.
+    /// If the date is out of the bounds for this timeline view, nil is returned.
+    /// If the date points within a segment, nil is also returned.
+    /// If not, the method returns the biggest date range capable of filling the space
+    /// under the date, stopping at segments and the boundaries of this timeline view.
+    func emptyRangeUnderDate(date: Date) -> DateRange? {
+        guard let segments = dataSource?.segmentsForTimelineView(self) else {
+            return nil
+        }
+        
+        let sDate = startDate
+        let eDate = endDate
+        
+        if(date < sDate || date > eDate) {
+            return nil
+        }
+        
+        if(segments.any { $0.range.contains(date: date) }) {
+            return nil
+        }
+        
+        let start = segments.filter { $0.range.endDate < date }.latestSegmentDate() ?? sDate
+        let end = segments.filter { $0.range.startDate > date }.earliestSegmentDate() ?? eDate
+        
+        return DateRange(startDate: start, endDate: end)
+    }
 }
 
 // MARK: Sizings
@@ -592,9 +663,13 @@ extension TimelineView {
     }
     
     func frameFor(segment: TaskSegment, withStartDate startDate: Date, endDate: Date, inBounds bounds: NSRect) -> NSRect {
+        return frameForDateRange(dateRange: segment.range, withStartDate: startDate, endDate: endDate, inBounds: bounds)
+    }
+    
+    func frameForDateRange(dateRange: DateRange, withStartDate startDate: Date, endDate: Date, inBounds bounds: NSRect) -> NSRect {
         let interval = endDate.timeIntervalSince(startDate)
-        let start = segment.range.startDate.timeIntervalSince(startDate)
-        let end = segment.range.endDate.timeIntervalSince(startDate)
+        let start = dateRange.startDate.timeIntervalSince(startDate)
+        let end = dateRange.endDate.timeIntervalSince(startDate)
         
         let startX = CGFloat(start / interval) * bounds.width
         let endX = CGFloat(end / interval) * bounds.width

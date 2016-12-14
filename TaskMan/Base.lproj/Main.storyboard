@@ -117,6 +117,19 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Tools" id="Wf7-QI-fYJ">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Tools" id="XDv-Kw-oPx">
+                                    <items>
+                                        <menuItem title="Time Calculator" id="YNj-pv-KVu">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="didTapOpenTimeCalculatur:" target="Ady-hI-5gd" id="xV4-Pq-Tea"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                         </items>
                     </menu>
                     <connections>
@@ -186,7 +199,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.80000000000000004" horizontal="NO" id="Z3h-vg-FWj">
-                                    <rect key="frame" x="660" y="1" width="15" height="175"/>
+                                    <rect key="frame" x="659" y="1" width="16" height="175"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>

@@ -8,6 +8,8 @@
 
 import Cocoa
 
+fileprivate var sharedTimeCalcController: TimeCalcWindowController?
+
 class ViewController: NSViewController {
 
     @IBOutlet weak var tasksTimelineView: TimelineView!
@@ -270,6 +272,21 @@ class ViewController: NSViewController {
     }
     
     // MARK: - Actions
+    @IBAction func didTapOpenTimeCalculatur(_ sender: NSMenuItem) {
+        // Check if a time calc window is not already open, and send it to front
+        if let calc = sharedTimeCalcController {
+            calc.window?.orderFront(self)
+            return
+        }
+        
+        let controller = TimeCalcWindowController(windowNibName: "TimeCalcWindowController")
+        controller.showWindow(self)
+        
+        controller.window?.makeKey()
+        
+        sharedTimeCalcController = controller
+    }
+    
     @IBAction func didTapAddTaskButton(_ sender: NSButton) {
         addNewTask(running: false)
     }

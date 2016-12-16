@@ -193,7 +193,7 @@ class TaskController {
     
     /// Updates the start date of the currently running segment.
     /// Does nothing, if there are no tasks currently running
-    func updateRunningSegment(withStartDate date: Date = Date()) {
+    func updateRunningSegment(withStartDate date: Date) {
         if let id = runningSegmentId {
             timeline.setSegmentDates(withId: id, startDate: date)
         }

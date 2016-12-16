@@ -16,6 +16,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var tasksScrollView: NSScrollView!
     @IBOutlet weak var tasksContainerView: NSView!
     @IBOutlet weak var tasksHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var lblTotalTime: NSTextField!
     
     fileprivate var dateRange: DateRange = DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60))
     
@@ -85,6 +86,7 @@ class ViewController: NSViewController {
             
             updateTaskViews()
             updateTimelineViews()
+            updateTotalTime()
         }
     }
     
@@ -257,6 +259,11 @@ class ViewController: NSViewController {
             view.viewTimeline.needsDisplay = true
         }
         tasksTimelineView.needsDisplay = true
+    }
+    
+    func updateTotalTime() {
+        let totalTime = taskController.timeline.segments.reduce(0) { $0 + $1.range.timeInterval }
+        lblTotalTime.stringValue = formatTimestamp(totalTime)
     }
     
     @discardableResult
@@ -623,13 +630,8 @@ extension ViewController {
     /// if the user has selected 'Yes'.
     /// Returns whether the user has tapped the YES button.
     func confirmRemoveTask(_ task: Task) -> Bool {
-        let alert = NSAlert()
-        alert.messageText = "Are you sure you want to remove the task '\(task.name)'?"
-        
-        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
-        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
-        
-        if(alert.runModal() == NSAlertSecondButtonReturn) {
+        let result = showYesNoDialog(withMessage: "Are you sure you want to remove the task '\(task.name)'?")
+        if(!result) {
             return false
         }
         
@@ -647,13 +649,8 @@ extension ViewController {
         let startDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.startDate)
         let endDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.endDate)
         
-        let alert = NSAlert()
-        alert.messageText = "Would you like to add the segment from \(startDateString) to \(endDateString) to task \(targetTask.name)?"
-        
-        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
-        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
-        
-        if(alert.runModal() == NSAlertSecondButtonReturn) {
+        let result = showYesNoDialog(withMessage: "Would you like to add the segment from \(startDateString) to \(endDateString) to task \(targetTask.name)?")
+        if(!result) {
             return false
         }
         
@@ -667,13 +664,8 @@ extension ViewController {
     /// if the user has selected 'Yes'.
     /// Returns whether the user has tapped the YES button to move the task segment.
     func confirmMoveSegment(_ segment: TaskSegment, fromTask sourceTask: Task, toTask targetTask: Task) -> Bool {
-        let alert = NSAlert()
-        alert.messageText = "Would you like to send the segment from task \(sourceTask.name) to task \(targetTask.name)?"
-        
-        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
-        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
-        
-        if(alert.runModal() == NSAlertSecondButtonReturn) {
+        let result = showYesNoDialog(withMessage: "Would you like to send the segment from task \(sourceTask.name) to task \(targetTask.name)?")
+        if(!result) {
             return false
         }
         
@@ -683,6 +675,16 @@ extension ViewController {
         
         return true
     }
+    
+    private func showYesNoDialog(withMessage message: String) -> Bool {
+        let alert = NSAlert()
+        alert.messageText = message
+        
+        alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
+        alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
+        
+        return alert.runModal() == NSAlertFirstButtonReturn
+    }
 }
 
 // MARK: - Task Timeline Delegate
@@ -691,24 +693,32 @@ extension ViewController: TaskTimelineManagerDelegate {
         markChangesPending()
         
         updateTimelineViews()
+        updateTaskViews(updateType: .RuntimeLabel)
+        updateTotalTime()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegment: TaskSegment) {
         markChangesPending()
         
         updateTimelineViews()
+        updateTaskViews(updateType: .RuntimeLabel)
+        updateTotalTime()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegments: [TaskSegment]) {
         markChangesPending()
         
         updateTimelineViews()
+        updateTaskViews(updateType: .RuntimeLabel)
+        updateTotalTime()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegments: [TaskSegment]) {
         markChangesPending()
         
         updateTimelineViews()
+        updateTaskViews(updateType: .RuntimeLabel)
+        updateTotalTime()
     }
     
     func taskTimelineManager(_ manager: TaskTimelineManager, didUpdateSegment: TaskSegment) {
@@ -716,6 +726,7 @@ extension ViewController: TaskTimelineManagerDelegate {
         
         updateTimelineViews()
         updateTaskViews(updateType: .RuntimeLabel)
+        updateTotalTime()
     }
 }
 

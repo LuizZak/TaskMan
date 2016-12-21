@@ -34,16 +34,11 @@ class TaskManStateConverter {
                 json[path].object = json[path].array.map { $0 + [segment] } ?? [segment]
             }
             
-            let id = try segment["id"].tryInt()
-            
+            let id = segment["id"].int
             json["state", "running_segment_id"].int = id
             
             // Remove segment key
-            json["state"].object = json["state"].dictionaryObject.flatMap {
-                var dict = $0
-                dict.removeValue(forKey: "running_segment")
-                return dict
-            } ?? [:]
+            _=json["state"].dictionaryObject?.removeValue(forKey: "running_segment")
         }
         
         return json

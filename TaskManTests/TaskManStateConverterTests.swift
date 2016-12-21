@@ -155,4 +155,54 @@ class TaskManStateConverterTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+    
+    func testVersion1_noRunningSegment() {
+        // Tests conversion from version 1 with no running segment associated
+        let json: JSON = [
+            "version": 1,
+            "state": [
+                "creation_date": "2016-12-14T11:10:59Z",
+                "task_list": [
+                    "task_segments": [ ],
+                    "tasks": [ ]
+                ],
+                "running_segment": NSNull()
+            ]
+        ]
+        
+        let expected: JSON = [
+            "version": 1,
+            "state": [
+                "creation_date": "2016-12-14T11:10:59Z",
+                "task_list": [
+                    "task_segments": [ ],
+                    "tasks": [ ]
+                ],
+                "running_segment_id": NSNull()
+            ]
+        ]
+        
+        let converter = TaskManStateConverter()
+        
+        XCTAssert(converter.canConvertFrom(version: 1))
+        
+        do {
+            let converted = try converter.convert(json: json, fromVersion: 1)
+            
+            // Assert segment was moved correctly
+            XCTAssertEqual(converted["state", "running_segment_id"].int, nil)
+            XCTAssertFalse(converted["state", "running_segment"].exists())
+            
+            guard let array = converted["state", "task_list", "task_segments"].array else {
+                XCTFail("Failed to generate proper running segment array")
+                return
+            }
+            
+            XCTAssertEqual(array.count, 0)
+            XCTAssertEqual(converted, expected)
+            
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
 }

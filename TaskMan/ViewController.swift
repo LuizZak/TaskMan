@@ -367,6 +367,10 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
+    func didTapSplitRunningSegment(_ sender: NSMenuItem) {
+        taskController.splitRunningSegment()
+    }
+    
     func didTapEditSegmentDates(_ sender: NSMenuItem) {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
@@ -810,6 +814,15 @@ extension ViewController: TaskViewDelegate {
         addSegment.representedObject = taskView
         
         listMenuView.addItem(addSegment)
+        
+        // If task is currently running, add option to split running segment and start a fresh one in this instant
+        if(taskController.runningTask?.id == taskView.taskId) {
+            let splitSegment = NSMenuItem(title: "Split Running Segment", action: #selector(ViewController.didTapSplitRunningSegment(_:)), keyEquivalent: "")
+            splitSegment.target = self
+            splitSegment.representedObject = taskView
+            
+            listMenuView.addItem(splitSegment)
+        }
         
         for (i, segment) in segments.enumerated() {
             let formatter = taskView.viewTimeline.dateTimeFormatter

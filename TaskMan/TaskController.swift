@@ -138,6 +138,23 @@ class TaskController {
         return segment
     }
     
+    /// Splits the currently running segment so it stops at the current instant
+    /// and starts a new running segment from the ending point of the last one.
+    /// Effectively 'stops/re-starts' the currently running task so the current
+    /// running segment is stored.
+    /// Does nothing if no task is currently running.
+    /// Returns the the segment that was saved during the split.
+    @discardableResult
+    func splitRunningSegment() -> TaskSegment? {
+        guard let segment = runningSegment else {
+            return nil
+        }
+        
+        self.startTask(taskId: segment.taskId)
+        
+        return segment
+    }
+    
     /// Gets the total runtime for a given task, including any currently running task segments, for a given task id
     func totalTime(forTaskId id: Task.IDType) -> TimeInterval {
         return timeline.totalTime(forTaskId: id)

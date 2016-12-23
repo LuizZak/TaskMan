@@ -50,7 +50,16 @@ class TaskController {
     
     /// Currently running task segment.
     /// Is nil, if no task is running.
-    private(set) var runningSegment: TaskSegment?
+    var runningSegment: TaskSegment? {
+        if let segmentId = runningSegmentId {
+            return timeline.segment(withId: segmentId)
+        }
+        return nil
+    }
+    
+    /// Identifier for the segment currently running.
+    /// Is nil, if no task is running
+    private(set) var runningSegmentId: TaskSegment.IDType?
     
     /// Gets the currently running task, if any.
     var runningTask: Task? {
@@ -61,10 +70,20 @@ class TaskController {
         self.timeline = timeline
     }
     
-    init(tasks: [Task], runningSegment: TaskSegment?, timeline: TaskTimelineManager) {
+    init(tasks: [Task], runningSegmentId: TaskSegment.IDType?, timeline: TaskTimelineManager) {
         self.currentTasks = tasks
         self.timeline = timeline
-        self.runningSegment = runningSegment
+        self.runningSegmentId = runningSegmentId
+    }
+    
+    /// Returns whether the segment with a given ID is currently running
+    func isSegmentRunning(segmentId: Int) -> Bool {
+        return runningSegmentId == segmentId
+    }
+    
+    /// Returns whether the task with a given ID is currently running
+    func isTaskRunning(taskId: Int) -> Bool {
+        return runningTask?.id == taskId
     }
     
     /// Creates a new task, returning the ID of the created task.
@@ -96,9 +115,7 @@ class TaskController {
         
         let range = DateRange(startDate: last?.range.endDate ?? Date(), endDate: Date())
         
-        runningSegment = TaskSegment(id: timeline.getUniqueSegmentId(),
-                                     taskId: task.id,
-                                     range: range)
+        runningSegmentId = timeline.createSegment(forTaskId: task.id, dateRange: range).id
         
         delegate?.taskController(self, didStartTask: task)
     }
@@ -107,30 +124,40 @@ class TaskController {
     /// Returns the task segment saved, or nil, if no task is currently running
     @discardableResult
     func stopCurrentTask() -> TaskSegment? {
-        guard var segment = runningSegment, let task = getTask(withId: segment.taskId) else {
+        guard let segmentId = runningSegmentId, let segment = timeline.segment(withId: segmentId), let task = getTask(withId: segment.taskId) else {
             return nil
         }
         
         // Add an end date and store
-        segment.range.endDate = Date()
+        timeline.setSegmentDates(withId: segmentId, endDate: Date())
         
-        timeline.add(segment: segment)
-        
-        runningSegment = nil
+        runningSegmentId = nil
         
         delegate?.taskController(self, didStopTask: task, newSegment: segment)
         
         return segment
     }
     
-    /// Gets the total runtime for a given task, including any currently running task segments, for a given task id
-    func totalTime(forTaskId id: Task.IDType) -> TimeInterval {
-        var total = timeline.totalTime(forTaskId: id)
-        if let runningSegment = runningSegment, runningSegment.taskId == id {
-            total += runningSegment.range.timeInterval
+    /// Splits the currently running segment so it stops at the current instant
+    /// and starts a new running segment from the ending point of the last one.
+    /// Effectively 'stops/re-starts' the currently running task so the current
+    /// running segment is stored.
+    /// Does nothing if no task is currently running.
+    /// Returns the the segment that was saved during the split.
+    @discardableResult
+    func splitRunningSegment() -> TaskSegment? {
+        guard let segment = runningSegment else {
+            return nil
         }
         
-        return total
+        self.startTask(taskId: segment.taskId)
+        
+        return segment
+    }
+    
+    /// Gets the total runtime for a given task, including any currently running task segments, for a given task id
+    func totalTime(forTaskId id: Task.IDType) -> TimeInterval {
+        return timeline.totalTime(forTaskId: id)
     }
     
     /// Removes a task with a given id from this task controller
@@ -176,13 +203,17 @@ class TaskController {
     /// Updates the end date of the currently running segment.
     /// Does nothing, if there are no tasks currently running
     func updateRunningSegment(withEndDate date: Date = Date()) {
-        runningSegment?.range.endDate = date
+        if let id = runningSegmentId {
+            timeline.setSegmentDates(withId: id, endDate: date)
+        }
     }
     
     /// Updates the start date of the currently running segment.
     /// Does nothing, if there are no tasks currently running
-    func updateRunningSegment(withStartDate date: Date = Date()) {
-        runningSegment?.range.startDate = date
+    func updateRunningSegment(withStartDate date: Date) {
+        if let id = runningSegmentId {
+            timeline.setSegmentDates(withId: id, startDate: date)
+        }
     }
     
     /// Gets a task by ID from this task controller
@@ -211,178 +242,17 @@ class TaskController {
     }
 }
 
-/// Protocol for notification of timeline manager events
-protocol TaskTimelineManagerDelegate: class {
-    /// Called to notify a new task segment was added to a given manager
-    func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegment: TaskSegment)
-    
-    /// Called to notify a series of new task segments where added to a given manager
-    func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegments: [TaskSegment])
-    
-    /// Called to notify a new task segment is goint go be removed from a given manager
-    func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegment: TaskSegment)
-    
-    /// Called to notify a list of segments will be removed from a given manager, following a removal-by-task id
-    func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegments: [TaskSegment])
-    
-    /// Called to notify that a task segment had its date range updated on a given manager
-    func taskTimelineManager(_ manager: TaskTimelineManager, didUpdateSegment: TaskSegment)
-}
-
-extension TaskTimelineManagerDelegate {
-    func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegment: TaskSegment) { }
-    func taskTimelineManager(_ manager: TaskTimelineManager, didAddSegments: [TaskSegment]) { }
-    func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegment: TaskSegment) { }
-    func taskTimelineManager(_ manager: TaskTimelineManager, didRemoveSegments: [TaskSegment]) { }
-    func taskTimelineManager(_ manager: TaskTimelineManager, didUpdateSegment: TaskSegment) { }
-}
-
-/// A class that is used to keep track of time segments that tasks executed
-class TaskTimelineManager {
-    
-    /// Array of task segments stored
-    private(set) var segments: [TaskSegment] = []
-    
-    /// Notifier-delegate for this task timeline manager
-    weak var delegate: TaskTimelineManagerDelegate?
-    
-    init(segments: [TaskSegment] = []) {
-        self.segments = segments
-    }
-    
-    /// Creates a segment for a given task ID, on a given date range on this task timeline manager
-    func createSegment(forTaskId taskId: Task.IDType, dateRange: DateRange) {
-        let segment = TaskSegment(id: getUniqueSegmentId(), taskId: taskId, range: dateRange)
-        add(segment: segment)
-    }
-    
-    /// Adds a given task segment to this timeline manager
-    func add(segment: TaskSegment) {
-        segments.append(segment)
-        
-        delegate?.taskTimelineManager(self, didAddSegment: segment)
-    }
-    
-    /// Adds multiple segments to this timeline manager
-    func addSegments(_ segments: [TaskSegment]) {
-        self.segments.append(contentsOf: segments)
-        
-        delegate?.taskTimelineManager(self, didAddSegments: segments)
-    }
-    
-    /// Sets the start/end dates of the segment with a given ID.
-    /// Does nothing, if no segment with a matching ID is found
-    func setSegmentRange(withId id: TaskSegment.IDType, startDate: Date, endDate: Date) {
-        for (i, segment) in segments.enumerated() {
-            if(segment.id == id) {
-                segments[i].range = DateRange(startDate: startDate, endDate: endDate)
-                self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
-                break
-            }
-        }
-    }
-    
-    /// Changes a segment's task id to be of a specified task ID.
-    /// Does nothing, if the segment is unexisting, or it's task Id is already of the provided taskId
-    func changeTaskForSegment(segmentId id: TaskSegment.IDType, toTaskId taskId: Task.IDType) {
-        for (i, segment) in segments.enumerated() {
-            if(segment.id == id && segments[i].taskId != taskId) {
-                segments[i].taskId = taskId
-                self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
-                break
-            }
-        }
-    }
-    
-    /// Removes a segment with a given ID from this task timeline
-    func removeSegment(withId id: TaskSegment.IDType) {
-        for (i, segment) in segments.enumerated() {
-            if(segment.id == id) {
-                segments.remove(at: i)
-                self.delegate?.taskTimelineManager(self, didRemoveSegment: segment)
-                break
-            }
-        }
-    }
-    
-    /// Removes all segments for a given task ID
-    func removeSegmentsForTaskId(_ taskId: Task.IDType) {
-        // Collect segments to be removed for notification
-        let segsToRemove = segments(forTaskId: taskId)
-        
-        // Filter all that are not associated with the requested task id
-        segments = segments.filter { $0.taskId != taskId }
-        
-        delegate?.taskTimelineManager(self, didRemoveSegments: segsToRemove)
-    }
-    
-    /// Removes all segments from this task timeline
-    func removeAllSegments() {
-        let segs = segments
-        segments.removeAll()
-        
-        delegate?.taskTimelineManager(self, didRemoveSegments: segs)
-    }
-    
-    /// Gets all segments for a given task ID on this task timeline manager
-    func segments(forTaskId taskId: Task.IDType) -> [TaskSegment] {
-        return segments.filter { $0.taskId == taskId }
-    }
-    
-    /// Gets all segments within a given date range
-    func segments(inRange range: DateRange) -> [TaskSegment] {
-        return segments.filter { $0.range.intersects(with: range) }
-    }
-    
-    /// Returns a task segment with a given ID
-    func segment(withId id: TaskSegment.IDType) -> TaskSegment? {
-        return segments.first { $0.id == id }
-    }
-    
-    /// Gets a list of all segments that end before a given date
-    func segments(endingBefore date: Date) -> [TaskSegment] {
-        return segments.filter { $0.range.endDate < date }
-    }
-    
-    /// Gets a list of all segments that start after a given date
-    func segments(startingAfter date: Date) -> [TaskSegment] {
-        return segments.filter { $0.range.startDate > date }
-    }
-    
-    /// Gets the total time interval for a given task ID on this timeline manager
-    func totalTime(forTaskId taskId: Task.IDType) -> TimeInterval {
-        return segments(forTaskId: taskId).reduce(0) { $0 + $1.range.timeInterval }
-    }
-    
-    /// Returns the earliest task segment date on this timeline manager.
-    /// Returns nil, if no task segment is currently registered
-    func earliestDate() -> Date? {
-        return segments.earliestSegmentDate()
-    }
-    
-    /// Returns the latest task segment date on this timeline manager.
-    /// Returns nil, if no task segment is currently registered
-    func latestDate() -> Date? {
-        return segments.latestSegmentDate()
-    }
-    
-    /// Generates a unique task segment ID
-    fileprivate func getUniqueSegmentId() -> TaskSegment.IDType {
-        return time(nil) + (segments.max(by: { $0.id < $1.id })?.id ?? 0) + 1
-    }
-}
-
 extension Collection where Iterator.Element == TaskSegment {
     
     /// Returns the earliest task segment date on this segments collection.
     /// Returns nil, if this collection is empty.
     func earliestSegmentDate() -> Date? {
-        return self.map { $0.range.startDate }.min(by: <)
+        return self.min { $0.range.startDate < $1.range.startDate }?.range.startDate
     }
     
     /// Returns the latest task segment date on this segments collection.
     /// Returns nil, if this collection is empty.
     func latestSegmentDate() -> Date? {
-        return self.map { $0.range.endDate }.max(by: <)
+        return self.max { $0.range.endDate < $1.range.endDate }?.range.endDate
     }
 }

@@ -9,4 +9,4 @@
 import Cocoa
 
 /// Current version of the TaskMan file format
-let FileFormatVersion: Int = 1
+public let FileFormatVersion: Int = 2

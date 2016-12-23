@@ -29,12 +29,19 @@ func rfc3339StringFrom(date: Date) -> String {
     return rfc3339DateTimeFormatter.string(from: date)
 }
 
-func formatTimestamp(_ timestamp: TimeInterval) -> String {
-    let minutes = (timestamp / 60).truncatingRemainder(dividingBy: 60)
-    let seconds = timestamp.truncatingRemainder(dividingBy: 60)
+func formatTimestamp(_ timestamp: TimeInterval, withMode mode: TimestampMode = .hoursMinutesSeconds) -> String {
     let hours = timestamp / 60 / 60
+    let minutes = (timestamp / 60).truncatingRemainder(dividingBy: 60)
     
-    return String(format: "%02d:%02d:%02d", Int(hours), Int(minutes), Int(seconds))
+    switch mode {
+    case .hoursMinutesSeconds:
+        let seconds = timestamp.truncatingRemainder(dividingBy: 60)
+        
+        return String(format: "%02d:%02d:%02d", Int(hours), Int(minutes), Int(seconds))
+        
+    case .hoursMinutes:
+        return String(format: "%02d:%02d", Int(hours), Int(minutes))
+    }
 }
 
 /// Formats a timestamp with hours, minutes and components only if these components are present.
@@ -65,4 +72,10 @@ func formatTimestampCompact(_ timestamp: TimeInterval) -> String {
     }
     
     return output
+}
+
+/// Specifies the mode for a timestamp generation with the formatTimestamp function
+enum TimestampMode {
+    case hoursMinutesSeconds
+    case hoursMinutes
 }

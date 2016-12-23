@@ -37,25 +37,17 @@ extension Sequence where Iterator.Element == JSON {
     /// Unserializes this array of JSON objects into a type provided through the generic T argument.
     /// In case any of the objects being unserialized fails to initialize, a JSONError error is raised
     func jsonUnserializeStrict<T: JsonInitializable>(withType type: T.Type) throws -> [T] {
-        var output: [T] = []
-        
-        for dictionary in self {
-            var unserialized: T!
-            
-            do {
+        do {
+            return try self.map { json in
                 try autoreleasepool {
-                    unserialized = try T(json: dictionary)
+                    try T(json: json)
                 }
-            } catch {
-                print("Error while trying to parse \(T.self) objects: \(error)")
-                
-                throw error
             }
+        } catch {
+            print("Error while trying to parse \(T.self) objects: \(error)")
             
-            output.append(unserialized)
+            throw error
         }
-        
-        return output
     }
     
     /// Unserializes this array of JSON objects into a type provided through the generic T argument.
@@ -67,20 +59,7 @@ extension Sequence where Iterator.Element == JSON {
     /// Unserializes this array of JSON objects into a type provided through the generic T argument.
     /// This version returns an array of all successful initializations, ignoring any failed initializations
     func jsonUnserialize<T: JsonInitializable>(withType type: T.Type) -> [T] {
-        var output: [T] = []
-        
-        for dictionary in self {
-            var unserialized: T?
-            autoreleasepool {
-                unserialized = try? T(json: dictionary)
-            }
-            
-            if let item = unserialized {
-                output.append(item)
-            }
-        }
-        
-        return output
+        return self.flatMap { json in try? autoreleasepool { try T(json: json) } }
     }
 }
 

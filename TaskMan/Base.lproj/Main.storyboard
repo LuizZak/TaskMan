@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -117,6 +117,19 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Tools" id="Wf7-QI-fYJ">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Tools" id="XDv-Kw-oPx">
+                                    <items>
+                                        <menuItem title="Time Calculator" id="YNj-pv-KVu">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="didTapOpenTimeCalculatur:" target="Ady-hI-5gd" id="xV4-Pq-Tea"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                         </items>
                     </menu>
                     <connections>
@@ -220,9 +233,26 @@
                                     <action selector="didTapEditStartEndTime:" target="XfG-lQ-9wD" id="2Xu-xT-Z0F"/>
                                 </connections>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nsJ-3V-3Q5">
+                                <rect key="frame" x="147" y="10" width="68" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Total time:" id="Mrv-vj-Dfh">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PJm-9J-s6g">
+                                <rect key="frame" x="219" y="10" width="61" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="00:00:00" id="MA0-0d-l9y">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="vL5-AN-FFa" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="2mq-CQ-HFD"/>
+                            <constraint firstAttribute="bottom" secondItem="nsJ-3V-3Q5" secondAttribute="bottom" constant="10" id="78v-yf-sYK"/>
                             <constraint firstAttribute="trailing" secondItem="7rN-Bz-EFC" secondAttribute="trailing" constant="17" id="AsQ-AU-zKo"/>
                             <constraint firstItem="7rN-Bz-EFC" firstAttribute="top" secondItem="vL5-AN-FFa" secondAttribute="bottom" constant="8" id="EAL-kq-fHD"/>
                             <constraint firstItem="bFQ-p7-nft" firstAttribute="top" secondItem="7rN-Bz-EFC" secondAttribute="bottom" constant="6" id="Nng-RJ-aSN"/>
@@ -233,11 +263,15 @@
                             <constraint firstAttribute="trailing" secondItem="vL5-AN-FFa" secondAttribute="trailing" constant="17" id="WD0-mY-wYv"/>
                             <constraint firstAttribute="bottom" secondItem="rJB-Gl-dIv" secondAttribute="bottom" constant="8" id="YSK-Xd-YV4"/>
                             <constraint firstItem="7rN-Bz-EFC" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="aly-ys-9K5"/>
+                            <constraint firstItem="PJm-9J-s6g" firstAttribute="leading" secondItem="nsJ-3V-3Q5" secondAttribute="trailing" constant="8" id="bMn-UN-GdE"/>
                             <constraint firstAttribute="bottom" secondItem="y10-8q-d0E" secondAttribute="bottom" constant="8" id="eU2-Ba-9Jm"/>
                             <constraint firstAttribute="trailing" secondItem="bFQ-p7-nft" secondAttribute="trailing" constant="17" id="h90-qb-YjT"/>
+                            <constraint firstItem="PJm-9J-s6g" firstAttribute="baseline" secondItem="nsJ-3V-3Q5" secondAttribute="baseline" id="p6A-Xc-MjZ"/>
+                            <constraint firstItem="nsJ-3V-3Q5" firstAttribute="leading" secondItem="rJB-Gl-dIv" secondAttribute="trailing" constant="16" id="wZH-JX-LMN"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="lblTotalTime" destination="PJm-9J-s6g" id="SJB-Wn-sAQ"/>
                         <outlet property="tasksContainerView" destination="ibX-7y-wue" id="kFF-1D-TnM"/>
                         <outlet property="tasksHeightConstraint" destination="gNt-di-m6E" id="P0b-86-6W1"/>
                         <outlet property="tasksScrollView" destination="vL5-AN-FFa" id="DEF-F3-TPw"/>

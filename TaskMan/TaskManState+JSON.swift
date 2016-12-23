@@ -13,7 +13,7 @@ extension TaskManState: ModelObject {
     
     init(json: JSON) throws {
         try taskList = json[JsonKey.taskList].tryParseModel()
-        runningSegment = try? json[JsonKey.runningSegment].tryParseModel()
+        runningSegmentId = try? json[JsonKey.runningSegmentId].tryInt()
         try timeRange = json[JsonKey.timeRange].tryParseModel()
         try creationDate = json[JsonKey.creationDate].tryParseDate(withFormatter: rfc3339DateTimeFormatter)
     }
@@ -22,7 +22,7 @@ extension TaskManState: ModelObject {
         var dict: [JsonKey: Any] = [:]
         
         dict[.taskList] = taskList.serialize().object
-        dict[.runningSegment] = runningSegment?.serialize().object ?? NSNull()
+        dict[.runningSegmentId] = runningSegmentId ?? NSNull()
         dict[.timeRange] = timeRange.serialize().object
         dict[.creationDate] = rfc3339StringFrom(date: creationDate)
         
@@ -35,7 +35,7 @@ extension TaskManState {
     /// Inner enum containing the JSON key names for the model
     enum JsonKey: String, JSONSubscriptType {
         case taskList = "task_list"
-        case runningSegment = "running_segment"
+        case runningSegmentId = "running_segment_id"
         case timeRange = "timeRange"
         case creationDate = "creation_date"
         

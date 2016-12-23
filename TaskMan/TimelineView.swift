@@ -446,15 +446,21 @@ class TimelineView: NSView {
             
             path.removeAllPoints()
             
-            path.lineWidth = 0
+            path.lineWidth = 1
             
-            // Selected or not
             path.appendRect(frame)
             
             let color = (delegate?.timelineView(self, colorForSegment: segment) ?? NSColor.blue)
             color.setFill()
             
             path.fill()
+            
+            // Stroke
+            path.removeAllPoints()
+            path.appendRect(frame.insetBy(dx: min(frame.width / 2, 0.5), dy: 0))
+            
+            color.shadow(withLevel: 0.3)?.withAlphaComponent(color.alphaComponent).setStroke()
+            path.stroke()
         }
         
         // Draw selected mouse segment
@@ -468,7 +474,7 @@ class TimelineView: NSView {
                 
                 path.lineWidth = 2
                 
-                path.appendRect(frame.insetBy(dx: 1, dy: 2))
+                path.appendRect(frame.insetBy(dx: min(frame.width / 2, 1), dy: min(frame.height / 2, 2)))
                 
                 path.stroke()
             }
@@ -481,7 +487,7 @@ class TimelineView: NSView {
                 
                 NSColor.selectedControlColor.highlight(withLevel: 0.3)?.setStroke()
                 path.lineWidth = 2
-                path.appendRect(frame.insetBy(dx: 1, dy: 2))
+                path.appendRect(frame.insetBy(dx: min(frame.width / 2, 1), dy: min(frame.height / 2, 2)))
                 path.stroke()
             }
         }

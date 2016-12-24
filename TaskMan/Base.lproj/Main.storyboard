@@ -148,10 +148,10 @@
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="466" y="357" width="713" height="270"/>
+                        <rect key="contentRect" x="466" y="357" width="713" height="320"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
-                        <value key="minSize" type="size" width="713" height="270"/>
-                        <value key="maxSize" type="size" width="713" height="700"/>
+                        <value key="minSize" type="size" width="713" height="320"/>
+                        <value key="maxSize" type="size" width="713" height="900"/>
                     </window>
                     <connections>
                         <segue destination="XfG-lQ-9wD" kind="relationship" relationship="window.shadowedContentViewController" id="cq2-FE-JQM"/>
@@ -166,19 +166,19 @@
             <objects>
                 <viewController showSeguePresentationStyle="single" id="XfG-lQ-9wD" customClass="ViewController" customModule="TaskMan" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="713" height="270"/>
+                        <rect key="frame" x="0.0" y="0.0" width="713" height="320"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="7rN-Bz-EFC" customClass="TimelineView" customModule="TaskMan" customModuleProvider="target">
-                                <rect key="frame" x="20" y="35" width="676" height="30"/>
+                                <rect key="frame" x="20" y="35" width="676" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="2hP-2R-JvR"/>
+                                    <constraint firstAttribute="height" constant="40" id="2hP-2R-JvR"/>
                                 </constraints>
                             </customView>
                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="vL5-AN-FFa">
-                                <rect key="frame" x="20" y="73" width="676" height="177"/>
+                                <rect key="frame" x="20" y="83" width="676" height="217"/>
                                 <clipView key="contentView" id="abb-3o-xQR">
-                                    <rect key="frame" x="1" y="1" width="674" height="175"/>
+                                    <rect key="frame" x="1" y="1" width="674" height="215"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view translatesAutoresizingMaskIntoConstraints="NO" id="ibX-7y-wue">
@@ -195,11 +195,11 @@
                                     </constraints>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="eaH-hu-nCy">
-                                    <rect key="frame" x="1" y="160" width="674" height="16"/>
+                                    <rect key="frame" x="1" y="200" width="674" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.80000000000000004" horizontal="NO" id="Z3h-vg-FWj">
-                                    <rect key="frame" x="660" y="1" width="15" height="175"/>
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.93333333333333335" horizontal="NO" id="Z3h-vg-FWj">
+                                    <rect key="frame" x="659" y="1" width="16" height="215"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -475,7 +475,7 @@ Gw
                 </viewController>
                 <customObject id="NEr-Hd-M3K" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-25" y="940"/>
+            <point key="canvasLocation" x="-25" y="975"/>
         </scene>
         <!--Edit Date-->
         <scene sceneID="Eym-nu-eNY">

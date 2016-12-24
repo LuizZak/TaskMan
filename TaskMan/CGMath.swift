@@ -19,4 +19,9 @@ extension NSPoint {
     static func -(lhs: NSPoint, rhs: NSPoint) -> NSPoint {
         return NSPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
     }
+    
+    /// Adds two points
+    static func +(lhs: NSPoint, rhs: NSPoint) -> NSPoint {
+        return NSPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
 }

@@ -144,7 +144,7 @@ class ViewController: NSViewController {
     // MARK: - Tasks View Management
     @discardableResult
     func addView(forTask task: Task) -> TaskView {
-        let view = TaskView(taskId: task.id, frame: NSRect(x: 0, y: 0, width: 650, height: 146))
+        let view = TaskView(taskId: task.id, frame: NSRect(x: 0, y: 0, width: 650, height: 156))
         
         view.viewTimeline.dataSource = self
         view.viewTimeline.delegate = self

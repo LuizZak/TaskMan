@@ -69,7 +69,13 @@ class TimelineView: NSView {
     
     /// Date the mouse is currently pointing at on this timeline view.
     /// Is nil, if the mouse is not within the bounds of this timeline view.
-    fileprivate(set) var mouseDate: Date?
+    fileprivate(set) var mouseDate: Date? {
+        didSet {
+            if(oldValue != mouseDate) {
+                needsDisplay = true
+            }
+        }
+    }
     
     /// A simple user tag to tag the view with.
     /// Used to mostly figure out which specific task this timeline view is displaying.
@@ -95,6 +101,9 @@ class TimelineView: NSView {
     
     /// The date time formatter to use while formatting start/end display dates
     var dateTimeFormatter: DateFormatter = DateFormatter()
+    
+    /// The calendar to use when performing date calculations
+    var calendar: Calendar = Calendar.autoupdatingCurrent
     
     /// Start presentation date for this timeline view
     var startDate: Date {
@@ -225,9 +234,9 @@ class TimelineView: NSView {
         label.drawsBackground = false
         label.font = NSFont.labelFont(ofSize: 9)
         label.backgroundColor = NSColor.clear
-        label.textColor = NSColor.white
+        label.textColor = NSColor.black
         label.shadow = NSShadow()
-        label.shadow?.shadowColor = NSColor.black
+        label.shadow?.shadowColor = NSColor.white
         label.shadow?.shadowBlurRadius = 2
     }
     
@@ -339,10 +348,7 @@ class TimelineView: NSView {
     override func mouseEntered(with event: NSEvent) {
         super.mouseEntered(with: event)
         
-        let windowPoint = event.locationInWindow
-        let point = self.convert(windowPoint, from: nil)
-        
-        mouseDate = dateForOffset(at: point.x)
+        updateMouseDisplay(withEvent: event)
         
         needsDisplay = true
     }
@@ -433,6 +439,13 @@ class TimelineView: NSView {
         let start = startDate
         let end = endDate
         
+        guard let context = NSGraphicsContext.current() else {
+            return
+        }
+        
+        // Draw hour bars
+        renderHourBars(context: context, startDate: start, endDate: end, clipRect: dirtyRect, segmentBounds: boundsForSegs)
+        
         NSColor.clear.setStroke()
         
         for segment in segments {
@@ -468,14 +481,11 @@ class TimelineView: NSView {
             let frame = frameFor(segment: mouseSeg, withStartDate: start, endDate: end, inBounds: boundsForSegs)
             
             if(dirtyRect.intersects(frame)) {
-                NSColor.black.setStroke()
-                
                 path.removeAllPoints()
                 
+                NSColor.black.setStroke()
                 path.lineWidth = 2
-                
-                path.appendRect(frame.insetBy(dx: min(frame.width / 2, 1), dy: min(frame.height / 2, 2)))
-                
+                path.appendRect(frame.insetBy(dx: min(frame.width / 2, 1), dy: min(frame.height / 2, 1)))
                 path.stroke()
             }
         } else if let mouseDate = mouseDate, let range = emptyRangeUnderDate(date: mouseDate), range.timeInterval > 0 {
@@ -487,54 +497,14 @@ class TimelineView: NSView {
                 
                 NSColor.selectedControlColor.highlight(withLevel: 0.3)?.setStroke()
                 path.lineWidth = 2
-                path.appendRect(frame.insetBy(dx: min(frame.width / 2, 1), dy: min(frame.height / 2, 2)))
+                path.appendRect(frame.insetBy(dx: min(frame.width / 2, 1), dy: min(frame.height / 2, 1)))
                 path.stroke()
             }
         }
         
         // Draw current time
         if(drawCurrentTime) {
-            let offset = offsetFor(date: Date())
-            
-            // Time is not within the dirty region to redraw
-            if(!dirtyRect.contains(CGPoint(x: offset, y: dirtyRect.midY))) {
-                return
-            }
-            
-            guard let context = NSGraphicsContext.current()?.cgContext else {
-                return
-            }
-            
-            // Add stripped red line
-            context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
-            
-            let t: CGFloat = CGFloat(CACurrentMediaTime().truncatingRemainder(dividingBy: 8))
-            
-            NSColor.red.setStroke()
-            context.setLineDash(phase: t, lengths: [4, 4])
-            context.strokePath()
-            
-            // Add stripped white line
-            context.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
-            NSColor.white.setStroke()
-            context.setLineDash(phase: 4 + t, lengths: [4, 4])
-            context.strokePath()
-            
-            var ellipseRect = CGRect(x: offset, y: bounds.minY + 1, width: 4, height: 4)
-            ellipseRect = ellipseRect.offsetBy(dx: -ellipseRect.width / 2, dy: -ellipseRect.height / 2)
-            
-            context.setLineDash(phase: 0, lengths: [])
-            NSColor.white.setStroke()
-            
-            // Top ellipse
-            NSColor.red.setFill()
-            context.addEllipse(in: ellipseRect)
-            context.drawPath(using: CGPathDrawingMode.fillStroke)
-            
-            // Bottom ellipse
-            NSColor.red.setFill()
-            context.addEllipse(in: ellipseRect.offsetBy(dx: 0, dy: bounds.height - 2))
-            context.drawPath(using: CGPathDrawingMode.fillStroke)
+            renderTimeIndicator(context: context, onDate: Date(), clipRect: dirtyRect)
         }
     }
     
@@ -543,7 +513,11 @@ class TimelineView: NSView {
         let windowPoint = event.locationInWindow
         let point = self.convert(windowPoint, from: nil)
         
-        mouseDate = dateForOffset(at: point.x)
+        if(boundsForSegments().contains(point)) {
+            mouseDate = dateForOffset(at: point.x)
+        } else {
+            mouseDate = nil
+        }
         
         dragStartPoint = point
         
@@ -611,6 +585,10 @@ class TimelineView: NSView {
         guard let segments = dataSource?.segmentsForTimelineView(self).reversed() else {
             return nil
         }
+        // Ignore, if out of bounds
+        if(!boundsForSegments().contains(point)) {
+            return nil
+        }
         
         let date = dateForOffset(at: point.x)
         
@@ -649,12 +627,126 @@ class TimelineView: NSView {
         
         return DateRange(startDate: start, endDate: end)
     }
+    
+    fileprivate func renderTimeIndicator(context: NSGraphicsContext, onDate date: Date, clipRect: NSRect) {
+        let cgContext = context.cgContext
+        let offset = offsetFor(date: date)
+        
+        // Time is not within the dirty region to redraw
+        if(!clipRect.contains(CGPoint(x: offset, y: clipRect.midY))) {
+            return
+        }
+        
+        // Add stripped red line
+        cgContext.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
+        
+        let t: CGFloat = CGFloat(CACurrentMediaTime().truncatingRemainder(dividingBy: 8))
+        
+        NSColor.red.setStroke()
+        cgContext.setLineDash(phase: t, lengths: [4, 4])
+        cgContext.strokePath()
+        
+        // Add stripped white line
+        cgContext.addLines(between: [NSPoint(x: offset, y: bounds.minY), NSPoint(x: offset, y: bounds.maxY)])
+        NSColor.white.setStroke()
+        cgContext.setLineDash(phase: 4 + t, lengths: [4, 4])
+        cgContext.strokePath()
+        
+        var ellipseRect = CGRect(x: offset, y: bounds.minY + 1, width: 4, height: 4)
+        ellipseRect = ellipseRect.offsetBy(dx: -ellipseRect.width / 2, dy: -ellipseRect.height / 2)
+        
+        cgContext.setLineDash(phase: 0, lengths: [])
+        NSColor.white.setStroke()
+        
+        // Top ellipse
+        NSColor.red.setFill()
+        cgContext.addEllipse(in: ellipseRect)
+        cgContext.drawPath(using: CGPathDrawingMode.fillStroke)
+        
+        // Bottom ellipse
+        NSColor.red.setFill()
+        cgContext.addEllipse(in: ellipseRect.offsetBy(dx: 0, dy: bounds.height - 2))
+        cgContext.drawPath(using: CGPathDrawingMode.fillStroke)
+    }
+    
+    
+    fileprivate func renderHourBars(context: NSGraphicsContext, startDate: Date, endDate: Date, clipRect: NSRect, segmentBounds: NSRect) {
+        if(!clipRect.intersects(segmentBounds)) {
+            return
+        }
+        
+        let totalTime = endDate.timeIntervalSince(startDate)
+        
+        // Avoid drawing too many vertical lines (> 100)
+        if(totalTime > 100 * 3600) {
+            return
+        }
+        
+        // Find how wide an hour is on the timeline view
+        // tw: Total width
+        // ts: Total time (in seconds)
+        // hw: Hour width (equation's X)
+        //
+        //  tw     hw
+        // ---- = ----
+        //  ts    3600
+        
+        // hw.ts = 3600tw
+        
+        //       3600tw
+        // hw =  ------
+        //         ts
+        
+        let hourSecs = 3600
+        let hourWidth = CGFloat(hourSecs) * segmentBounds.width / CGFloat(totalTime)
+        
+        // Obtain rounded-down hour for offset, and start travelling to the right
+        let components = calendar.dateComponents([.calendar, .era, .year, .month, .weekday, .day, .hour], from: startDate)
+        let date = calendar.date(from: components) ?? startDate
+        
+        // Start from the left-most date, and scroll every hour drawing a vertical gray bar
+        var x = segmentBounds.minX - (CGFloat(startDate.timeIntervalSince(date)) / CGFloat(hourSecs)) * hourWidth
+        let y = bounds.height
+        let h = -bounds.height
+        var hoursAdded = 0
+        
+        let path = NSBezierPath()
+        
+        NSColor(white: 0.9, alpha: 1).setStroke()
+        
+        while x < segmentBounds.maxX {
+            x += hourWidth
+            hoursAdded += 1
+            
+            if(clipRect.minX >= x || segmentBounds.minX >= x) {
+                continue
+            }
+            if(clipRect.maxX <= x) {
+                break
+            }
+            
+            // Verify we are not at a 0h, if we are, draw a solid vertical bar instead of a dashed one
+            let curDate = calendar.date(byAdding: .hour, value: hoursAdded, to: date)!
+            if(calendar.component(.hour, from: curDate) == 0) {
+                path.setLineDash([], count: 0, phase: 0)
+            } else {
+                path.setLineDash([5, 4], count: 2, phase: 0)
+            }
+            
+            path.removeAllPoints()
+            path.move(to: NSPoint(x: x, y: y))
+            path.line(to: NSPoint(x: x, y: y + h))
+            path.stroke()
+        }
+    }
 }
 
 // MARK: Sizings
 extension TimelineView {
     func boundsForSegments() -> NSRect {
-        return NSRect(origin: contentOffset, size: NSSize(width: boundWidth(), height: bounds.height))
+        let offY: CGFloat = 14
+        
+        return NSRect(origin: contentOffset + NSPoint(x: 0, y: offY), size: NSSize(width: boundWidth(), height: bounds.height - offY))
     }
     
     func boundWidth() -> CGFloat {

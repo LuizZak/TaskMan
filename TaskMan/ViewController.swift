@@ -371,6 +371,28 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
+    func didTapJoinConnectedSegments(_ sender: NSMenuItem) {
+        guard let taskView = sender.representedObject as? TaskView else {
+            return
+        }
+        
+        delayUiUpdates {
+            // Stop task if it's running
+            var restartDate: Date?
+            if(taskController.runningTask?.id == taskView.taskId) {
+                restartDate = taskController.stopCurrentTask()?.range.startDate
+            }
+            
+            // Update running segments
+            taskController.timeline.joinConnectedSegments(forTaskId: taskView.taskId)
+            
+            // Restart running task
+            if let date = restartDate {
+                taskController.startTask(taskId: taskView.taskId, atDate: date)
+            }
+        }
+    }
+    
     func didTapSplitRunningSegment(_ sender: NSMenuItem) {
         taskController.splitRunningSegment()
     }
@@ -818,6 +840,13 @@ extension ViewController: TaskViewDelegate {
         addSegment.representedObject = taskView
         
         listMenuView.addItem(addSegment)
+        
+        // Add 'Join Connected Segments' button
+        let joinConnected = NSMenuItem(title: "Join Connected Segments", action: #selector(ViewController.didTapJoinConnectedSegments(_:)), keyEquivalent: "")
+        joinConnected.target = self
+        joinConnected.representedObject = taskView
+        
+        listMenuView.addItem(joinConnected)
         
         // If task is currently running, add option to split running segment and start a fresh one in this instant
         if(taskController.runningTask?.id == taskView.taskId) {

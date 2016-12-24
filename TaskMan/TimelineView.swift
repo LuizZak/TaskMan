@@ -612,13 +612,10 @@ class TimelineView: NSView {
             return nil
         }
         
-        let startDate = self.startDate
-        let endDate = self.endDate
-        let bounds = self.boundsForSegments()
+        let date = dateForOffset(at: point.x)
         
         for segment in segments {
-            let frame = frameFor(segment: segment, withStartDate: startDate, endDate: endDate, inBounds: bounds)
-            if(frame.contains(point)) {
+            if(segment.range.contains(date: date)) {
                 return segment
             }
         }

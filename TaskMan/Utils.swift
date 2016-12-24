@@ -150,17 +150,31 @@ extension Sequence where Iterator.Element: Equatable {
 
 extension RangeReplaceableCollection {
     /// Removes an item from the collection, usign the given compute closure to specify which item to remove
-    mutating func remove(where compute: (Self.Iterator.Element) throws -> Bool) rethrows {
+    @discardableResult
+    mutating func removeFirst(where compute: (Self.Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
         if let index = try self.index(where: compute) {
-            self.remove(at: index)
+            return self.remove(at: index)
         }
+        
+        return nil
+    }
+    
+    /// Removes all items from the collection, usign the given compute closure to specify which items to remove.
+    /// The method also returns a list of all items that where removed on the operation
+    @discardableResult
+    mutating func remove(where compute: (Self.Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
+        var removed: [Iterator.Element] = []
+        while let index = try self.index(where: compute) {
+            removed.append(self.remove(at: index))
+        }
+        return removed
     }
 }
 
 extension RangeReplaceableCollection where Iterator.Element: Equatable {
     /// Removes a given element from this collection, using the element's equality check to determine the first match to remove
     mutating func remove(_ object: Self.Iterator.Element) {
-        self.remove { $0 == object }
+        self.removeFirst { $0 == object }
     }
 }
 

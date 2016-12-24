@@ -150,7 +150,7 @@ class ViewController: NSViewController {
         view.viewTimeline.delegate = self
         view.viewTimeline.userTag = task.id
         
-        view.lblRuntime.stringValue = formatTimestamp(taskController.totalTime(forTaskId: task.id))
+        view.lblRuntime.stringValue = formatTimestamp(taskController.timeline.totalTime(forTaskId: task.id))
         
         view.delegate = self
         view.layer?.borderWidth = 2
@@ -239,7 +239,7 @@ class ViewController: NSViewController {
                 view.displayState = taskController.runningTask?.id == view.taskId ? .running : .stopped
             }
             if(updateType.contains(.RuntimeLabel)) {
-                view.lblRuntime.stringValue = formatTimestamp(taskController.totalTime(forTaskId: view.taskId))
+                view.lblRuntime.stringValue = formatTimestamp(taskController.timeline.totalTime(forTaskId: view.taskId))
             }
         }
         
@@ -262,7 +262,7 @@ class ViewController: NSViewController {
     }
     
     func updateTotalTime() {
-        let totalTime = taskController.timeline.segments.reduce(0) { $0 + $1.range.timeInterval }
+        let totalTime = taskController.timeline.totalTime(withOverlap: false)
         lblTotalTime.stringValue = formatTimestamp(totalTime)
     }
     
@@ -352,7 +352,11 @@ class ViewController: NSViewController {
             return
         }
         
-        controller.setDateRange(dateRange: DateRange(startDate: Date(), endDate: Date().addingTimeInterval(60 * 60)))
+        // Round down minute
+        let components = Calendar.autoupdatingCurrent.dateComponents([.calendar, .era, .year, .month, .weekday, .day, .hour, .minute], from: Date())
+        let date = Calendar.autoupdatingCurrent.date(from: components)!
+        
+        controller.setDateRange(dateRange: DateRange(startDate: date, endDate: date.addingTimeInterval(60 * 60)))
         
         controller.didTapOkCallback = { (controller) -> Void in
             let range = DateRange(startDate: controller.startDate, endDate: controller.endDate)
@@ -911,7 +915,7 @@ extension ViewController: TaskViewDelegate {
             return
         }
         
-        let time = taskController.totalTime(forTaskId: taskView.taskId)
+        let time = taskController.timeline.totalTime(forTaskId: taskView.taskId)
         let timestamp = formatTimestamp(time, withMode: mode)
         
         NSPasteboard.general().clearContents()

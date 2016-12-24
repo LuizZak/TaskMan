@@ -105,7 +105,7 @@ class TaskController {
     /// Starts execution of a task with a given ID.
     /// Automatically stops any currently running tasks
     /// No task is started, if taskId is inexistent
-    func startTask(taskId: Task.IDType) {
+    func startTask(taskId: Task.IDType, atDate date: Date? = nil) {
         // Stop any currently running tasks
         let last = stopCurrentTask()
         
@@ -113,7 +113,7 @@ class TaskController {
             return
         }
         
-        let range = DateRange(startDate: last?.range.endDate ?? Date(), endDate: Date())
+        let range = DateRange(startDate: date ?? last?.range.endDate ?? Date(), endDate: Date())
         
         runningSegmentId = timeline.createSegment(forTaskId: task.id, dateRange: range).id
         
@@ -124,7 +124,12 @@ class TaskController {
     /// Returns the task segment saved, or nil, if no task is currently running
     @discardableResult
     func stopCurrentTask() -> TaskSegment? {
-        guard let segmentId = runningSegmentId, let segment = timeline.segment(withId: segmentId), let task = getTask(withId: segment.taskId) else {
+        guard let segmentId = runningSegmentId else {
+            return nil
+        }
+        
+        guard let segment = timeline.segment(withId: segmentId), let task = getTask(withId: segment.taskId) else {
+            runningSegmentId = nil
             return nil
         }
         
@@ -153,11 +158,6 @@ class TaskController {
         self.startTask(taskId: segment.taskId)
         
         return segment
-    }
-    
-    /// Gets the total runtime for a given task, including any currently running task segments, for a given task id
-    func totalTime(forTaskId id: Task.IDType) -> TimeInterval {
-        return timeline.totalTime(forTaskId: id)
     }
     
     /// Removes a task with a given id from this task controller
@@ -242,17 +242,22 @@ class TaskController {
     }
 }
 
-extension Collection where Iterator.Element == TaskSegment {
+extension Sequence where Iterator.Element == TaskSegment {
     
-    /// Returns the earliest task segment date on this segments collection.
+    /// Returns the earliest task segment date on this segments sequence.
     /// Returns nil, if this collection is empty.
     func earliestSegmentDate() -> Date? {
         return self.min { $0.range.startDate < $1.range.startDate }?.range.startDate
     }
     
-    /// Returns the latest task segment date on this segments collection.
+    /// Returns the latest task segment date on this segments sequence.
     /// Returns nil, if this collection is empty.
     func latestSegmentDate() -> Date? {
         return self.max { $0.range.endDate < $1.range.endDate }?.range.endDate
+    }
+    
+    /// Returns a time interval that matches the sum of every date range of every segment on this sequence of segments
+    func intervalSum() -> TimeInterval {
+        return self.reduce(0) { $0 + $1.range.timeInterval }
     }
 }

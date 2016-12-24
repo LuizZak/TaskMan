@@ -18,6 +18,24 @@
 		A00956431DF98F7700F30194 /* TaskSegment+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */; };
 		A00956451DF98F9600F30194 /* TaskManState+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956441DF98F9600F30194 /* TaskManState+JSON.swift */; };
 		A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
+		A018D1311E0F173300FE7AD2 /* TaskTimelineManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A018D1301E0F173300FE7AD2 /* TaskTimelineManagerTests.swift */; };
+		A018D1321E0F174B00FE7AD2 /* TaskTimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */; };
+		A018D1331E0F17EA00FE7AD2 /* TaskSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */; };
+		A018D1341E0F17ED00FE7AD2 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92B91D8C703300F3916D /* Task.swift */; };
+		A018D1351E0F18B300FE7AD2 /* TaskController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92BB1D8C70F000F3916D /* TaskController.swift */; };
+		A018D1371E0F18EC00FE7AD2 /* Task+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956401DF98F5700F30194 /* Task+JSON.swift */; };
+		A018D1381E0F18F300FE7AD2 /* ModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6501DF5C49100F84863 /* ModelObject.swift */; };
+		A018D1391E0F18F500FE7AD2 /* IDModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6511DF5C49100F84863 /* IDModelObject.swift */; };
+		A018D13A1E0F18F800FE7AD2 /* ModelSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */; };
+		A018D13B1E0F18FC00FE7AD2 /* SwiftyJSON+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6571DF5C59000F84863 /* SwiftyJSON+Extensions.swift */; };
+		A018D13C1E0F190000FE7AD2 /* CGMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65F1DF5E98D00F84863 /* CGMath.swift */; };
+		A018D13E1E0F190300FE7AD2 /* DateFormatHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */; };
+		A018D13F1E0F190300FE7AD2 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6591DF5C60400F84863 /* Utils.swift */; };
+		A018D1401E0F190B00FE7AD2 /* TaskSegment+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */; };
+		A018D1411E0F190B00FE7AD2 /* TaskManState+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956441DF98F9600F30194 /* TaskManState+JSON.swift */; };
+		A018D1421E0F190B00FE7AD2 /* DateRange+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */; };
+		A018D1431E0F191700FE7AD2 /* TaskManState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65D1DF5D6FF00F84863 /* TaskManState.swift */; };
+		A018D1441E0F192500FE7AD2 /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93971DF861D60080FF14 /* DateRangeTests.swift */; };
 		A01F939C1DF862440080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
 		A01F939D1DF862450080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
@@ -81,6 +99,7 @@
 		A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskSegment+JSON.swift"; sourceTree = "<group>"; };
 		A00956441DF98F9600F30194 /* TaskManState+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskManState+JSON.swift"; sourceTree = "<group>"; };
 		A00EBEF61DF5B7D1007D740E /* TaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskList.swift; sourceTree = "<group>"; };
+		A018D1301E0F173300FE7AD2 /* TaskTimelineManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTimelineManagerTests.swift; sourceTree = "<group>"; };
 		A01F93971DF861D60080FF14 /* DateRangeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRangeTests.swift; sourceTree = "<group>"; };
 		A01F93991DF862030080FF14 /* DateRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRange.swift; sourceTree = "<group>"; };
 		A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DateRange+JSON.swift"; sourceTree = "<group>"; };
@@ -276,6 +295,7 @@
 			children = (
 				A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */,
 				A01F93971DF861D60080FF14 /* DateRangeTests.swift */,
+				A018D1301E0F173300FE7AD2 /* TaskTimelineManagerTests.swift */,
 				A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */,
 				A0FA92AE1D8C6F7D00F3916D /* Info.plist */,
 			);
@@ -555,12 +575,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A018D1441E0F192500FE7AD2 /* TaskList.swift in Sources */,
+				A018D13B1E0F18FC00FE7AD2 /* SwiftyJSON+Extensions.swift in Sources */,
 				A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */,
+				A018D1321E0F174B00FE7AD2 /* TaskTimelineManager.swift in Sources */,
+				A018D1421E0F190B00FE7AD2 /* DateRange+JSON.swift in Sources */,
+				A018D13A1E0F18F800FE7AD2 /* ModelSerialization.swift in Sources */,
+				A018D1341E0F17ED00FE7AD2 /* Task.swift in Sources */,
 				A055CC581E01A47100A997D8 /* TaskManStateConverter.swift in Sources */,
+				A018D1311E0F173300FE7AD2 /* TaskTimelineManagerTests.swift in Sources */,
+				A018D1431E0F191700FE7AD2 /* TaskManState.swift in Sources */,
 				A0FA92AD1D8C6F7D00F3916D /* TaskManTests.swift in Sources */,
+				A018D13E1E0F190300FE7AD2 /* DateFormatHelper.swift in Sources */,
 				A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */,
+				A018D1351E0F18B300FE7AD2 /* TaskController.swift in Sources */,
+				A018D1381E0F18F300FE7AD2 /* ModelObject.swift in Sources */,
 				A01F939D1DF862450080FF14 /* DateRange.swift in Sources */,
+				A018D1331E0F17EA00FE7AD2 /* TaskSegment.swift in Sources */,
 				A055CC591E01A74200A997D8 /* Constants.swift in Sources */,
+				A018D1371E0F18EC00FE7AD2 /* Task+JSON.swift in Sources */,
+				A018D1401E0F190B00FE7AD2 /* TaskSegment+JSON.swift in Sources */,
+				A018D1391E0F18F500FE7AD2 /* IDModelObject.swift in Sources */,
+				A018D13F1E0F190300FE7AD2 /* Utils.swift in Sources */,
+				A018D1411E0F190B00FE7AD2 /* TaskManState+JSON.swift in Sources */,
+				A018D13C1E0F190000FE7AD2 /* CGMath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

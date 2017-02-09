@@ -26,6 +26,10 @@ class ViewController: NSViewController {
     
     fileprivate var taskViews: [TaskView] = []
     
+    /// The last date that the timer notification fired.
+    /// Used to keep notifications from firing constantly whenever tasks exceed the current time interval
+    fileprivate var lastNotificationDate: Date?
+    
     /// Flag used to stop calls to markUnsavedChanges() from updating the unsaved state of the current document
     ///
     /// This flag affects markUnsavedChanges() to not fire while this flag is `true`.
@@ -137,8 +141,37 @@ class ViewController: NSViewController {
                 taskController.updateRunningSegment(withEndDate: Date())
                 updateTaskViews(updateType: .RuntimeLabel)
                 updateTimelineViews()
+                
+                // Not notified yet
+                if(Date() > dateRange.endDate) {
+                    notifyExceeded()
+                }
             }
         }
+    }
+    
+    /// Creates and displays a notification alerting the user that the current task has exceeded the
+    /// current end/start time intervals for the document
+    func notifyExceeded() {
+        if let last = lastNotificationDate {
+            // Last notification fire time was less than a minute ago - ignore notification
+            if(abs(Date().timeIntervalSince(last)) < 60) {
+                return
+            }
+        }
+        
+        lastNotificationDate = Date()
+        
+        let total = formatTimestamp(dateRange.timeInterval, withMode: .hoursMinutes)
+        let worked = formatTimestamp(taskController.timeline.totalTime(), withMode: .hoursMinutes)
+        
+        let notification = NSUserNotification()
+        
+        notification.title = "TaskMan"
+        notification.subtitle = "Time's up!"
+        notification.informativeText = "Your \(total) is up!\nYou've worked \(worked)! Yay!"
+        
+        NSUserNotificationCenter.default.deliver(notification)
     }
     
     // MARK: - Tasks View Management

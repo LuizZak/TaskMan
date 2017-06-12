@@ -24,6 +24,7 @@
 		A01F93A21DF8632D0080FF14 /* DateRange+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */; };
 		A022571A1D9082630030A28E /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02257191D9082630030A28E /* TimelineView.swift */; };
 		A03D9E1A1EECC3A10043D477 /* TaskList+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */; };
+		A044B2541EEED0E100A2B6DC /* SegmentsGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A044B2531EEED0E100A2B6DC /* SegmentsGraph.swift */; };
 		A04B2AEA1E000FDB007F9B9F /* TaskTimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */; };
 		A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */; };
 		A055CC571E01A45E00A997D8 /* TaskManStateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */; };
@@ -86,6 +87,7 @@
 		A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DateRange+JSON.swift"; sourceTree = "<group>"; };
 		A02257191D9082630030A28E /* TimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskList+JSON.swift"; sourceTree = "<group>"; };
+		A044B2531EEED0E100A2B6DC /* SegmentsGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentsGraph.swift; sourceTree = "<group>"; };
 		A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTimelineManager.swift; sourceTree = "<group>"; };
 		A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManStateConverterTests.swift; sourceTree = "<group>"; };
 		A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManStateConverter.swift; sourceTree = "<group>"; };
@@ -190,6 +192,14 @@
 			name = View;
 			sourceTree = "<group>";
 		};
+		A044B2551EEED0F700A2B6DC /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				A044B2531EEED0E100A2B6DC /* SegmentsGraph.swift */,
+			);
+			path = Math;
+			sourceTree = "<group>";
+		};
 		A0632FFF1DF20032003043A9 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -258,6 +268,7 @@
 		A0FA92991D8C6F7D00F3916D /* TaskMan */ = {
 			isa = PBXGroup;
 			children = (
+				A044B2551EEED0F700A2B6DC /* Math */,
 				A00956351DF8817C00F30194 /* TimeCalc */,
 				A0A6B6561DF5C57800F84863 /* Extensions */,
 				A02257181D9082560030A28E /* View */,
@@ -545,6 +556,7 @@
 				A009563B1DF8818500F30194 /* Lexer.swift in Sources */,
 				A00956431DF98F7700F30194 /* TaskSegment+JSON.swift in Sources */,
 				A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */,
+				A044B2541EEED0E100A2B6DC /* SegmentsGraph.swift in Sources */,
 				A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */,
 				A009563C1DF8818500F30194 /* Parser.swift in Sources */,
 				A03D9E1A1EECC3A10043D477 /* TaskList+JSON.swift in Sources */,

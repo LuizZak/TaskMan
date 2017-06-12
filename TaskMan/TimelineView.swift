@@ -617,29 +617,6 @@ class TimelineView: NSView {
         let date = dateForOffset(at: point.x)
         
         return segmentsNode.segment(on: date, reverseSearch: true)
-        
-        /*
-        // Reverse so search finds the top-most segment always
-        guard let segments = dataSource?.segmentsForTimelineView(self).reversed() else {
-            return nil
-        }
- 
-        
-        // Ignore, if out of bounds
-        if(!boundsForSegments().contains(point)) {
-            return nil
-        }
-        
-        let date = dateForOffset(at: point.x)
-        
-        for segment in segments {
-            if(segment.range.contains(date: date)) {
-                return segment
-            }
-        }
-         */
-        
-        return nil
     }
     
     /// Returns a date range that fills the empty space on top of the given date, if any.
@@ -669,8 +646,8 @@ class TimelineView: NSView {
         var earliest: Date = sDate
         var latest: Date = eDate
         
-        earliest = segmentsNode.closestSegmentEarlierThan(date: date)?.range.endDate ?? sDate
-        latest = segmentsNode.closestSegmentLaterThan(date: date)?.range.startDate ?? eDate
+        earliest = segmentsNode.closestSegmentEndingEarlierThan(date: date)?.range.endDate ?? sDate
+        latest = segmentsNode.closestSegmentStartingLaterThan(date: date)?.range.startDate ?? eDate
         
         return earliest...latest
     }

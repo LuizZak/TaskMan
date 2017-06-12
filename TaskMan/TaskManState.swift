@@ -9,7 +9,7 @@
 import Foundation
 
 /// Basic structure that bundles a TaskMan state
-struct TaskManState {
+struct TaskManState: Codable {
     
     /// The task list associated with this state, containing the tasks and
     /// segments stored

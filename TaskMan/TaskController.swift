@@ -16,15 +16,17 @@ protocol TaskControllerDelegate: class {
     /// Called to notify a task will be removed from a task controller
     func taskController(_ controller: TaskController, didRemoveTask task: Task)
     
-    /// Called to notify a task's inner properties (name, description, etc.) where updated.
-    /// This delegate method is not called when the task's associated segments are updated, only
-    /// the immediate properties of the task.
+    /// Called to notify a task's inner properties (name, description, etc.) where
+    /// updated.
+    /// This delegate method is not called when the task's associated segments are
+    /// updated, only the immediate properties of the task.
     func taskController(_ controller: TaskController, didUpdateTask task: Task)
     
     /// Called to notify a task has started execution
     func taskController(_ controller: TaskController, didStartTask task: Task)
     
-    /// Called to notify a task has stopped executing, also providing the task segment that was created in the process.
+    /// Called to notify a task has stopped executing, also providing the task
+    /// segment that was created in the process.
     func taskController(_ controller: TaskController, didStopTask task: Task, newSegment: TaskSegment)
 }
 
@@ -87,7 +89,8 @@ class TaskController {
     }
     
     /// Creates a new task, returning the ID of the created task.
-    /// A `startRunning` flag specifies whether to initiate the task as soon as it is created
+    /// A `startRunning` flag specifies whether to initiate the task as soon as
+    /// it is created
     func createTask(startRunning: Bool, name: String? = nil, description: String? = nil) -> Task {
         let task = Task(id: getUniqueId(), name: name ?? "", description: description ?? "")
         
@@ -103,8 +106,8 @@ class TaskController {
     }
     
     /// Starts execution of a task with a given ID.
-    /// Automatically stops any currently running tasks
-    /// No task is started, if taskId is inexistent
+    /// Automatically stops any currently running tasks.
+    /// No task is started, if taskId is unexistent.
     func startTask(taskId: Task.IDType, atDate date: Date? = nil) {
         // Stop any currently running tasks
         let last = stopCurrentTask()
@@ -256,7 +259,8 @@ extension Sequence where Iterator.Element == TaskSegment {
         return self.max { $0.range.endDate < $1.range.endDate }?.range.endDate
     }
     
-    /// Returns a time interval that matches the sum of every date range of every segment on this sequence of segments
+    /// Returns a time interval that matches the sum of every date range of every
+    /// segment on this sequence of segments
     func intervalSum() -> TimeInterval {
         return self.reduce(0) { $0 + $1.range.timeInterval }
     }

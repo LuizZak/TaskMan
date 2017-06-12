@@ -27,7 +27,7 @@ class TimeCalcWindowController: NSWindowController {
         //outputTextView.string = inputTextView.string
         txtOutput.string = ""
         
-        let lexer = Lexer(input: txtInput.string!)
+        let lexer = Lexer(input: txtInput.string)
         let parser = Parser(lexer: lexer)
         let typeResolver = TypeResolver()
         

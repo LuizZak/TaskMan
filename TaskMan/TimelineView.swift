@@ -9,11 +9,19 @@
 import Cocoa
 import QuartzCore
 
-let SegmentDragItemType = "taskman.segment"
+let SegmentDragItemType = NSPasteboard.PasteboardType("taskman.segment")
 
 /// Data source for a timeline view, which feeds task segments to the view
 protocol TimelineViewDataSource: class {
     func segmentsForTimelineView(_ timelineView: TimelineView) -> [TaskSegment]
+    
+    func segmentsGraphForTimelineView(_ timelineView: TimelineView) -> TaskSegmentsNodeGraph
+}
+
+extension TimelineViewDataSource {
+    func segmentsGraphForTimelineView(_ timelineView: TimelineView) -> TaskSegmentsNodeGraph {
+        return SegmentsNode(with: segmentsForTimelineView(timelineView))
+    }
 }
 
 protocol TimelineViewDelegate: class {
@@ -107,11 +115,19 @@ class TimelineView: NSView {
     
     /// Start presentation date for this timeline view
     var startDate: Date {
+        /*
         guard let segments = dataSource?.segmentsForTimelineView(self) else {
             return Date()
         }
         
         let minDate = segments.earliestSegmentDate() ?? Date()
+        */
+        
+        guard let segmentsNode = dataSource?.segmentsGraphForTimelineView(self) else {
+            return Date()
+        }
+        
+        let minDate = segmentsNode.range.startDate
         
         if let minimumStartDate = self.delegate?.minimumStartDateForTimelineView(self) {
             return min(minimumStartDate, minDate)
@@ -121,11 +137,19 @@ class TimelineView: NSView {
     
     /// End presentation date for this timeline view
     var endDate: Date {
+        /*
         guard let segments = dataSource?.segmentsForTimelineView(self) else {
             return Date()
         }
         
         let latest = segments.latestSegmentDate() ?? Date()
+         */
+        
+        guard let segmentsNode = dataSource?.segmentsGraphForTimelineView(self) else {
+            return Date()
+        }
+        
+        let latest = segmentsNode.range.endDate
         
         if let minimumEndDate = self.delegate?.minimumEndDateForTimelineView(self) {
             return max(latest, minimumEndDate)
@@ -203,7 +227,7 @@ class TimelineView: NSView {
         dateTimeFormatter.dateFormat = "HH:mm"
         
         // Add tracking
-        let options: NSTrackingAreaOptions = [.activeAlways, .inVisibleRect, .mouseEnteredAndExited, .mouseMoved]
+        let options: NSTrackingArea.Options = [.activeAlways, .inVisibleRect, .mouseEnteredAndExited, .mouseMoved]
         let area = NSTrackingArea(rect: bounds, options:options, owner: self, userInfo: nil)
         
         self.addTrackingArea(area)
@@ -285,12 +309,12 @@ class TimelineView: NSView {
             dragging = true
             
             let paste = NSPasteboardItem()
-            paste.setDataProvider(self, forTypes: [SegmentDragItemType, NSPasteboardTypeString])
+            paste.setDataProvider(self, forTypes: [SegmentDragItemType, .string])
             
             let item = NSDraggingItem(pasteboardWriter: paste)
             item.draggingFrame = frameFor(segment: mouseSegment)
             
-            let image = NSDraggingImageComponent(key: "")
+            let image = NSDraggingImageComponent(key: NSDraggingItem.ImageComponentKey(rawValue: ""))
             image.contents = self.imageForSegment(segment: mouseSegment)
             image.frame = NSRect(origin: NSPoint.zero, size: item.draggingFrame.size)
             
@@ -374,11 +398,11 @@ class TimelineView: NSView {
         
         // Change offset depending on location of touch before/after magnification
         switch(event.phase) {
-        case NSEventPhase.began:
+        case NSEvent.Phase.began:
             let absoluteX = point.x - segmentBounds.minX
             
             zoomStartLocation = absoluteX / segmentBounds.width
-        case NSEventPhase.changed:
+        case NSEvent.Phase.changed:
             zoomLevel += event.magnification
             
             let afterBounds = boundsForSegments()
@@ -408,7 +432,7 @@ class TimelineView: NSView {
         updateMouseDisplay(withEvent: event)
     }
     
-    override func view(_ view: NSView, stringForToolTip tag: NSToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
+    override func view(_ view: NSView, stringForToolTip tag: NSView.ToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
         if let mouseSegment = mouseSegment, let label = self.delegate?.timelineView(self, labelForSegment: mouseSegment) {
             return label
         }
@@ -439,7 +463,7 @@ class TimelineView: NSView {
         let start = startDate
         let end = endDate
         
-        guard let context = NSGraphicsContext.current() else {
+        guard let context = NSGraphicsContext.current else {
             return
         }
         
@@ -581,10 +605,26 @@ class TimelineView: NSView {
     
     // MARK: - Positioning
     func segmentUnder(point: NSPoint) -> TaskSegment? {
+        guard let segmentsNode = dataSource?.segmentsGraphForTimelineView(self) else {
+            return nil
+        }
+        
+        // Ignore, if out of bounds
+        if(!boundsForSegments().contains(point)) {
+            return nil
+        }
+        
+        let date = dateForOffset(at: point.x)
+        
+        return segmentsNode.segment(on: date, reverseSearch: true)
+        
+        /*
         // Reverse so search finds the top-most segment always
         guard let segments = dataSource?.segmentsForTimelineView(self).reversed() else {
             return nil
         }
+ 
+        
         // Ignore, if out of bounds
         if(!boundsForSegments().contains(point)) {
             return nil
@@ -597,6 +637,7 @@ class TimelineView: NSView {
                 return segment
             }
         }
+         */
         
         return nil
     }
@@ -618,14 +659,20 @@ class TimelineView: NSView {
             return nil
         }
         
-        if(segments.any { $0.range.contains(date: date) }) {
+        let segmentsNode = SegmentsNode(with: segments, range: startDate...endDate)
+        
+        // Is on top of a segment
+        if(segmentsNode.segment(on: date) != nil) {
             return nil
         }
         
-        let start = segments.filter { $0.range.endDate < date }.latestSegmentDate() ?? sDate
-        let end = segments.filter { $0.range.startDate > date }.earliestSegmentDate() ?? eDate
+        var earliest: Date = sDate
+        var latest: Date = eDate
         
-        return DateRange(startDate: start, endDate: end)
+        earliest = segmentsNode.closestSegmentEarlierThan(date: date)?.range.endDate ?? sDate
+        latest = segmentsNode.closestSegmentLaterThan(date: date)?.range.startDate ?? eDate
+        
+        return earliest...latest
     }
     
     fileprivate func renderTimeIndicator(context: NSGraphicsContext, onDate date: Date, clipRect: NSRect) {
@@ -797,10 +844,10 @@ extension TimelineView {
 }
 
 extension TimelineView : NSPasteboardItemDataProvider {
-    func pasteboard(_ pasteboard: NSPasteboard?, item: NSPasteboardItem, provideDataForType type: String) {
-        if(type == SegmentDragItemType || type == NSPasteboardTypeString) {
+    func pasteboard(_ pasteboard: NSPasteboard?, item: NSPasteboardItem, provideDataForType type: NSPasteboard.PasteboardType) {
+        if(type == SegmentDragItemType || type == NSPasteboard.PasteboardType.string) {
             if let mouseSegment = mouseSegment {
-                item.setString(mouseSegment.serialize().rawString(), forType: type)
+                item.setString(mouseSegment.serialize().rawString()!, forType: type)
             }
         }
     }

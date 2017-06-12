@@ -8,7 +8,8 @@
 
 import Foundation
 
-struct DateRange {
+/// Represents a period of time with a fixed start and end.
+struct DateRange: Codable {
     
     /// Start date of range
     var startDate: Date

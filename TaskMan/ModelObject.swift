@@ -78,7 +78,7 @@ extension Dictionary where Key: RawRepresentable, Value: Any, Key.RawValue == St
     func mapToJSON() -> JSON {
         var dict: [String: Any] = [:]
         
-        self.forEach { dict[$0.rawValue] = $1 }
+        self.forEach { dict[$0.0.rawValue] = $0.1 }
         
         return JSON(dict)
     }

@@ -8,6 +8,7 @@
 
 import XCTest
 import SwiftyJSON
+@testable import TaskMan
 
 class TaskManStateConverterTests: XCTestCase {
 

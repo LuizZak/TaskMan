@@ -86,7 +86,7 @@ indirect enum TypedASTreeNode {
     
     /// Returns the entire complex string resulting from collapsing this expression, on top of a given source string.
     func sourceString(onString string: String) -> String {
-        return string[sourceRange()]
+        return String(string[sourceRange()])
     }
 }
 

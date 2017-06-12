@@ -8,7 +8,7 @@
 
 /// Describes a collection of tasks.
 /// Used mostly to store tasks and associated segments to a persistency interface.
-struct TaskList {
+struct TaskList: Codable {
     
     /// List of tasks
     var tasks: [Task] = []

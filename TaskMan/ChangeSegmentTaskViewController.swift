@@ -70,7 +70,7 @@ extension ChangeSegmentTaskViewController: NSTableViewDataSource {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        guard let cell = tableView.make(withIdentifier: "textCell", owner: self) as? NSTableCellView else {
+        guard let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "textCell"), owner: self) as? NSTableCellView else {
             return nil
         }
         

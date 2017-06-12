@@ -72,10 +72,10 @@ class TaskView: NSView {
             let image: NSImage?
             switch(displayState) {
             case .stopped:
-                image = NSImage(named: "NSRightFacingTriangleTemplate")
+                image = NSImage(named: NSImage.Name(rawValue: "NSRightFacingTriangleTemplate"))
                 layer?.borderColor = NSColor.clear.cgColor
             case .running:
-                image = NSImage(named: "NSMenuOnStateTemplate")
+                image = NSImage(named: NSImage.Name(rawValue: "NSMenuOnStateTemplate"))
                 layer?.borderColor = NSColor.green.withAlphaComponent(0.3).cgColor
             }
             
@@ -100,11 +100,11 @@ class TaskView: NSView {
         self.layer?.borderWidth = 2
         self.layer?.masksToBounds = false
         
-        Bundle.main.loadNibNamed("TaskView", owner: self, topLevelObjects: nil)
+        Bundle.main.loadNibNamed(NSNib.Name(rawValue: "TaskView"), owner: self, topLevelObjects: nil)
         
         self.addSubview(view)
         
-        self.register(forDraggedTypes: [SegmentDragItemType, NSPasteboardTypeString])
+        self.registerForDraggedTypes([SegmentDragItemType, NSPasteboard.PasteboardType.string])
         
         let clickGesture = NSClickGestureRecognizer(target: self, action: #selector(TaskView.didClickRuntimeLabel(_:)))
         clickGesture.buttonMask = 0x2
@@ -128,7 +128,7 @@ class TaskView: NSView {
     @IBAction func didTapSegmentListButton(_ sender: NSButton) {
         delegate?.didTapSegmentListButton(onTaskView: self)
     }
-    func didClickRuntimeLabel(_ gesture: NSClickGestureRecognizer) {
+    @objc func didClickRuntimeLabel(_ gesture: NSClickGestureRecognizer) {
         delegate?.didRightClickRuntimeLabel(onTaskView: self, withGesture: gesture)
     }
     
@@ -178,7 +178,7 @@ class TaskView: NSView {
 extension TaskView: NSTextViewDelegate {
     
     func textDidChange(_ notification: Notification) {
-        self.delegate?.taskView(self, didUpdateDescription: txtDescription.string ?? "")
+        self.delegate?.taskView(self, didUpdateDescription: txtDescription.string)
     }
 }
 
@@ -190,7 +190,7 @@ extension TaskView {
     /// verification, and the associated drag and drop state.
     fileprivate func verifyDrag(_ sender: NSDraggingInfo) -> (DragAndDropState, NSDragOperation) {
         let pasteBoard = sender.draggingPasteboard()
-        if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType, NSPasteboardTypeString])) {
+        if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType.rawValue, NSPasteboard.PasteboardType.string.rawValue])) {
             return (.none, NSDragOperation())
         }
         
@@ -200,7 +200,7 @@ extension TaskView {
         }
         
         // Read the segment from the pasteboard
-        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: NSPasteboardTypeString) else {
+        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: NSPasteboard.PasteboardType.string) else {
             return (.none, NSDragOperation())
         }
         
@@ -245,10 +245,10 @@ extension TaskView {
         }
         
         let pasteBoard = sender.draggingPasteboard()
-        if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType, NSPasteboardTypeString])) {
+        if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType.rawValue, NSPasteboard.PasteboardType.string.rawValue])) {
             return false
         }
-        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: NSPasteboardTypeString), let segment = try? TaskSegment(json: JSON.parse(string)) else {
+        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: .string), let segment = try? TaskSegment(json: JSON.parse(string)) else {
             return false
         }
         

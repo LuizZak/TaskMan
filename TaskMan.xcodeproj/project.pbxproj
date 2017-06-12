@@ -19,35 +19,16 @@
 		A00956451DF98F9600F30194 /* TaskManState+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956441DF98F9600F30194 /* TaskManState+JSON.swift */; };
 		A00EBEF71DF5B7D1007D740E /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A018D1311E0F173300FE7AD2 /* TaskTimelineManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A018D1301E0F173300FE7AD2 /* TaskTimelineManagerTests.swift */; };
-		A018D1321E0F174B00FE7AD2 /* TaskTimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */; };
-		A018D1331E0F17EA00FE7AD2 /* TaskSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */; };
-		A018D1341E0F17ED00FE7AD2 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92B91D8C703300F3916D /* Task.swift */; };
-		A018D1351E0F18B300FE7AD2 /* TaskController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92BB1D8C70F000F3916D /* TaskController.swift */; };
-		A018D1371E0F18EC00FE7AD2 /* Task+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956401DF98F5700F30194 /* Task+JSON.swift */; };
-		A018D1381E0F18F300FE7AD2 /* ModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6501DF5C49100F84863 /* ModelObject.swift */; };
-		A018D1391E0F18F500FE7AD2 /* IDModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6511DF5C49100F84863 /* IDModelObject.swift */; };
-		A018D13A1E0F18F800FE7AD2 /* ModelSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */; };
-		A018D13B1E0F18FC00FE7AD2 /* SwiftyJSON+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6571DF5C59000F84863 /* SwiftyJSON+Extensions.swift */; };
-		A018D13C1E0F190000FE7AD2 /* CGMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65F1DF5E98D00F84863 /* CGMath.swift */; };
-		A018D13E1E0F190300FE7AD2 /* DateFormatHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65B1DF5CB1800F84863 /* DateFormatHelper.swift */; };
-		A018D13F1E0F190300FE7AD2 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6591DF5C60400F84863 /* Utils.swift */; };
-		A018D1401E0F190B00FE7AD2 /* TaskSegment+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */; };
-		A018D1411E0F190B00FE7AD2 /* TaskManState+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00956441DF98F9600F30194 /* TaskManState+JSON.swift */; };
-		A018D1421E0F190B00FE7AD2 /* DateRange+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */; };
-		A018D1431E0F191700FE7AD2 /* TaskManState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B65D1DF5D6FF00F84863 /* TaskManState.swift */; };
-		A018D1441E0F192500FE7AD2 /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EBEF61DF5B7D1007D740E /* TaskList.swift */; };
 		A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93971DF861D60080FF14 /* DateRangeTests.swift */; };
 		A01F939C1DF862440080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
-		A01F939D1DF862450080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
 		A01F93A21DF8632D0080FF14 /* DateRange+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */; };
 		A022571A1D9082630030A28E /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02257191D9082630030A28E /* TimelineView.swift */; };
 		A03D9E1A1EECC3A10043D477 /* TaskList+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */; };
 		A04B2AEA1E000FDB007F9B9F /* TaskTimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */; };
 		A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */; };
 		A055CC571E01A45E00A997D8 /* TaskManStateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */; };
-		A055CC581E01A47100A997D8 /* TaskManStateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */; };
-		A055CC591E01A74200A997D8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F7B1071DF73D7400B99E1E /* Constants.swift */; };
 		A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */; };
+		A08280AC1EECC50C00562FE9 /* TaskManTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */; };
 		A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6501DF5C49100F84863 /* ModelObject.swift */; };
 		A0A6B6541DF5C49100F84863 /* IDModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6511DF5C49100F84863 /* IDModelObject.swift */; };
 		A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */; };
@@ -70,7 +51,6 @@
 		A0FA929D1D8C6F7D00F3916D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA929C1D8C6F7D00F3916D /* ViewController.swift */; };
 		A0FA929F1D8C6F7D00F3916D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0FA929E1D8C6F7D00F3916D /* Assets.xcassets */; };
 		A0FA92A21D8C6F7D00F3916D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0FA92A01D8C6F7D00F3916D /* Main.storyboard */; };
-		A0FA92AD1D8C6F7D00F3916D /* TaskManTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */; };
 		A0FA92BA1D8C703300F3916D /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92B91D8C703300F3916D /* Task.swift */; };
 		A0FA92BC1D8C70F000F3916D /* TaskController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92BB1D8C70F000F3916D /* TaskController.swift */; };
 		A0FA92BE1D8C73EF00F3916D /* TaskSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92BD1D8C73EF00F3916D /* TaskSegment.swift */; };
@@ -382,16 +362,17 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Luiz Fernando Silva";
 				TargetAttributes = {
 					A0FA92961D8C6F7C00F3916D = {
 						CreatedOnToolsVersion = 8.0;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 					A0FA92A71D8C6F7D00F3916D = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						TestTargetID = A0FA92961D8C6F7C00F3916D;
 					};
@@ -579,30 +560,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A018D1441E0F192500FE7AD2 /* TaskList.swift in Sources */,
-				A018D13B1E0F18FC00FE7AD2 /* SwiftyJSON+Extensions.swift in Sources */,
 				A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */,
-				A018D1321E0F174B00FE7AD2 /* TaskTimelineManager.swift in Sources */,
-				A018D1421E0F190B00FE7AD2 /* DateRange+JSON.swift in Sources */,
-				A018D13A1E0F18F800FE7AD2 /* ModelSerialization.swift in Sources */,
-				A018D1341E0F17ED00FE7AD2 /* Task.swift in Sources */,
-				A055CC581E01A47100A997D8 /* TaskManStateConverter.swift in Sources */,
 				A018D1311E0F173300FE7AD2 /* TaskTimelineManagerTests.swift in Sources */,
-				A018D1431E0F191700FE7AD2 /* TaskManState.swift in Sources */,
-				A0FA92AD1D8C6F7D00F3916D /* TaskManTests.swift in Sources */,
-				A018D13E1E0F190300FE7AD2 /* DateFormatHelper.swift in Sources */,
 				A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */,
-				A018D1351E0F18B300FE7AD2 /* TaskController.swift in Sources */,
-				A018D1381E0F18F300FE7AD2 /* ModelObject.swift in Sources */,
-				A01F939D1DF862450080FF14 /* DateRange.swift in Sources */,
-				A018D1331E0F17EA00FE7AD2 /* TaskSegment.swift in Sources */,
-				A055CC591E01A74200A997D8 /* Constants.swift in Sources */,
-				A018D1371E0F18EC00FE7AD2 /* Task+JSON.swift in Sources */,
-				A018D1401E0F190B00FE7AD2 /* TaskSegment+JSON.swift in Sources */,
-				A018D1391E0F18F500FE7AD2 /* IDModelObject.swift in Sources */,
-				A018D13F1E0F190300FE7AD2 /* Utils.swift in Sources */,
-				A018D1411E0F190B00FE7AD2 /* TaskManState+JSON.swift in Sources */,
-				A018D13C1E0F190000FE7AD2 /* CGMath.swift in Sources */,
+				A08280AC1EECC50C00562FE9 /* TaskManTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -637,7 +598,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -645,7 +608,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -687,7 +654,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -695,7 +664,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -730,12 +703,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = TaskMan/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_SWIFT_FLAGS = "$(inherited) -Onone \"-D\" \"COCOAPODS\"";
+				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" -Onone";
 				PRODUCT_BUNDLE_IDENTIFIER = luizFernandoSilva.TaskMan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -752,7 +726,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = luizFernandoSilva.TaskMan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -767,7 +742,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = luizFernandoSilva.TaskManTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TaskMan.app/Contents/MacOS/TaskMan";
 			};
 			name = Debug;
@@ -783,7 +759,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = luizFernandoSilva.TaskManTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TaskMan.app/Contents/MacOS/TaskMan";
 			};
 			name = Release;

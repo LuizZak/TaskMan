@@ -18,7 +18,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var tasksHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var lblTotalTime: NSTextField!
     
-    fileprivate var dateRange: DateRange = DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60))
+    fileprivate var dateRange: DateRange = Date()...Date().addingTimeInterval(8 * 60 * 60)
     
     fileprivate var secondUpdateTimer: Timer!
     
@@ -29,6 +29,7 @@ class ViewController: NSViewController {
     /// The last date that the timer notification fired.
     /// Used to keep notifications from firing constantly whenever tasks exceed the current time interval
     fileprivate var lastNotificationDate: Date?
+    private var didNotifyCompletion: Bool = false
     
     /// Flag used to stop calls to markUnsavedChanges() from updating the unsaved state of the current document
     ///
@@ -52,7 +53,7 @@ class ViewController: NSViewController {
             var tasks: [Task] = []
             var segments: [TaskSegment] = []
             var runningId: TaskSegment.IDType?
-            var dateRange: DateRange = DateRange(startDate: Date(), endDate: Date().addingTimeInterval(8 * 60 * 60))
+            var dateRange: DateRange = Date()...Date().addingTimeInterval(8 * 60 * 60)
             
             if let document = representedObject as? TaskManDocument {
                 tasks = document.taskManState.taskList.tasks
@@ -134,7 +135,7 @@ class ViewController: NSViewController {
         }
     }
     
-    func timerDidFire() {
+    @objc func timerDidFire() {
         // Update running segment and views
         if(taskController.runningSegment != nil) {
             lockFileChangedFlag {
@@ -153,6 +154,9 @@ class ViewController: NSViewController {
     /// Creates and displays a notification alerting the user that the current task has exceeded the
     /// current end/start time intervals for the document
     func notifyExceeded() {
+        if didNotifyCompletion {
+            return
+        }
         if let last = lastNotificationDate {
             // Last notification fire time was less than a minute ago - ignore notification
             if(abs(Date().timeIntervalSince(last)) < 60) {
@@ -172,6 +176,8 @@ class ViewController: NSViewController {
         notification.informativeText = "Your \(total) is up!\nYou've worked \(worked)! Yay!"
         
         NSUserNotificationCenter.default.deliver(notification)
+        
+        didNotifyCompletion = true
     }
     
     // MARK: - Tasks View Management
@@ -331,7 +337,7 @@ class ViewController: NSViewController {
             return
         }
         
-        let controller = TimeCalcWindowController(windowNibName: "TimeCalcWindowController")
+        let controller = TimeCalcWindowController(windowNibName: NSNib.Name(rawValue: "TimeCalcWindowController"))
         controller.showWindow(self)
         
         controller.window?.makeKey()
@@ -348,7 +354,7 @@ class ViewController: NSViewController {
     }
     
     @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
-        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDateRange")) as? EditDateRangeViewController else {
             return
         }
         
@@ -368,7 +374,7 @@ class ViewController: NSViewController {
     }
     
     // MARK: Segment menu buttons
-    func didTapRemoveSegment(_ sender: NSMenuItem) {
+    @objc func didTapRemoveSegment(_ sender: NSMenuItem) {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
         }
@@ -377,11 +383,11 @@ class ViewController: NSViewController {
     }
     
     // MARK: Segment List menu buttons
-    func didTapAddSegmentOnTaskView(_ sender: NSMenuItem) {
+    @objc func didTapAddSegmentOnTaskView(_ sender: NSMenuItem) {
         guard let taskView = sender.representedObject as? TaskView else {
             return
         }
-        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDateRange")) as? EditDateRangeViewController else {
             return
         }
         
@@ -389,10 +395,10 @@ class ViewController: NSViewController {
         let components = Calendar.autoupdatingCurrent.dateComponents([.calendar, .era, .year, .month, .weekday, .day, .hour, .minute], from: Date())
         let date = Calendar.autoupdatingCurrent.date(from: components)!
         
-        controller.setDateRange(dateRange: DateRange(startDate: date, endDate: date.addingTimeInterval(60 * 60)))
+        controller.setDateRange(dateRange: date ... date.addingTimeInterval(60 * 60))
         
         controller.didTapOkCallback = { (controller) -> Void in
-            let range = DateRange(startDate: controller.startDate, endDate: controller.endDate)
+            let range = controller.startDate...controller.endDate
             self.taskController.timeline.createSegment(forTaskId: taskView.taskId, dateRange: range)
             
             self.updateTimelineViews()
@@ -404,7 +410,7 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
-    func didTapJoinConnectedSegments(_ sender: NSMenuItem) {
+    @objc func didTapJoinConnectedSegments(_ sender: NSMenuItem) {
         guard let taskView = sender.representedObject as? TaskView else {
             return
         }
@@ -426,15 +432,15 @@ class ViewController: NSViewController {
         }
     }
     
-    func didTapSplitRunningSegment(_ sender: NSMenuItem) {
+    @objc func didTapSplitRunningSegment(_ sender: NSMenuItem) {
         taskController.splitRunningSegment()
     }
     
-    func didTapEditSegmentDates(_ sender: NSMenuItem) {
+    @objc func didTapEditSegmentDates(_ sender: NSMenuItem) {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
         }
-        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDateRange")) as? EditDateRangeViewController else {
             return
         }
         
@@ -449,14 +455,12 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
-    func didTapChangeSegmentTask(_ sender: NSMenuItem) {
+    @objc func didTapChangeSegmentTask(_ sender: NSMenuItem) {
         
         guard let segment = sender.representedObject as? TaskSegment, let sourceTask = taskController.getTask(withId: segment.taskId) else {
             return
         }
-        guard let controller = ChangeSegmentTaskViewController(nibName: "ChangeSegmentTaskViewController", bundle: nil) else {
-            return
-        }
+        let controller = ChangeSegmentTaskViewController(nibName: NSNib.Name(rawValue: "ChangeSegmentTaskViewController"), bundle: nil)
         
         controller.taskController = taskController
         controller.segment = segment
@@ -480,11 +484,11 @@ class ViewController: NSViewController {
         self.presentViewControllerAsModalWindow(controller)
     }
     
-    func didTapEditRunnignSegmentStartDate(_ sender: NSMenuItem) {
+    @objc func didTapEditRunnignSegmentStartDate(_ sender: NSMenuItem) {
         guard let segment = taskController.runningSegment else {
             return
         }
-        guard let controller = storyboard?.instantiateController(withIdentifier: "editDate") as? EditDateViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDate")) as? EditDateViewController else {
             return
         }
         
@@ -512,7 +516,7 @@ class ViewController: NSViewController {
         presentViewControllerAsModalWindow(controller)
     }
     
-    func didTapFillTaskWithSegment(_ sender: NSMenuItem) {
+    @objc func didTapFillTaskWithSegment(_ sender: NSMenuItem) {
         guard let (task, date) = sender.representedObject as? (Task, Date) else {
             return
         }
@@ -522,7 +526,7 @@ class ViewController: NSViewController {
         taskController.timeline.createSegment(forTaskId: task.id, dateRange: range)
     }
     
-    func didTapFillWithTask(_ sender: NSMenuItem) {
+    @objc func didTapFillWithTask(_ sender: NSMenuItem) {
         guard let date = sender.representedObject as? Date else {
             return
         }
@@ -547,7 +551,7 @@ class ViewController: NSViewController {
         let start = tempManager.segments(endingBefore: date).latestSegmentDate() ?? dateRange.startDate
         let end = tempManager.segments(startingAfter: date).earliestSegmentDate() ?? dateRange.endDate
         
-        return DateRange(startDate: start, endDate: end)
+        return start...end
     }
     
     // MARK: - Selection Menu Creation
@@ -558,18 +562,18 @@ class ViewController: NSViewController {
         if(!isRunning) {
             // Delete
             let delete = NSMenuItem(title: "Delete Segment", action:#selector(ViewController.didTapRemoveSegment(_:)), keyEquivalent: "")
-            delete.image = NSImage(named: "NSStopProgressFreestandingTemplate")
+            delete.image = NSImage(named: NSImage.Name(rawValue: "NSStopProgressFreestandingTemplate"))
             delete.representedObject = segment
             
             // Edit dates
             let editDate = NSMenuItem(title: "Edit start/end", action: #selector(ViewController.didTapEditSegmentDates(_:)), keyEquivalent: "")
-            editDate.image = NSImage(named: "NSActionTemplate")
+            editDate.image = NSImage(named: NSImage.Name(rawValue: "NSActionTemplate"))
             editDate.representedObject = segment
             editDate.target = self
             
             // Change task
             let changeTask = NSMenuItem(title: "Change segment's task", action: #selector(ViewController.didTapChangeSegmentTask(_:)), keyEquivalent: "")
-            changeTask.image = NSImage(named: "NSShareTemplate")
+            changeTask.image = NSImage(named: NSImage.Name(rawValue: "NSShareTemplate"))
             changeTask.representedObject = segment
             changeTask.target = self
             
@@ -582,7 +586,7 @@ class ViewController: NSViewController {
         } else {
             // Add editing start date for running segment
             let editDate = NSMenuItem(title: "Edit start", action: #selector(ViewController.didTapEditRunnignSegmentStartDate(_:)), keyEquivalent: "")
-            editDate.image = NSImage(named: "NSActionTemplate")
+            editDate.image = NSImage(named: NSImage.Name(rawValue: "NSActionTemplate"))
             editDate.target = self
             
             let sub = NSMenu()
@@ -746,7 +750,7 @@ extension ViewController {
         alert.addButton(withTitle: "Yes").keyEquivalent = "\r" // Enter
         alert.addButton(withTitle: "No").keyEquivalent = "\u{1b}" // Esc
         
-        return alert.runModal() == NSAlertFirstButtonReturn
+        return alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn
     }
 }
 
@@ -980,8 +984,8 @@ extension ViewController: TaskViewDelegate {
         let time = taskController.timeline.totalTime(forTaskId: taskView.taskId)
         let timestamp = formatTimestamp(time, withMode: mode)
         
-        NSPasteboard.general().clearContents()
-        NSPasteboard.general().setString(timestamp, forType: NSPasteboardTypeString)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(timestamp, forType: NSPasteboard.PasteboardType.string)
     }
 }
 

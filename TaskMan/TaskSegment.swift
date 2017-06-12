@@ -7,7 +7,7 @@
 //
 
 /// Represents a segment in time in which a task was executed
-struct TaskSegment {
+struct TaskSegment: Codable {
     
     /// The identifier type for task segments
     typealias IDType = Int

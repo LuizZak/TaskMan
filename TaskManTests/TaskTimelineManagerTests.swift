@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import TaskMan
 
 class TaskTimelineManagerTests: XCTestCase {
     
@@ -164,38 +165,132 @@ class TaskTimelineManagerTests: XCTestCase {
     }
     
     func testTotalTimeNoOverlapPerformance() {
+        let count = 10_000
+        
         let timeline = TaskTimelineManager()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
+        
+        let startDate = dateFromTimestamp("2000-01-01 01:00:00")
+        
+        // Add segments that start 30m appart each other, while growing by one hour
+        // each (1h, 2h, 3h, 4h etc...).
+        for i in 0..<count {
+            let time = TimeInterval(i)
+            
+            let start = startDate.addingTimeInterval(time * 1800) // 30m
+            let end = start.addingTimeInterval(time * 3600)
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
+        }
+        
+        timeline.addSegments(segments)
+        
+        measure {
+            XCTAssertEqual(timeline.totalTime(forTaskId: 1, withOverlap: false), 53992800.0)
+        }
+    }
+    
+    func testTotalTimeNoOverlapPerformanceSequentialOverlaps() {
+        let count = 10_000
+        
+        let timeline = TaskTimelineManager()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
         
         let startDate = dateFromTimestamp("2000-01-01 01:00:00")
         
         // Add 1h segments sequentially, overlapping accross one another over 30m each
-        for i in 0..<1000 {
-            let start = startDate.addingTimeInterval(TimeInterval(i) * 1800) // 30m
-            let end = start.addingTimeInterval(TimeInterval(i) * 3600)
+        for i in 0..<count {
+            let time = TimeInterval(i) / 2
             
-            timeline.createSegment(forTaskId: 1, dateRange: DateRange(startDate: start, endDate: end))
+            let start = startDate.addingTimeInterval(time * 3600)
+            let end = start.addingTimeInterval(3600)
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
         
+        timeline.addSegments(segments)
+        
         measure {
-            _=timeline.totalTime(forTaskId: 1, withOverlap: false)
+            XCTAssertEqual(timeline.totalTime(forTaskId: 1, withOverlap: false), 18001800.0)
+        }
+    }
+    
+    func testTotalTimeNoOverlapPerformanceWithGaps() {
+        let count = 10_000
+        
+        let timeline = TaskTimelineManager()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
+        
+        let startDate = dateFromTimestamp("2000-01-01 01:00:00")
+        
+        // Add segments that have 30m of gap between each other and have 1h of
+        // duration each.
+        for i in 0..<count {
+            let time = TimeInterval(i)
+            
+            let start = startDate.addingTimeInterval(time * 5400)
+            let end = start.addingTimeInterval(3600)
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
+        }
+        
+        timeline.addSegments(segments)
+        
+        measure {
+            XCTAssertEqual(timeline.totalTime(forTaskId: 1, withOverlap: false), 36000000.0)
         }
     }
     
     func testTotalTimeWithOverlapPerformance() {
+        let count = 100_000
+        
         let timeline = TaskTimelineManager()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
         
         let startDate = dateFromTimestamp("2000-01-01 01:00:00")
         
         // Add 1h segments sequentially, overlapping accross one another over 30m each
-        for i in 0..<1000 {
+        for i in 0..<count {
             let start = startDate.addingTimeInterval(TimeInterval(i) * 1800) // 30m
             let end = start.addingTimeInterval(TimeInterval(i) * 3600)
             
-            timeline.createSegment(forTaskId: 1, dateRange: DateRange(startDate: start, endDate: end))
+            segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
         
+        timeline.addSegments(segments)
+        
         measure {
-            _=timeline.totalTime(forTaskId: 1, withOverlap: true)
+            XCTAssertEqual(timeline.totalTime(forTaskId: 1, withOverlap: true), 17999820000000)
+        }
+    }
+    
+    func testTotalTimeWithOverlapPerformanceSequentialOverlaps() {
+        let count = 100_000
+        
+        let timeline = TaskTimelineManager()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
+        
+        let startDate = dateFromTimestamp("2000-01-01 01:00:00")
+        
+        // Add 1h segments sequentially, overlapping accross one another over 30m each
+        for i in 0..<count {
+            let time = TimeInterval(i)
+            
+            let start = startDate.addingTimeInterval(time * 1800) // 30m
+            let end = start.addingTimeInterval(3600)
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
+        }
+        
+        timeline.addSegments(segments)
+        
+        measure {
+            XCTAssertEqual(timeline.totalTime(forTaskId: 1, withOverlap: true), 360000000.0)
         }
     }
     
@@ -211,3 +306,4 @@ class TaskTimelineManagerTests: XCTestCase {
         return DateRange(startDate: dateFromTimestamp(start), endDate: dateFromTimestamp(end))
     }
 }
+

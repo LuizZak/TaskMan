@@ -105,39 +105,23 @@ extension Sequence {
         return count
     }
     
-    /// Returns a dictionary containing elements grouped by a specified key
-    /// Note that the 'key' closure is required to always return the same T key for the same value passed in, so values can be grouped correctly
-    func groupBy<T: Hashable>(key: (Iterator.Element) -> T) -> [T: [Iterator.Element]] {
-        var dict: [T: [Iterator.Element]] = [:]
-        
-        for item in self {
-            let field = key(item)
-            
-            if dict[field]?.append(item) == nil {
-                dict[field] = [item]
-            }
+    /// Returns a dictionary containing elements grouped by a specified key,
+    /// applying a trasnform on the elements along the way.
+    /// Note that the 'key' closure is required to always return the same T key
+    /// for the same value passed in, so values can be grouped correctly.
+    /// The transform can be used to manipulate values so that keys are removed
+    /// from the resulting values on the arrays of each dictionary entry
+    func groupBy<T, U>(_ key: (Iterator.Element) -> T, transform: (Iterator.Element) -> U) -> [T: [U]] {
+        return Dictionary(grouping: self, by: key).mapValues { values in
+            values.map(transform)
         }
-        
-        return dict
     }
     
-    /// Returns a dictionary containing elements grouped by a specified key, applying a trasnform on the elements along the way.
-    /// Note that the 'key' closure is required to always return the same T key for the same value passed in, so values can be grouped correctly.
-    /// The transform can be used to manipulate values so that keys are removed from the resulting values on the arrays of each dictionary entry
-    func groupBy<T: Hashable, U>(key: (Iterator.Element) -> T, transform: (Iterator.Element) -> U) -> [T: [U]] {
-        var dict: [T: [U]] = [:]
-        
-        for item in self {
-            let field = key(item)
-            
-            let newItem = transform(item)
-            
-            if dict[field]?.append(newItem) == nil {
-                dict[field] = [newItem]
-            }
-        }
-        
-        return dict
+    /// Returns a dictionary containing elements grouped by a specified key
+    /// Note that the 'key' closure is required to always return the same T key
+    /// for the same value passed in, so values can be grouped correctly
+    func groupBy<T>(_ key: (Iterator.Element) -> T) -> [T: [Iterator.Element]] {
+        return Dictionary(grouping: self, by: key)
     }
 }
 

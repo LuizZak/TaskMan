@@ -7,7 +7,7 @@
 //
 
 /// Represents a Task on the system
-struct Task {
+struct Task: Codable {
     
     typealias IDType = Int
     

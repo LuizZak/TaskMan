@@ -178,10 +178,10 @@ indirect enum ASTreeNode {
             return "\(lstring)\(op.rawValue)\(rstring)"
             
         case .unaryExpression(let op, let node):
-            return "\(op.rawValue)\(node.stringRepresentation())"
+            return "\(op.rawValue)\(String(describing: node.stringRepresentation()))"
             
         case .parenthesizedExpression(let node):
-            return "(\(node.stringRepresentation()))"
+            return "(\(String(describing: node.stringRepresentation()))"
             
         case .invalidAST:
             return nil
@@ -191,6 +191,6 @@ indirect enum ASTreeNode {
     /// Returns the entire complex string resulting from collapsing this expression, on top of a given source string.
     /// Returns nil, if it's an invalid tree.
     func sourceString(onString source: String) -> String? {
-        return sourceRange().flatMap { source[$0] }
+        return sourceRange().flatMap { String(source[$0]) }
     }
 }

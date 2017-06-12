@@ -6,7 +6,6 @@
 //  Copyright © 2016 Luiz Fernando Silva. All rights reserved.
 //
 
-import Cocoa
 import SwiftyJSON
 
 extension TaskSegment: ModelObject, IDModelObject {

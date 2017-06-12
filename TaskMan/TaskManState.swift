@@ -6,7 +6,7 @@
 //  Copyright © 2016 Luiz Fernando Silva. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 /// Basic structure that bundles a TaskMan state
 struct TaskManState {
@@ -25,7 +25,7 @@ struct TaskManState {
     var creationDate: Date
     
     /// Inits a TaskMan state with the given set of data
-    init(taskList: TaskList, runningSegmentId: TaskSegment.IDType, timeRange: DateRange, creationDate: Date = Date()) {
+    init(taskList: TaskList, runningSegmentId: TaskSegment.IDType?, timeRange: DateRange, creationDate: Date = Date()) {
         self.taskList = taskList
         self.runningSegmentId = runningSegmentId
         self.timeRange = timeRange

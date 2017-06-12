@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 struct DateRange {
     
@@ -27,12 +26,22 @@ struct DateRange {
         self.endDate = endDate
     }
     
-    /// Returns whether the given date is located within this date range's start and end dates
+    /// Returns whether the given date is located within this date range's start
+    /// and end dates
     func contains(date: Date) -> Bool {
         return self.startDate <= date && self.endDate >= date
     }
     
-    /// Returns whether this date range intersects with another date range, in inclusive fashion.
+    /// Returns whether the given date range is located completely within this date
+    /// range's start and end dates
+    func contains(range: DateRange) -> Bool {
+        return self.startDate <= range.startDate && self.endDate >= range.endDate
+    }
+    
+    /// Returns whether this date range intersects with another date range, in
+    /// inclusive fashion.
+    /// That means ranges with start/end regions that have the same dates return
+    /// `true`.
     func intersects(with range: DateRange) -> Bool {
         return self.startDate <= range.endDate && range.startDate <= self.endDate
     }
@@ -47,18 +56,43 @@ struct DateRange {
         let start = max(startDate, range.startDate)
         let end = min(endDate, range.endDate)
         
-        return DateRange(startDate: start, endDate: end)
+        return start...end
     }
     
-    /// Returns the union between this and another date range, that is, the minimum date
-    /// range capable of containing both date ranges inclusively
+    /// Returns the union between this and another date range, that is, the minimum
+    /// date range capable of containing both date ranges inclusively
     func union(with range: DateRange) -> DateRange {
-        return DateRange(startDate: min(startDate, range.startDate), endDate: max(endDate, range.endDate))
+        return min(startDate, range.startDate)...max(endDate, range.endDate)
+    }
+    
+    /// Splits this date range into two equally sized ranges that join at the middle.
+    /// Final ranges have the same total combined time range as this date range.
+    func splitAtMiddle() -> (left: DateRange, right: DateRange) {
+        let mid = startDate + endDate.timeIntervalSince(startDate) / 2
+        
+        let left = startDate...mid
+        let right = mid...endDate
+        
+        return (left, right)
     }
 }
 
 extension DateRange: Equatable {
     static func ==(lhs: DateRange, rhs: DateRange) -> Bool {
         return lhs.startDate == rhs.startDate && lhs.endDate == rhs.endDate
+    }
+}
+
+extension Date {
+    /// Creates a date range that starts and ends at two specified values.
+    ///
+    /// - Parameters:
+    ///   - lhs: Starting date of range. Must be earlier-or-exactly-equal-to rhs
+    ///   - rhs: Ending date of the range.
+    /// - Precondition: `lhs <= rhs`
+    /// - Returns: A date range with the specified dates.
+    static func ...(lhs: Date, rhs: Date) -> DateRange {
+        precondition(lhs <= rhs)
+        return DateRange(startDate: lhs, endDate: rhs)
     }
 }

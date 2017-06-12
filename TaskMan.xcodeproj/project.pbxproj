@@ -41,6 +41,7 @@
 		A01F939D1DF862450080FF14 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93991DF862030080FF14 /* DateRange.swift */; };
 		A01F93A21DF8632D0080FF14 /* DateRange+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */; };
 		A022571A1D9082630030A28E /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02257191D9082630030A28E /* TimelineView.swift */; };
+		A03D9E1A1EECC3A10043D477 /* TaskList+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */; };
 		A04B2AEA1E000FDB007F9B9F /* TaskTimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */; };
 		A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */; };
 		A055CC571E01A45E00A997D8 /* TaskManStateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */; };
@@ -104,6 +105,7 @@
 		A01F93991DF862030080FF14 /* DateRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRange.swift; sourceTree = "<group>"; };
 		A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DateRange+JSON.swift"; sourceTree = "<group>"; };
 		A02257191D9082630030A28E /* TimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskList+JSON.swift"; sourceTree = "<group>"; };
 		A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTimelineManager.swift; sourceTree = "<group>"; };
 		A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManStateConverterTests.swift; sourceTree = "<group>"; };
 		A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManStateConverter.swift; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 				A00956421DF98F7700F30194 /* TaskSegment+JSON.swift */,
 				A00956441DF98F9600F30194 /* TaskManState+JSON.swift */,
 				A01F93A11DF8632D0080FF14 /* DateRange+JSON.swift */,
+				A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */,
 			);
 			name = Serialization;
 			sourceTree = "<group>";
@@ -563,6 +566,7 @@
 				A0FA929B1D8C6F7D00F3916D /* AppDelegate.swift in Sources */,
 				A0B324461DF5850200308A28 /* EditDateViewController.swift in Sources */,
 				A009563C1DF8818500F30194 /* Parser.swift in Sources */,
+				A03D9E1A1EECC3A10043D477 /* TaskList+JSON.swift in Sources */,
 				A0A6B65C1DF5CB1800F84863 /* DateFormatHelper.swift in Sources */,
 				A04B2AEA1E000FDB007F9B9F /* TaskTimelineManager.swift in Sources */,
 				A0F63BBF1E0085D6000D6256 /* TimeCalcWindowController.swift in Sources */,

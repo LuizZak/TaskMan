@@ -6,9 +6,6 @@
 //  Copyright © 2016 Luiz Fernando Silva. All rights reserved.
 //
 
-import Cocoa
-import SwiftyJSON
-
 /// Represents a segment in time in which a task was executed
 struct TaskSegment {
     

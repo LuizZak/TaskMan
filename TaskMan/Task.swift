@@ -6,8 +6,6 @@
 //  Copyright © 2016 Luiz Fernando Silva. All rights reserved.
 //
 
-import Cocoa
-
 /// Represents a Task on the system
 struct Task {
     

@@ -186,6 +186,41 @@ class SegmentsNodeTests: XCTestCase {
         XCTAssertEqual(empty[1], seg2.range.endDate...seg4.range.startDate)
     }
     
+    func testEmptyDateRangesPerformanceWithGapsCoveredWithLongRange() {
+        let count = 10_000
+        
+        let node = SegmentsNode()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
+        
+        let startDate = dateFromTimestamp("2000-01-01 01:00:00")
+        
+        // Add segments that have 30m of gap between each other and have 1h of
+        // duration each.
+        for i in 0..<count {
+            let time = TimeInterval(i)
+            
+            let start = startDate + (time * 5400)
+            let end = start + 3600
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
+        }
+        
+        // Add a segment that completely covers all segments above
+        let endRange = startDate + (TimeInterval(count - 1) * 5400) + (3600)
+        
+        // Inset interval by 1 second on each end so the first and last segments
+        // are actually 1h segments. The fast path should then kick in and hop
+        // using the large segment that covers almost end-to-end all the segments
+        segments.append(TaskSegment(id: count + 1, taskId: 1, range: (startDate + 1)...endRange - 1))
+        
+        node.insertUpdatingRanges(segments)
+        
+        measure {
+            XCTAssertEqual(node.emptySpacesWithinNodes().count, 0)
+        }
+    }
+    
     func testEmptyDateRangesPerformanceWithGaps() {
         let count = 10_000
         

@@ -816,7 +816,7 @@ extension TimelineView {
         let sDate = startDate
         let timeInterval = endDate.timeIntervalSince(sDate)
         
-        return sDate.addingTimeInterval(TimeInterval(ratio) * timeInterval)
+        return sDate + (TimeInterval(ratio) * timeInterval)
     }
 }
 

@@ -18,7 +18,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var tasksHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var lblTotalTime: NSTextField!
     
-    fileprivate var dateRange: DateRange = Date()...Date().addingTimeInterval(8 * 60 * 60)
+    fileprivate var dateRange: DateRange = Date()...Date() + (8 * 60 * 60)
     
     fileprivate var secondUpdateTimer: Timer!
     
@@ -53,7 +53,7 @@ class ViewController: NSViewController {
             var tasks: [Task] = []
             var segments: [TaskSegment] = []
             var runningId: TaskSegment.IDType?
-            var dateRange: DateRange = Date()...Date().addingTimeInterval(8 * 60 * 60)
+            var dateRange: DateRange = Date()...Date() + (8 * 60 * 60)
             
             if let document = representedObject as? TaskManDocument {
                 tasks = document.taskManState.taskList.tasks
@@ -395,7 +395,7 @@ class ViewController: NSViewController {
         let components = Calendar.autoupdatingCurrent.dateComponents([.calendar, .era, .year, .month, .weekday, .day, .hour, .minute], from: Date())
         let date = Calendar.autoupdatingCurrent.date(from: components)!
         
-        controller.setDateRange(dateRange: date ... date.addingTimeInterval(60 * 60))
+        controller.setDateRange(dateRange: date ... date + (60 * 60))
         
         controller.didTapOkCallback = { (controller) -> Void in
             let range = controller.startDate...controller.endDate

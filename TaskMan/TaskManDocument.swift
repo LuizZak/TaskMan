@@ -11,7 +11,7 @@ import SwiftyJSON
 
 class TaskManDocument: NSDocument {
     
-    var taskManState = TaskManState(range: Date()...Date().addingTimeInterval(8 * 60 * 60))
+    var taskManState = TaskManState(range: Date()...Date() + (8 * 60 * 60))
     
     override func defaultDraftName() -> String {
         let now = Date()

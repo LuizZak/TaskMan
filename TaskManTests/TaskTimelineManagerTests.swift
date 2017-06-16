@@ -36,7 +36,7 @@ class TaskTimelineManagerTests: XCTestCase {
         XCTAssertEqual(delegate.calls, 0)
         
         // Try calling with new dates
-        timeline.setSegmentDates(withId: id, startDate: range.startDate, endDate: range.endDate.addingTimeInterval(1))
+        timeline.setSegmentDates(withId: id, startDate: range.startDate, endDate: range.endDate + 1)
         XCTAssertEqual(delegate.calls, 1)
     }
     
@@ -178,8 +178,8 @@ class TaskTimelineManagerTests: XCTestCase {
         for i in 0..<count {
             let time = TimeInterval(i)
             
-            let start = startDate.addingTimeInterval(time * 1800) // 30m
-            let end = start.addingTimeInterval(time * 3600)
+            let start = startDate + (time * 1800) // 30m
+            let end = start + (time * 3600)
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
@@ -204,8 +204,8 @@ class TaskTimelineManagerTests: XCTestCase {
         for i in 0..<count {
             let time = TimeInterval(i) / 2
             
-            let start = startDate.addingTimeInterval(time * 3600)
-            let end = start.addingTimeInterval(3600)
+            let start = startDate + (time * 3600)
+            let end = start + 3600
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
@@ -231,8 +231,8 @@ class TaskTimelineManagerTests: XCTestCase {
         for i in 0..<count {
             let time = TimeInterval(i)
             
-            let start = startDate.addingTimeInterval(time * 5400)
-            let end = start.addingTimeInterval(3600)
+            let start = startDate + (time * 5400)
+            let end = start + 3600
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
@@ -255,8 +255,10 @@ class TaskTimelineManagerTests: XCTestCase {
         
         // Add 1h segments sequentially, overlapping accross one another over 30m each
         for i in 0..<count {
-            let start = startDate.addingTimeInterval(TimeInterval(i) * 1800) // 30m
-            let end = start.addingTimeInterval(TimeInterval(i) * 3600)
+            let time = TimeInterval(i)
+            
+            let start = startDate + (time * 1800) // 30m
+            let end = start + (time * 3600)
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
@@ -281,8 +283,8 @@ class TaskTimelineManagerTests: XCTestCase {
         for i in 0..<count {
             let time = TimeInterval(i)
             
-            let start = startDate.addingTimeInterval(time * 1800) // 30m
-            let end = start.addingTimeInterval(3600)
+            let start = startDate + (time * 1800) // 30m
+            let end = start + 3600
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }

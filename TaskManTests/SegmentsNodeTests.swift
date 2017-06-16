@@ -38,8 +38,8 @@ class SegmentsNodeTests: XCTestCase {
         
         let node = SegmentsNode()
         
-        let seg1 = segWithDates(startDate, startDate.addingTimeInterval(1.hours))
-        let seg2 = segWithDates(startDate.addingTimeInterval(2.hours), startDate.addingTimeInterval(3.hours))
+        let seg1 = segWithDates(startDate, startDate + 1.hours)
+        let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         
         node.insertUpdatingRanges(seg1)
         node.insertUpdatingRanges(seg2)
@@ -52,8 +52,8 @@ class SegmentsNodeTests: XCTestCase {
         
         let node = SegmentsNode()
         
-        let seg1 = segWithDates(startDate, startDate.addingTimeInterval(1.hours))
-        let seg2 = segWithDates(startDate.addingTimeInterval(2.hours), startDate.addingTimeInterval(3.hours))
+        let seg1 = segWithDates(startDate, startDate + 1.hours)
+        let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         
         node.insertUpdatingRanges(seg1)
         node.insertUpdatingRanges(seg2) // id: 2
@@ -68,19 +68,19 @@ class SegmentsNodeTests: XCTestCase {
         
         let node = SegmentsNode()
         
-        let seg1 = segWithDates(startDate, startDate.addingTimeInterval(1.hours))
-        let seg2 = segWithDates(startDate.addingTimeInterval(2.hours), startDate.addingTimeInterval(3.hours))
+        let seg1 = segWithDates(startDate, startDate + 1.hours)
+        let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         
         node.insertUpdatingRanges(seg1)
         node.insertUpdatingRanges(seg2) // id: 2
         
-        let range = startDate...startDate.addingTimeInterval(3.hours)
+        let range = startDate...startDate + 3.hours
         XCTAssertEqual(node.range, range)
         
         node.removeSegment(withId: 2)
         node.compactRange()
         
-        let rangeAfter = startDate...startDate.addingTimeInterval(1.hours)
+        let rangeAfter = startDate...startDate + 1.hours
         XCTAssertEqual(node.range, rangeAfter)
     }
     
@@ -90,8 +90,8 @@ class SegmentsNodeTests: XCTestCase {
         let config = SegmentsNode.Configuration(maximumDepth: 2, maxCountBeforeSplit: 2)
         let node = SegmentsNode(configuration: config)
         
-        let fullRange = DateRange(startDate: startDate, endDate: startDate.addingTimeInterval(5.hours))
-        let eightRange = DateRange(startDate: startDate, endDate: startDate.addingTimeInterval(5.hours / 8))
+        let fullRange = DateRange(startDate: startDate, endDate: startDate + 5.hours)
+        let eightRange = DateRange(startDate: startDate, endDate: startDate + (5.hours / 8))
         
         // Keep inserting until split
         node.insertUpdatingRanges(segWithRange(fullRange))
@@ -116,8 +116,8 @@ class SegmentsNodeTests: XCTestCase {
         let config = SegmentsNode.Configuration(maximumDepth: 2, maxCountBeforeSplit: 2)
         let node = SegmentsNode(configuration: config)
         
-        let fullRange = DateRange(startDate: startDate, endDate: startDate.addingTimeInterval(5.hours))
-        let eightRange = DateRange(startDate: startDate, endDate: startDate.addingTimeInterval(5.hours / 8))
+        let fullRange = DateRange(startDate: startDate, endDate: startDate + 5.hours)
+        let eightRange = DateRange(startDate: startDate, endDate: startDate + (5.hours / 8))
         
         // Keep inserting until split
         node.insertUpdatingRanges(segWithRange(fullRange, taskId: 1))
@@ -138,9 +138,9 @@ class SegmentsNodeTests: XCTestCase {
         
         let node = SegmentsNode()
         
-        let seg1 = segWithDates(startDate, startDate.addingTimeInterval(1.hours))
-        let seg2 = segWithDates(startDate.addingTimeInterval(2.hours), startDate.addingTimeInterval(3.hours))
-        let seg3 = segWithDates(startDate.addingTimeInterval(4.hours), startDate.addingTimeInterval(6.hours))
+        let seg1 = segWithDates(startDate, startDate + 1.hours)
+        let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
+        let seg3 = segWithDates(startDate + 4.hours, startDate + 6.hours)
         
         node.insertUpdatingRanges([seg1, seg2, seg3])
         
@@ -156,9 +156,9 @@ class SegmentsNodeTests: XCTestCase {
         
         let node = SegmentsNode()
         
-        let seg1 = segWithDates(startDate, startDate.addingTimeInterval(2.5.hours))
-        let seg2 = segWithDates(startDate.addingTimeInterval(2.hours), startDate.addingTimeInterval(5.hours))
-        let seg3 = segWithDates(startDate.addingTimeInterval(4.hours), startDate.addingTimeInterval(6.hours))
+        let seg1 = segWithDates(startDate, startDate + 2.5.hours)
+        let seg2 = segWithDates(startDate + 2.hours, startDate + 5.hours)
+        let seg3 = segWithDates(startDate + 4.hours, startDate + 6.hours)
         
         node.insertUpdatingRanges([seg1, seg2, seg3])
         
@@ -172,10 +172,10 @@ class SegmentsNodeTests: XCTestCase {
         
         let node = SegmentsNode()
         
-        let seg1 = segWithDates(startDate, startDate.addingTimeInterval(1.hours))
-        let seg2 = segWithDates(startDate.addingTimeInterval(2.hours), startDate.addingTimeInterval(3.hours))
-        let seg3 = segWithDates(startDate.addingTimeInterval(2.5.hours), startDate.addingTimeInterval(2.5.hours))
-        let seg4 = segWithDates(startDate.addingTimeInterval(4.hours), startDate.addingTimeInterval(6.hours))
+        let seg1 = segWithDates(startDate, startDate + 1.hours)
+        let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
+        let seg3 = segWithDates(startDate + 2.5.hours, startDate + 2.5.hours)
+        let seg4 = segWithDates(startDate + 4.hours, startDate + 6.hours)
         
         node.insertUpdatingRanges([seg1, seg2, seg3, seg4])
         
@@ -207,7 +207,7 @@ class SegmentsNodeTests: XCTestCase {
         }
         
         // Add a segment that completely covers all segments above
-        let endRange = startDate + (TimeInterval(count - 1) * 5400) + (3600)
+        let endRange = startDate + (TimeInterval(count - 1) * 5400) + 3600
         
         // Inset interval by 1 second on each end so the first and last segments
         // are actually 1h segments. The fast path should then kick in and hop
@@ -235,8 +235,8 @@ class SegmentsNodeTests: XCTestCase {
         for i in 0..<count {
             let time = TimeInterval(i)
             
-            let start = startDate.addingTimeInterval(time * 5400)
-            let end = start.addingTimeInterval(3600)
+            let start = startDate + (time * 5400)
+            let end = start + 3600
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
@@ -261,8 +261,8 @@ class SegmentsNodeTests: XCTestCase {
         for i in 0..<count {
             let time = TimeInterval(i) / 2
             
-            let start = startDate.addingTimeInterval(time * 3600)
-            let end = start.addingTimeInterval(3600)
+            let start = startDate + (time * 3600)
+            let end = start + 3600
             
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }

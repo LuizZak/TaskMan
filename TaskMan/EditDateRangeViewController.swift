@@ -105,7 +105,7 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
             do {
                 let value = try Evaluator.evaluate(expression: txtDuration.stringValue)
                 if case .time(let interval) = value {
-                    endDate = startDate.addingTimeInterval(interval)
+                    endDate = startDate + interval
                 } else {
                     endDate = startDate
                 }

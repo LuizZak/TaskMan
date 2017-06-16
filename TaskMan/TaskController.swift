@@ -245,23 +245,3 @@ class TaskController {
     }
 }
 
-extension Sequence where Iterator.Element == TaskSegment {
-    
-    /// Returns the earliest task segment date on this segments sequence.
-    /// Returns nil, if this collection is empty.
-    func earliestSegmentDate() -> Date? {
-        return self.min { $0.range.startDate < $1.range.startDate }?.range.startDate
-    }
-    
-    /// Returns the latest task segment date on this segments sequence.
-    /// Returns nil, if this collection is empty.
-    func latestSegmentDate() -> Date? {
-        return self.max { $0.range.endDate < $1.range.endDate }?.range.endDate
-    }
-    
-    /// Returns a time interval that matches the sum of every date range of every
-    /// segment on this sequence of segments
-    func intervalSum() -> TimeInterval {
-        return self.reduce(0) { $0 + $1.range.timeInterval }
-    }
-}

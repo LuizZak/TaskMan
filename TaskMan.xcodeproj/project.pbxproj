@@ -26,6 +26,7 @@
 		A03D9E1A1EECC3A10043D477 /* TaskList+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */; };
 		A044B2541EEED0E100A2B6DC /* SegmentsGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A044B2531EEED0E100A2B6DC /* SegmentsGraph.swift */; };
 		A04B2AEA1E000FDB007F9B9F /* TaskTimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */; };
+		A05198AA1EEF449500B7199B /* SegmentsNodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05198A91EEF449500B7199B /* SegmentsNodeTests.swift */; };
 		A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */; };
 		A055CC571E01A45E00A997D8 /* TaskManStateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */; };
 		A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */; };
@@ -89,6 +90,7 @@
 		A03D9E191EECC3A10043D477 /* TaskList+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskList+JSON.swift"; sourceTree = "<group>"; };
 		A044B2531EEED0E100A2B6DC /* SegmentsGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentsGraph.swift; sourceTree = "<group>"; };
 		A04B2AE91E000FDB007F9B9F /* TaskTimelineManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTimelineManager.swift; sourceTree = "<group>"; };
+		A05198A91EEF449500B7199B /* SegmentsNodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentsNodeTests.swift; sourceTree = "<group>"; };
 		A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManStateConverterTests.swift; sourceTree = "<group>"; };
 		A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManStateConverter.swift; sourceTree = "<group>"; };
 		A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDateRangeViewController.swift; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 				A01F93971DF861D60080FF14 /* DateRangeTests.swift */,
 				A018D1301E0F173300FE7AD2 /* TaskTimelineManagerTests.swift */,
 				A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */,
+				A05198A91EEF449500B7199B /* SegmentsNodeTests.swift */,
 				A0FA92AE1D8C6F7D00F3916D /* Info.plist */,
 			);
 			path = TaskManTests;
@@ -572,6 +575,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A05198AA1EEF449500B7199B /* SegmentsNodeTests.swift in Sources */,
 				A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */,
 				A018D1311E0F173300FE7AD2 /* TaskTimelineManagerTests.swift in Sources */,
 				A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */,

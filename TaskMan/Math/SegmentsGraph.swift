@@ -92,8 +92,8 @@ extension TaskSegmentsNodeGraph {
 ///
 /// Used by date intersection methods used above to improve querying speed.
 final class SegmentsNode: TaskSegmentsNodeGraph {
-    private let maxDepth = 6
-    private let maxCountBeforeSplit = 10
+    private(set) var maxDepth = 6
+    private(set) var maxCountBeforeSplit = 10
     
     private(set) weak var parentNode: SegmentsNode?
     
@@ -108,33 +108,48 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     /// combined.
     private(set) var segmentsCount: Int = 0
     
-    init(startDate: Date, endDate: Date) {
-        range = startDate...endDate
+    init(range: DateRange, configuration: Configuration) {
+        self.range = range
+        
+        maxDepth = configuration.maximumDepth
+        maxCountBeforeSplit = configuration.maxCountBeforeSplit
         
         segments.reserveCapacity(maxCountBeforeSplit)
     }
     
-    init(range: DateRange) {
-        self.range = range
+    convenience init(range: DateRange) {
+        self.init(range: range, configuration: Configuration())
     }
     
-    init(with segments: [TaskSegment]) {
+    convenience init(configuration: Configuration) {
+        self.init(range: DateRange(startDate: Date(), endDate: Date()), configuration: configuration)
+    }
+    
+    convenience init(startDate: Date, endDate: Date) {
+        self.init(range: startDate...endDate)
+    }
+    
+    convenience init(with segments: [TaskSegment]) {
         let start = segments.earliestSegmentDate() ?? Date()
         let end = segments.latestSegmentDate() ?? Date()
         
-        range = start...end
+        self.init(range: start...end)
         
         for segment in segments {
             insert(segment)
         }
     }
     
-    init(with segments: [TaskSegment], range: DateRange) {
-        self.range = range
+    convenience init(with segments: [TaskSegment], range: DateRange) {
+        self.init(range: range)
         
         for segment in segments {
             insert(segment)
         }
+    }
+    
+    init() {
+        self.range = DateRange(startDate: Date(), endDate: Date())
     }
     
     @discardableResult
@@ -164,10 +179,67 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         return true
     }
     
+    func insertUpdatingRanges(_ segment: TaskSegment) {
+        insertUpdatingRanges([segment])
+    }
+    
+    func insertUpdatingRanges(_ segments: [TaskSegment]) {
+        guard let range = segments.totalRange() else {
+            return
+        }
+        
+        if self.range.contains(range: range) {
+            for segment in segments {
+                precondition(insert(segment), "Should have succeeded to insert segments")
+            }
+        } else {
+            // Drop all ranges and insert them again
+            let totalSegments = allSegments()
+            
+            removeAllSegments()
+            let resetDate = totalSegments.count == 0
+            self.segments = []
+            
+            self.range = resetDate ? range : range.union(with: self.range)
+            
+            for segment in totalSegments + segments {
+                precondition(insert(segment), "Should have succeeded to insert segments")
+            }
+        }
+    }
+    
+    /// Flattens the range of this segments so its range reflects the smallest
+    /// range possible that fits all segments within.
+    ///
+    /// Does nothing, if no segments are present.
+    func compactRange() {
+        if segmentsCount == 0 {
+            return
+        }
+        
+        let nodeList = allSegments()
+        removeAllSegments()
+        subNodes = []
+        
+        range = nodeList.totalRange() ?? range
+        insertUpdatingRanges(nodeList)
+    }
+    
+    /// Removes all segments, recursively.
+    /// Does not reset subnode count.
+    private func removeAllSegments() {
+        segments = []
+        
+        for node in subNodes {
+            node.removeAllSegments()
+        }
+    }
+    
     /// Searches for a segment within this segments node and removes it.
     ///
     /// - Parameter id: The ID of the segment to remove.
     /// - Returns: Whether the segment was found and removed.
+    @discardableResult
     func removeSegment(withId id: TaskSegment.IDType) -> Bool {
         if let index = segments.index(where: { $0.id == id }) {
             segments.remove(at: index)
@@ -184,6 +256,43 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         }
         
         return false
+    }
+    
+    /// Searches for all segments within this segments node that match a given
+    /// taks ID and removes them.
+    ///
+    /// - Parameter id: The ID of the task to remove all segments of.
+    /// - Returns: All segments that where removed.
+    @discardableResult
+    func removeSegments(forTaskId id: Task.IDType) -> [TaskSegment] {
+        return removeSegments { segment in
+            segment.taskId == id
+        }
+    }
+    
+    private func removeSegments(where closure: (TaskSegment) throws -> Bool) rethrows -> [TaskSegment] {
+        var removed: [TaskSegment] = []
+        for (i, segment) in segments.enumerated().reversed() {
+            if try closure(segment) {
+                segments.remove(at: i)
+                removed.append(segment)
+            }
+        }
+        
+        segmentsCount -= removed.count
+        
+        for node in subNodes {
+            let subRemoved = try node.removeSegments(where: closure)
+            segmentsCount -= subRemoved.count
+            
+            removed.append(contentsOf: subRemoved)
+        }
+        
+        if removed.count > 0 {
+            squashEmptySubdivisions()
+        }
+        
+        return removed
     }
     
     /// Searches for a segment within this segments node, limited to a specified
@@ -246,6 +355,16 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         subNodes = []
     }
     
+    /// Specifies configurations during the creation of a segments node
+    struct Configuration {
+        var maximumDepth: Int = 6
+        var maxCountBeforeSplit: Int = 10
+    }
+}
+
+// MARK: - Recursive segments node fetching
+extension SegmentsNode {
+    
     func allSubNodes() -> [TaskSegmentsNodeGraph] {
         return Array(subNodes)
     }
@@ -300,6 +419,27 @@ extension SegmentsNode {
 
 // MARK: - Segment Iteration/querying
 extension SegmentsNode {
+    
+    /// Searches for a segment with a specified ID within this segments graph node.
+    /// Searchies this and all sub-nodes recursively.
+    ///
+    /// - Parameter id: The ID of the segment to search.
+    /// - Returns: A segment with a matching segment ID, or nil, if none was found.
+    func segment(withId id: TaskSegment.IDType) -> TaskSegment? {
+        for segment in segments {
+            if segment.id == id {
+                return segment
+            }
+        }
+        
+        for node in subNodes {
+            if let segment = node.segment(withId: id) {
+                return segment
+            }
+        }
+        
+        return nil
+    }
     
     /// Returns the first task segment found that contains the given date.
     ///
@@ -468,6 +608,10 @@ extension SegmentsNode {
         
         return true
     }
+}
+
+// MARK: - Spatial querying
+extension SegmentsNode {
     
     /// Returns a list of date ranges that covers all the date regions that all
     /// segments cover, by 'flattening' and merging them down into sequential
@@ -495,44 +639,7 @@ extension SegmentsNode {
             repeat {
                 end = nextSegment.range.endDate
                 
-                func nextLongestSegment(on date: Date, in node: SegmentsNode) -> TaskSegment? {
-                    var longest: TaskSegment?
-                    for segment in node.segments {
-                        guard segment.range.contains(date: date), segment.range.endDate > date else {
-                            continue
-                        }
-                        
-                        if let long = longest {
-                            if segment.range.endDate > long.range.endDate {
-                                longest = segment
-                            }
-                        } else {
-                            longest = segment
-                        }
-                    }
-                    
-                    let endDate = longest?.range.endDate ?? date
-                    for subNode in node.subNodes {
-                        guard subNode.range.contains(date: endDate) else {
-                            continue
-                        }
-                        guard let found = nextLongestSegment(on: endDate, in: subNode) else {
-                            continue
-                        }
-                        
-                        if let long = longest {
-                            if long.range.endDate < found.range.endDate {
-                                longest = found
-                            }
-                        } else {
-                            longest = found
-                        }
-                    }
-                    
-                    return longest
-                }
-                
-                guard let next = nextLongestSegment(on: end, in: self) else {
+                guard let next = nextLongestSegment(on: end) else {
                     break
                 }
                 
@@ -546,10 +653,56 @@ extension SegmentsNode {
         
         return ranges
     }
-}
-
-// MARK: - Specific spatial searching
-extension SegmentsNode {
+    
+    /// Returns a list of all date range gaps within this segments graph and all
+    /// children nodes recursively.
+    ///
+    /// For example, a node configuration that spans (time is from left to right,
+    /// each line is a segment represented in non-specific node depth):
+    ///
+    ///     - [===]- - - - - - - - - - -
+    ///     - - [==] - - - - - [=====] -
+    ///     - - - - - -[===] - - - - - -
+    ///
+    /// results in an empty range composition of:
+    ///
+    ///     - - - - [=] - - [=]- - - - -
+    ///
+    func emptySpacesWithinNodes() -> [DateRange] {
+        
+        // Start at left-most range
+        guard let start = closestSegmentStartingLaterThan(date: range.startDate)?.range.startDate else {
+            return []
+        }
+        
+        var ranges: [DateRange] = []
+        
+        var currentDate = start
+        var lastEndDate: Date?
+        
+        while var nextSegment = closestSegmentStartingLaterThan(date: currentDate, nonEmptyOnly: true) {
+            if let lastEndDate = lastEndDate {
+                ranges.append(lastEndDate...nextSegment.range.startDate)
+            }
+            
+            var end: Date
+            
+            repeat {
+                end = nextSegment.range.endDate
+                
+                guard let next = nextLongestSegment(on: end) else {
+                    break
+                }
+                
+                nextSegment = next
+            } while true
+            
+            currentDate = nextSegment.range.endDate
+            lastEndDate = currentDate
+        }
+        
+        return ranges
+    }
     
     /// Return the segment that has the end date closest to the given date,
     /// while also being earlier than it.
@@ -585,7 +738,7 @@ extension SegmentsNode {
             if segment.range.timeInterval == 0 && nonEmptyOnly {
                 continue
             }
-            if segment.range.endDate > date {
+            guard segment.range.endDate <= date else {
                 continue
             }
             
@@ -638,15 +791,19 @@ extension SegmentsNode {
             }
             
             closest = closestSub
+            // Break - we just won't find a better result going a node to the right
+            // because all segments of a node must start on (or later) than its
+            // start range date.
             break
         }
         
         // Search own segments
         for segment in segments {
+            // Non-empty
             if segment.range.timeInterval == 0 && nonEmptyOnly {
                 continue
             }
-            if segment.range.startDate < date {
+            guard segment.range.startDate >= date else {
                 continue
             }
             
@@ -662,5 +819,44 @@ extension SegmentsNode {
         
         return closest
     }
+    
+    // Internal spatial query helper
+    fileprivate func nextLongestSegment(on date: Date) -> TaskSegment? {
+        var longest: TaskSegment?
+        for segment in segments {
+            guard segment.range.contains(date: date), segment.range.endDate > date else {
+                continue
+            }
+            
+            guard let long = longest else {
+                longest = segment
+                continue
+            }
+            
+            if segment.range.endDate > long.range.endDate {
+                longest = segment
+            }
+        }
+        
+        let endDate = longest?.range.endDate ?? date
+        for subNode in subNodes {
+            guard subNode.range.contains(date: endDate) else {
+                continue
+            }
+            guard let found = subNode.nextLongestSegment(on: endDate) else {
+                continue
+            }
+            
+            guard let long = longest else {
+                longest = found
+                continue
+            }
+            
+            if long.range.endDate < found.range.endDate {
+                longest = found
+            }
+        }
+        
+        return longest
+    }
 }
-

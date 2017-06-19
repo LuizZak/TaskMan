@@ -6,7 +6,7 @@
 //  Copyright © 2017 Luiz Fernando Silva. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 /// Protocol for types that provide task segment querying in the form of various
 /// helper methods.
@@ -19,7 +19,7 @@ protocol TaskSegmentsNodeGraph {
     var segments: [TaskSegment] { get }
     
     /// Gets all subnodes of this task segments node graph
-    func allSubNodes() -> [TaskSegmentsNodeGraph]
+    func allSubNodes() -> [Self]
     
     /// Gets all task segments contained within this node graph, and all
     /// child graphs.
@@ -87,10 +87,11 @@ extension TaskSegmentsNodeGraph {
     }
 }
 
-/// Tree-style node structure used to split timeline segments into grid-like
-/// regions that get recursively smaller.
+/// Quad-tree node structure used to split timeline segments into grid-like regions
+/// that get recursively smaller.
 ///
-/// Used by date intersection methods used above to improve querying speed.
+/// Used to improve performance of tasks that require querying of spacing information
+/// of task segments.
 final class SegmentsNode: TaskSegmentsNodeGraph {
     private(set) var maxDepth = 6
     private(set) var maxCountBeforeSplit = 10
@@ -153,8 +154,8 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     }
     
     @discardableResult
-    func insert(_ segment: TaskSegment) -> Bool {
-        if(!range.intersects(with: segment.range)) {
+    func insertIfFits(_ segment: TaskSegment) -> Bool {
+        if(!range.contains(range: segment.range)) {
             return false
         }
         
@@ -168,8 +169,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         
         subdivide()
         for node in subNodes {
-            if(node.range.contains(range: segment.range)) {
-                node.insert(segment)
+            if(node.insertIfFits(segment)) {
                 return true
             }
         }
@@ -179,18 +179,18 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         return true
     }
     
-    func insertUpdatingRanges(_ segment: TaskSegment) {
-        insertUpdatingRanges([segment])
+    func insert(_ segment: TaskSegment) {
+        insert([segment])
     }
     
-    func insertUpdatingRanges(_ segments: [TaskSegment]) {
+    func insert(_ segments: [TaskSegment]) {
         guard let range = segments.totalRange() else {
             return
         }
         
         if self.range.contains(range: range) {
             for segment in segments {
-                precondition(insert(segment), "Should have succeeded to insert segments")
+                precondition(insertIfFits(segment), "Should have succeeded to insert segments")
             }
         } else {
             // Drop all ranges and insert them again
@@ -203,7 +203,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
             self.range = resetDate ? range : range.union(with: self.range)
             
             for segment in totalSegments + segments {
-                precondition(insert(segment), "Should have succeeded to insert segments")
+                precondition(insertIfFits(segment), "Should have succeeded to insert segments")
             }
         }
     }
@@ -222,7 +222,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         subNodes = []
         
         range = nodeList.totalRange() ?? range
-        insertUpdatingRanges(nodeList)
+        insert(nodeList)
     }
     
     /// Removes all segments, recursively.
@@ -365,7 +365,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
 // MARK: - Recursive segments node fetching
 extension SegmentsNode {
     
-    func allSubNodes() -> [TaskSegmentsNodeGraph] {
+    func allSubNodes() -> [SegmentsNode] {
         return Array(subNodes)
     }
     
@@ -419,6 +419,12 @@ extension SegmentsNode {
 
 // MARK: - Segment Iteration/querying
 extension SegmentsNode {
+    
+    /// Returns all segments stored within this and all descendant nodes sorted
+    /// by their starting date.
+    func sortedSegments() -> [TaskSegment] {
+        return allSegments().sorted(by: { $0.range.startDate < $1.range.startDate })
+    }
     
     /// Searches for a segment with a specified ID within this segments graph node.
     /// Searchies this and all sub-nodes recursively.

@@ -41,8 +41,8 @@ class SegmentsNodeTests: XCTestCase {
         let seg1 = segWithDates(startDate, startDate + 1.hours)
         let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         
-        node.insertUpdatingRanges(seg1)
-        node.insertUpdatingRanges(seg2)
+        node.insert(seg1)
+        node.insert(seg2)
         
         XCTAssertEqual(node.segments.count, 2)
     }
@@ -55,8 +55,8 @@ class SegmentsNodeTests: XCTestCase {
         let seg1 = segWithDates(startDate, startDate + 1.hours)
         let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         
-        node.insertUpdatingRanges(seg1)
-        node.insertUpdatingRanges(seg2) // id: 2
+        node.insert(seg1)
+        node.insert(seg2) // id: 2
         
         node.removeSegment(withId: 2)
         
@@ -71,8 +71,8 @@ class SegmentsNodeTests: XCTestCase {
         let seg1 = segWithDates(startDate, startDate + 1.hours)
         let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         
-        node.insertUpdatingRanges(seg1)
-        node.insertUpdatingRanges(seg2) // id: 2
+        node.insert(seg1)
+        node.insert(seg2) // id: 2
         
         let range = startDate...startDate + 3.hours
         XCTAssertEqual(node.range, range)
@@ -94,7 +94,7 @@ class SegmentsNodeTests: XCTestCase {
         let eightRange = DateRange(startDate: startDate, endDate: startDate + (5.hours / 8))
         
         // Keep inserting until split
-        node.insertUpdatingRanges(segWithRange(fullRange))
+        node.insert(segWithRange(fullRange))
         node.insert(segWithRange(fullRange))
         
         // Insert eight
@@ -120,7 +120,7 @@ class SegmentsNodeTests: XCTestCase {
         let eightRange = DateRange(startDate: startDate, endDate: startDate + (5.hours / 8))
         
         // Keep inserting until split
-        node.insertUpdatingRanges(segWithRange(fullRange, taskId: 1))
+        node.insert(segWithRange(fullRange, taskId: 1))
         node.insert(segWithRange(fullRange, taskId: 1))
         
         // Insert eight
@@ -142,7 +142,7 @@ class SegmentsNodeTests: XCTestCase {
         let seg2 = segWithDates(startDate + 2.hours, startDate + 3.hours)
         let seg3 = segWithDates(startDate + 4.hours, startDate + 6.hours)
         
-        node.insertUpdatingRanges([seg1, seg2, seg3])
+        node.insert([seg1, seg2, seg3])
         
         let empty = node.emptySpacesWithinNodes()
         
@@ -160,7 +160,7 @@ class SegmentsNodeTests: XCTestCase {
         let seg2 = segWithDates(startDate + 2.hours, startDate + 5.hours)
         let seg3 = segWithDates(startDate + 4.hours, startDate + 6.hours)
         
-        node.insertUpdatingRanges([seg1, seg2, seg3])
+        node.insert([seg1, seg2, seg3])
         
         let empty = node.emptySpacesWithinNodes()
         
@@ -177,13 +177,64 @@ class SegmentsNodeTests: XCTestCase {
         let seg3 = segWithDates(startDate + 2.5.hours, startDate + 2.5.hours)
         let seg4 = segWithDates(startDate + 4.hours, startDate + 6.hours)
         
-        node.insertUpdatingRanges([seg1, seg2, seg3, seg4])
+        node.insert([seg1, seg2, seg3, seg4])
         
         let empty = node.emptySpacesWithinNodes()
         
         XCTAssertEqual(empty.count, 2)
         XCTAssertEqual(empty[0], seg1.range.endDate...seg2.range.startDate)
         XCTAssertEqual(empty[1], seg2.range.endDate...seg4.range.startDate)
+    }
+    
+    func testSortedSegments() {
+        let startDate = dateFromTimestamp("2000-01-01 01:00:00")
+        let endDate = dateFromTimestamp("2000-02-01 01:00:00")
+        
+        let count = 10_000
+        
+        let node = SegmentsNode()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
+        
+        // Add segments randomly spanning a pre-determined range
+        for i in 0..<count {
+            let date1 = startDate + TimeInterval(arc4random_uniform(UInt32(endDate.timeIntervalSince(startDate))))
+            let date2 = startDate + TimeInterval(arc4random_uniform(UInt32(endDate.timeIntervalSince(startDate))))
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: min(date1, date2)...max(date1, date2)))
+        }
+        
+        node.insert(segments)
+        
+        let expected = segments.sorted { $0.range.startDate < $1.range.startDate }
+        let result = node.sortedSegments()
+        
+        XCTAssert(expected.elementsEqual(result, by: { $0.range.startDate == $1.range.startDate }))
+    }
+    
+    func testSortedSegmentsPerformance() {
+        let startDate = dateFromTimestamp("2000-01-01 01:00:00")
+        let endDate = dateFromTimestamp("2000-02-01 01:00:00")
+        
+        let count = 10_000
+        
+        let node = SegmentsNode()
+        var segments: [TaskSegment] = []
+        segments.reserveCapacity(count)
+        
+        // Add segments spanning across a range
+        for i in 0..<count {
+            let date1 = startDate + TimeInterval(arc4random_uniform(UInt32(endDate.timeIntervalSince(startDate))))
+            let date2 = startDate + TimeInterval(arc4random_uniform(UInt32(endDate.timeIntervalSince(startDate))))
+            
+            segments.append(TaskSegment(id: i, taskId: 1, range: min(date1, date2)...max(date1, date2)))
+        }
+        
+        node.insert(segments)
+        
+        measure {
+            _=node.sortedSegments()
+        }
     }
     
     func testEmptyDateRangesPerformanceWithGapsCoveredWithLongRange() {
@@ -214,7 +265,7 @@ class SegmentsNodeTests: XCTestCase {
         // using the large segment that covers almost end-to-end all the segments
         segments.append(TaskSegment(id: count + 1, taskId: 1, range: (startDate + 1)...endRange - 1))
         
-        node.insertUpdatingRanges(segments)
+        node.insert(segments)
         
         measure {
             XCTAssertEqual(node.emptySpacesWithinNodes().count, 0)
@@ -241,7 +292,7 @@ class SegmentsNodeTests: XCTestCase {
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
         
-        node.insertUpdatingRanges(segments)
+        node.insert(segments)
         
         measure {
             XCTAssertEqual(node.emptySpacesWithinNodes().count, count - 1)
@@ -267,7 +318,7 @@ class SegmentsNodeTests: XCTestCase {
             segments.append(TaskSegment(id: i, taskId: 1, range: start...end))
         }
         
-        node.insertUpdatingRanges(segments)
+        node.insert(segments)
         
         measure {
             XCTAssertEqual(node.emptySpacesWithinNodes().count, 0)

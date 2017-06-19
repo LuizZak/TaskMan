@@ -56,6 +56,16 @@
 					<string>16 de jun de 2017 10:13:38</string>
 				</dict>
 			</dict>
+			<key>testSortedSegmentsPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.013112</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>TaskTimelineManagerTests</key>
 		<dict>

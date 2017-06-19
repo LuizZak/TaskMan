@@ -15,11 +15,11 @@ let SegmentDragItemType = NSPasteboard.PasteboardType("taskman.segment")
 protocol TimelineViewDataSource: class {
     func segmentsForTimelineView(_ timelineView: TimelineView) -> [TaskSegment]
     
-    func segmentsGraphForTimelineView(_ timelineView: TimelineView) -> TaskSegmentsNodeGraph
+    func segmentsGraphForTimelineView(_ timelineView: TimelineView) -> SegmentsNode
 }
 
 extension TimelineViewDataSource {
-    func segmentsGraphForTimelineView(_ timelineView: TimelineView) -> TaskSegmentsNodeGraph {
+    func segmentsGraphForTimelineView(_ timelineView: TimelineView) -> SegmentsNode {
         return SegmentsNode(with: segmentsForTimelineView(timelineView))
     }
 }

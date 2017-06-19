@@ -64,7 +64,7 @@ class TaskTimelineManager {
     /// Adds a given task segment to this timeline manager
     func add(segment: TaskSegment) {
         //segments.append(segment)
-        segmentsNode.insertUpdatingRanges(segment)
+        segmentsNode.insert(segment)
         
         delegate?.taskTimelineManager(self, didAddSegment: segment)
     }
@@ -72,7 +72,7 @@ class TaskTimelineManager {
     /// Adds multiple segments to this timeline manager
     func addSegments(_ segments: [TaskSegment]) {
         //self.segments.append(contentsOf: segments)
-        segmentsNode.insertUpdatingRanges(segments)
+        segmentsNode.insert(segments)
         
         delegate?.taskTimelineManager(self, didAddSegments: segments)
     }
@@ -96,7 +96,7 @@ class TaskTimelineManager {
         
         segmentsNode.removeSegment(withId: id)
         
-        segmentsNode.insertUpdatingRanges(segment)
+        segmentsNode.insert(segment)
         
         // Only notify delegate if a change was detected
         if(segment.range != original) {

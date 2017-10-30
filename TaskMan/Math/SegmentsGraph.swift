@@ -63,7 +63,7 @@ protocol TaskSegmentsNodeGraph {
     ///   - range: Range to test against.
     ///   - closure: Closure to execute for every matching task segment found.
     /// - Throws: Rethrows errors from `closure`.
-    func querySegments(range: DateRange, with closure: (TaskSegment) throws -> Void) rethrows
+    func querySegments(in range: DateRange, with closure: (TaskSegment) throws -> Void) rethrows
     
     /// Iterates all segments of this segments node recursively, depth-first,
     /// calling a given closure for every task segment found.
@@ -75,9 +75,23 @@ protocol TaskSegmentsNodeGraph {
     /// if `closure` returns false.
     /// - Throws: Rethrows any error from `closure`.
     func iterateAllSegments(with closure: (TaskSegment) throws -> Bool) rethrows -> Bool
+    
+    /// Returns the intersection of a given range on this task segments node
+    /// graph's range.
+    ///
+    /// Returns `nil`, if the given range does not intersect with this node's `range`.
+    ///
+    /// - Parameter range: Range to limit.
+    /// - Returns: input `range`, limited to be within this node's `range` value,
+    /// or `nil`, if ranges do not intersect.
+    func limitRangeWithinBounds(_ range: DateRange) -> DateRange?
 }
 
 extension TaskSegmentsNodeGraph {
+    func limitRangeWithinBounds(_ range: DateRange) -> DateRange? {
+        return range.intersection(with: range)
+    }
+    
     func maximumDepth() -> Int {
         if segments.count == 0 {
             return 0
@@ -303,6 +317,10 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     ///   - range: Range to limit searching within.
     /// - Returns: Whether the segment was found and removed.
     func removeSegment(withId id: TaskSegment.IDType, within range: DateRange) -> Bool {
+        guard let limited = limitRangeWithinBounds(range) else {
+            return false
+        }
+        
         if let index = segments.index(where: { $0.id == id }) {
             segments.remove(at: index)
             segmentsCount -= 1
@@ -310,7 +328,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         }
         
         for node in subNodes {
-            if (node.range.intersects(with: range) && node.removeSegment(withId: id)) {
+            if (node.range.intersects(with: limited) && node.removeSegment(withId: id)) {
                 segmentsCount -= 1
                 squashEmptySubdivisions()
                 return true
@@ -423,7 +441,7 @@ extension SegmentsNode {
     /// Returns all segments stored within this and all descendant nodes sorted
     /// by their starting date.
     func sortedSegments() -> [TaskSegment] {
-        return allSegments().sorted(by: { $0.range.startDate < $1.range.startDate })
+        return allSegments().sorted { $0.range.startDate < $1.range.startDate }
     }
     
     /// Searches for a segment with a specified ID within this segments graph node.
@@ -432,19 +450,7 @@ extension SegmentsNode {
     /// - Parameter id: The ID of the segment to search.
     /// - Returns: A segment with a matching segment ID, or nil, if none was found.
     func segment(withId id: TaskSegment.IDType) -> TaskSegment? {
-        for segment in segments {
-            if segment.id == id {
-                return segment
-            }
-        }
-        
-        for node in subNodes {
-            if let segment = node.segment(withId: id) {
-                return segment
-            }
-        }
-        
-        return nil
+        return firstSegment(where: { $0.id == id })
     }
     
     /// Returns the first task segment found that contains the given date.
@@ -493,17 +499,21 @@ extension SegmentsNode {
     /// - Parameter range: Range to query for the segments.
     /// - Returns: Count of segments intersecting `range`.
     func countOfSegments(intersecting range: DateRange) -> Int {
+        guard let effectiveRange = limitRangeWithinBounds(range) else {
+            return 0
+        }
+        
         var count = 0
         
         for segment in segments {
-            if(segment.range.intersects(with: range)) {
+            if(segment.range.intersects(with: effectiveRange)) {
                 count += 1
             }
         }
         
         for node in subNodes {
-            if(node.range.intersects(with: range)) {
-                count += node.countOfSegments(intersecting: range)
+            if(node.range.intersects(with: effectiveRange)) {
+                count += node.countOfSegments(intersecting: effectiveRange)
             }
         }
         
@@ -516,9 +526,13 @@ extension SegmentsNode {
     /// - Returns: All segments contained within the given range on this segments
     /// node.
     func allSegments(intersecting range: DateRange) -> [TaskSegment] {
+        guard let effectiveRange = limitRangeWithinBounds(range) else {
+            return []
+        }
+        
         var array: [TaskSegment] = []
         
-        _appendAllSegments(intersecting: range, to: &array)
+        _appendAllSegments(intersecting: effectiveRange, to: &array)
         
         return array
     }
@@ -568,6 +582,30 @@ extension SegmentsNode {
     }
     
     /// Recursively queries this task segments node and runs a given block
+    /// for all task segments contained within this segments node recursively,
+    /// then returning the first segment that returns `true` for the closure.
+    ///
+    /// The order of the segments is not guaranteed to be ordered.
+    ///
+    /// - Parameter closure: Closure to execute for every matching task segment found.
+    /// - Throws: Rethrows errors from `closure`.
+    func firstSegment(where closure: (TaskSegment) throws -> Bool) rethrows -> TaskSegment? {
+        for segment in segments {
+            if(try closure(segment)) {
+                return segment
+            }
+        }
+        
+        for node in subNodes {
+            if let segment = try node.firstSegment(where: closure) {
+                return segment
+            }
+        }
+        
+        return nil
+    }
+    
+    /// Recursively queries this task segments node and runs a given block
     /// for every task segment that is overlapping over the given date range.
     ///
     /// The order of the segments is not guaranteed to be ordered.
@@ -576,16 +614,20 @@ extension SegmentsNode {
     ///   - range: Range to test against.
     ///   - closure: Closure to execute for every matching task segment found.
     /// - Throws: Rethrows errors from `closure`.
-    func querySegments(range: DateRange, with closure: (TaskSegment) throws -> Void) rethrows {
+    func querySegments(in range: DateRange, with closure: (TaskSegment) throws -> Void) rethrows {
+        guard let effectiveRange = limitRangeWithinBounds(range) else {
+            return
+        }
+        
         for segment in segments {
-            if(segment.range.intersects(with: range)) {
+            if(segment.range.intersects(with: effectiveRange)) {
                 try closure(segment)
             }
         }
         
         for node in subNodes {
-            if(node.range.intersects(with: range)) {
-                try node.querySegments(range: range, with: closure)
+            if(node.range.intersects(with: effectiveRange)) {
+                try node.querySegments(in: effectiveRange, with: closure)
             }
         }
     }
@@ -613,6 +655,26 @@ extension SegmentsNode {
         }
         
         return true
+    }
+    
+    /// Iterates all segments of this segments node recursively within the given
+    /// date range, mapping them one-by-one using a passed closure, then returning
+    /// the collected values.
+    ///
+    /// - Parameters:
+    ///   - range: Date that segments must be intersecting to be considered for
+    /// the mapping.
+    ///   - closure: A closure that maps the segments to an output value.
+    /// - Returns: All segments mapped with the closure within the range.
+    /// - Throws: Rethrows any error from `closure`.
+    func mapSegments<T>(in range: DateRange, with closure: (TaskSegment) throws -> T) rethrows -> [T] {
+        var values: [T] = []
+        
+        try querySegments(in: range) { segment in
+            try values.append(closure(segment))
+        }
+        
+        return values
     }
 }
 
@@ -845,6 +907,7 @@ extension SegmentsNode {
         }
         
         let endDate = longest?.range.endDate ?? date
+        
         for subNode in subNodes {
             guard subNode.range.contains(date: endDate) else {
                 continue

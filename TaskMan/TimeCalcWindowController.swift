@@ -19,10 +19,6 @@ class TimeCalcWindowController: NSWindowController {
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     }
     
-    func textDidChange(_ notification: Notification) {
-        evaluateOutput()
-    }
-    
     func evaluateOutput() {
         //outputTextView.string = inputTextView.string
         txtOutput.string = ""
@@ -104,5 +100,11 @@ class TimeCalcWindowController: NSWindowController {
         }
         
         return interval < 0 ? "-\(output)" : output
+    }
+}
+
+extension TimeCalcWindowController: NSTextViewDelegate {
+    func textDidChange(_ notification: Notification) {
+        evaluateOutput()
     }
 }

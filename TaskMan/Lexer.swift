@@ -288,7 +288,7 @@ class Lexer {
         // Detect and read date labels
         while(try !isEof() && isTimeLabel(peekIdent()))
         {
-            guard let labelIndex = try Lexer.timeLabels.index(where: { try $0.0 == peekIdent() }) else {
+            guard let labelIndex = try Lexer.timeLabels.firstIndex(where: { try $0.0 == peekIdent() }) else {
                 break
             }
             

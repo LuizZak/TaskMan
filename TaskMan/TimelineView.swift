@@ -432,7 +432,7 @@ class TimelineView: NSView {
         updateMouseDisplay(withEvent: event)
     }
     
-    override func view(_ view: NSView, stringForToolTip tag: NSView.ToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
+    func view(_ view: NSView, stringForToolTip tag: NSView.ToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
         if let mouseSegment = mouseSegment, let label = self.delegate?.timelineView(self, labelForSegment: mouseSegment) {
             return label
         }
@@ -838,6 +838,9 @@ extension TimelineView : NSDraggingSource {
             
         case .outsideApplication:
             return NSDragOperation.copy
+            
+        @unknown default:
+            return NSDragOperation.move
         }
     }
     

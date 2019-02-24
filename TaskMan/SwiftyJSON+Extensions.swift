@@ -76,7 +76,7 @@ public enum JSONError: Error, CustomStringConvertible, CustomDebugStringConverti
 // Used mostly for failing during model creations nicely using do { } catch { } statements
 public extension JSON {
     
-    public func tryString(file: String = #file, line: Int = #line) throws -> String {
+    func tryString(file: String = #file, line: Int = #line) throws -> String {
         if let value = self.string {
             return value
         }
@@ -96,7 +96,7 @@ public extension JSON {
     ///
     /// would infer T to be `SomeEnum`, without the need to specify the `type` parameter explicitly, because the required
     /// return type is `SomeEnum` since we are intializing a `SomeEnum`-typed variable.
-    public func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == String {
+    func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == String {
         guard let value = self.string else {
             throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.string, received: self.type), file: file, line: line)
         }
@@ -120,7 +120,7 @@ public extension JSON {
     ///
     /// would infer T to be `SomeEnum`, without the need to specify the `type` parameter explicitly, because the required
     /// return type is `SomeEnum` since we are intializing a `SomeEnum`-typed variable.
-    public func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == Int {
+    func tryParseEnum<T: RawRepresentable>(withType type: T.Type = T.self, file: String = #file, line: Int = #line) throws -> T where T.RawValue == Int {
         guard let value = self.int else {
             throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.number, received: self.type), file: file, line: line)
         }
@@ -132,7 +132,7 @@ public extension JSON {
         throw composeError(self.error ?? JSONError.InvalidType(message: "Could not parse enum \(T.self) out of value \(value)"), file: file, line: line)
     }
     
-    public func tryInt(file: String = #file, line: Int = #line) throws -> Int {
+    func tryInt(file: String = #file, line: Int = #line) throws -> Int {
         if let value = self.intConvertible {
             return value
         }
@@ -140,7 +140,7 @@ public extension JSON {
         throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.number, received: self.type), file: file, line: line)
     }
     
-    public func tryDouble(file: String = #file, line: Int = #line) throws -> Double {
+    func tryDouble(file: String = #file, line: Int = #line) throws -> Double {
         if let value = self.doubleConvertible {
             return value
         }
@@ -148,7 +148,7 @@ public extension JSON {
         throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.number, received: self.type), file: file, line: line)
     }
     
-    public func tryBool(file: String = #file, line: Int = #line) throws -> Bool {
+    func tryBool(file: String = #file, line: Int = #line) throws -> Bool {
         if let value = self.bool {
             return value
         }
@@ -156,7 +156,7 @@ public extension JSON {
         throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.bool, received: self.type), file: file, line: line)
     }
     
-    public func tryParseDate(withFormatter formatter: DateFormatter, file: String = #file, line: Int = #line) throws -> Date {
+    func tryParseDate(withFormatter formatter: DateFormatter, file: String = #file, line: Int = #line) throws -> Date {
         guard let string = self.string else {
             throw composeError(self.error ?? JSONError.UnexpectedType(expected: Type.string, received: self.type), file: file, line: line)
         }
@@ -165,7 +165,7 @@ public extension JSON {
             return value
         }
         
-        throw composeError(self.error ?? JSONError.InvalidType(message: "Could not parse '\(formatter.dateFormat)' date out of value '\(string)'"), file: file, line: line)
+        throw composeError(self.error ?? JSONError.InvalidType(message: "Could not parse '\(formatter.dateFormat!)' date out of value '\(string)'"), file: file, line: line)
     }
 }
 

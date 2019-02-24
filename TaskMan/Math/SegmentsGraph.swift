@@ -255,7 +255,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     /// - Returns: Whether the segment was found and removed.
     @discardableResult
     func removeSegment(withId id: TaskSegment.IDType) -> Bool {
-        if let index = segments.index(where: { $0.id == id }) {
+        if let index = segments.firstIndex(where: { $0.id == id }) {
             segments.remove(at: index)
             segmentsCount -= 1
             return true
@@ -321,7 +321,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
             return false
         }
         
-        if let index = segments.index(where: { $0.id == id }) {
+        if let index = segments.firstIndex(where: { $0.id == id }) {
             segments.remove(at: index)
             segmentsCount -= 1
             return true

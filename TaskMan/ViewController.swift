@@ -78,7 +78,7 @@ class ViewController: NSViewController {
             
             // Move task for the currently running segment, if any, to the top
             if let task = taskController.runningTask, let taskView = viewForTask(task: task) {
-                if let i = taskViews.index(of: taskView) {
+                if let i = taskViews.firstIndex(of: taskView) {
                     taskViews.remove(at: i)
                     taskViews.append(taskView)
                 }
@@ -119,7 +119,7 @@ class ViewController: NSViewController {
         
         secondUpdateTimer = Timer(timeInterval: 0.5, target: self, selector: #selector(ViewController.timerDidFire), userInfo: nil, repeats: true)
         
-        RunLoop.current.add(secondUpdateTimer, forMode: .defaultRunLoopMode)
+        RunLoop.current.add(secondUpdateTimer, forMode: RunLoop.Mode.default)
     }
     
     override func viewWillAppear() {
@@ -337,7 +337,7 @@ class ViewController: NSViewController {
             return
         }
         
-        let controller = TimeCalcWindowController(windowNibName: NSNib.Name(rawValue: "TimeCalcWindowController"))
+        let controller = TimeCalcWindowController(windowNibName: "TimeCalcWindowController")
         controller.showWindow(self)
         
         controller.window?.makeKey()
@@ -354,7 +354,7 @@ class ViewController: NSViewController {
     }
     
     @IBAction func didTapEditStartEndTime(_ sender: NSButton) {
-        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDateRange")) as? EditDateRangeViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
             return
         }
         
@@ -370,7 +370,7 @@ class ViewController: NSViewController {
             controller.dismiss(self)
         }
         
-        presentViewControllerAsModalWindow(controller)
+        presentAsModalWindow(controller)
     }
     
     // MARK: Segment menu buttons
@@ -387,7 +387,7 @@ class ViewController: NSViewController {
         guard let taskView = sender.representedObject as? TaskView else {
             return
         }
-        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDateRange")) as? EditDateRangeViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
             return
         }
         
@@ -407,7 +407,7 @@ class ViewController: NSViewController {
             controller.dismiss(self)
         }
         
-        presentViewControllerAsModalWindow(controller)
+        presentAsModalWindow(controller)
     }
     
     @objc func didTapJoinConnectedSegments(_ sender: NSMenuItem) {
@@ -440,7 +440,7 @@ class ViewController: NSViewController {
         guard let segment = sender.representedObject as? TaskSegment else {
             return
         }
-        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDateRange")) as? EditDateRangeViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDateRange") as? EditDateRangeViewController else {
             return
         }
         
@@ -452,7 +452,7 @@ class ViewController: NSViewController {
             controller.dismiss(self)
         }
         
-        presentViewControllerAsModalWindow(controller)
+        presentAsModalWindow(controller)
     }
     
     @objc func didTapChangeSegmentTask(_ sender: NSMenuItem) {
@@ -460,7 +460,7 @@ class ViewController: NSViewController {
         guard let segment = sender.representedObject as? TaskSegment, let sourceTask = taskController.getTask(withId: segment.taskId) else {
             return
         }
-        let controller = ChangeSegmentTaskViewController(nibName: NSNib.Name(rawValue: "ChangeSegmentTaskViewController"), bundle: nil)
+        let controller = ChangeSegmentTaskViewController(nibName: "ChangeSegmentTaskViewController", bundle: nil)
         
         controller.taskController = taskController
         controller.segment = segment
@@ -481,14 +481,14 @@ class ViewController: NSViewController {
             }
         }
         
-        self.presentViewControllerAsModalWindow(controller)
+        self.presentAsModalWindow(controller)
     }
     
     @objc func didTapEditRunnignSegmentStartDate(_ sender: NSMenuItem) {
         guard let segment = taskController.runningSegment else {
             return
         }
-        guard let controller = storyboard?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "editDate")) as? EditDateViewController else {
+        guard let controller = storyboard?.instantiateController(withIdentifier: "editDate") as? EditDateViewController else {
             return
         }
         
@@ -513,7 +513,7 @@ class ViewController: NSViewController {
             controller.dismiss(self)
         }
         
-        presentViewControllerAsModalWindow(controller)
+        presentAsModalWindow(controller)
     }
     
     @objc func didTapFillTaskWithSegment(_ sender: NSMenuItem) {
@@ -562,18 +562,18 @@ class ViewController: NSViewController {
         if(!isRunning) {
             // Delete
             let delete = NSMenuItem(title: "Delete Segment", action:#selector(ViewController.didTapRemoveSegment(_:)), keyEquivalent: "")
-            delete.image = NSImage(named: NSImage.Name(rawValue: "NSStopProgressFreestandingTemplate"))
+            delete.image = NSImage(named: "NSStopProgressFreestandingTemplate")
             delete.representedObject = segment
             
             // Edit dates
             let editDate = NSMenuItem(title: "Edit start/end", action: #selector(ViewController.didTapEditSegmentDates(_:)), keyEquivalent: "")
-            editDate.image = NSImage(named: NSImage.Name(rawValue: "NSActionTemplate"))
+            editDate.image = NSImage(named: "NSActionTemplate")
             editDate.representedObject = segment
             editDate.target = self
             
             // Change task
             let changeTask = NSMenuItem(title: "Change segment's task", action: #selector(ViewController.didTapChangeSegmentTask(_:)), keyEquivalent: "")
-            changeTask.image = NSImage(named: NSImage.Name(rawValue: "NSShareTemplate"))
+            changeTask.image = NSImage(named: "NSShareTemplate")
             changeTask.representedObject = segment
             changeTask.target = self
             
@@ -586,7 +586,7 @@ class ViewController: NSViewController {
         } else {
             // Add editing start date for running segment
             let editDate = NSMenuItem(title: "Edit start", action: #selector(ViewController.didTapEditRunnignSegmentStartDate(_:)), keyEquivalent: "")
-            editDate.image = NSImage(named: NSImage.Name(rawValue: "NSActionTemplate"))
+            editDate.image = NSImage(named: "NSActionTemplate")
             editDate.target = self
             
             let sub = NSMenu()
@@ -854,7 +854,7 @@ extension ViewController: TaskViewDelegate {
             taskController.startTask(taskId: taskView.taskId)
             
             // Re-order views, bringing the selected view to the top
-            if let i = taskViews.index(of: taskView) {
+            if let i = taskViews.firstIndex(of: taskView) {
                 taskViews.remove(at: i)
                 taskViews.append(taskView)
             }
@@ -944,7 +944,7 @@ extension ViewController: TaskViewDelegate {
     
     func taskView(_ taskView: TaskView, allowSegmentDrop segment: TaskSegment, withDragInfo dragInfo: NSDraggingInfo) -> (Bool, NSDragOperation) {
         // Segment comes from an external text source - allow copying
-        if(!(dragInfo.draggingSource() is TimelineView)) {
+        if(!(dragInfo.draggingSource is TimelineView)) {
             return (true, .copy)
         }
         
@@ -964,7 +964,7 @@ extension ViewController: TaskViewDelegate {
         }
         
         // Segment comes from an external text source - copy segment data
-        if(!(dragInfo.draggingSource() is TimelineView)) {
+        if(!(dragInfo.draggingSource is TimelineView)) {
             return confirmAddSegment(segment, toTask: targetTask)
         }
         
@@ -1013,7 +1013,7 @@ extension ViewController: TimelineViewDelegate {
     }
     
     func timelineView(_ timelineView: TimelineView, colorForSegment segment: TaskSegment) -> NSColor {
-        let index = taskController.currentTasks.index { $0.id == segment.taskId } ?? 0
+        let index = taskController.currentTasks.firstIndex { $0.id == segment.taskId } ?? 0
         
         let colors = ViewController.defaultColors()
         

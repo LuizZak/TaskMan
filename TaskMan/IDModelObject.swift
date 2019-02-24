@@ -19,8 +19,8 @@ protocol IDModelObject: Hashable {
 
 /// Default implementation of Hashable for an IDModelObject which has a Hashable key type - returns the hash of the object's ID
 extension IDModelObject where IdentifierType: Hashable {
-    var hashValue: Int {
-        return id.hashValue
+    func hash(into hasher: inout Hasher) {
+        id.hash(into: &hasher)
     }
 }
 

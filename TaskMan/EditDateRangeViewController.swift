@@ -81,7 +81,7 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
         dismiss(self)
     }
     
-    override func controlTextDidChange(_ obj: Notification) {
+    func controlTextDidChange(_ obj: Notification) {
         // Try to evaluate time interval from text field
         if(!isDurationTextValid()) {
             txtDuration.toolTip = "The given text is not a valid time string"

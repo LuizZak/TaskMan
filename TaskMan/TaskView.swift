@@ -72,10 +72,10 @@ class TaskView: NSView {
             let image: NSImage?
             switch(displayState) {
             case .stopped:
-                image = NSImage(named: NSImage.Name(rawValue: "NSRightFacingTriangleTemplate"))
+                image = NSImage(named: "NSRightFacingTriangleTemplate")
                 layer?.borderColor = NSColor.clear.cgColor
             case .running:
-                image = NSImage(named: NSImage.Name(rawValue: "NSMenuOnStateTemplate"))
+                image = NSImage(named: "NSMenuOnStateTemplate")
                 layer?.borderColor = NSColor.green.withAlphaComponent(0.3).cgColor
             }
             
@@ -100,7 +100,7 @@ class TaskView: NSView {
         self.layer?.borderWidth = 2
         self.layer?.masksToBounds = false
         
-        Bundle.main.loadNibNamed(NSNib.Name(rawValue: "TaskView"), owner: self, topLevelObjects: nil)
+        Bundle.main.loadNibNamed("TaskView", owner: self, topLevelObjects: nil)
         
         self.addSubview(view)
         
@@ -132,7 +132,7 @@ class TaskView: NSView {
         delegate?.didRightClickRuntimeLabel(onTaskView: self, withGesture: gesture)
     }
     
-    override func controlTextDidChange(_ obj: Notification) {
+    func controlTextDidChange(_ obj: Notification) {
         if let object = obj.object as? NSTextField, object == txtName {
             delegate?.taskView(self, didUpdateName: txtName.stringValue)
         }
@@ -189,7 +189,7 @@ extension TaskView {
     /// Returns a value from the DragAndDropState enumeration describing the result of the
     /// verification, and the associated drag and drop state.
     fileprivate func verifyDrag(_ sender: NSDraggingInfo) -> (DragAndDropState, NSDragOperation) {
-        let pasteBoard = sender.draggingPasteboard()
+        let pasteBoard = sender.draggingPasteboard
         if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType.rawValue, NSPasteboard.PasteboardType.string.rawValue])) {
             return (.none, NSDragOperation())
         }
@@ -204,7 +204,7 @@ extension TaskView {
             return (.none, NSDragOperation())
         }
         
-        guard let segment = try? TaskSegment(json: JSON.parse(string)) else {
+        guard let segment = try? TaskSegment(json: JSON(parseJSON: string)) else {
             return (.none, NSDragOperation())
         }
         
@@ -244,11 +244,11 @@ extension TaskView {
             return false
         }
         
-        let pasteBoard = sender.draggingPasteboard()
+        let pasteBoard = sender.draggingPasteboard
         if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType.rawValue, NSPasteboard.PasteboardType.string.rawValue])) {
             return false
         }
-        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: .string), let segment = try? TaskSegment(json: JSON.parse(string)) else {
+        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: .string), let segment = try? TaskSegment(json: JSON(parseJSON: string)) else {
             return false
         }
         

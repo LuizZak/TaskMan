@@ -92,19 +92,6 @@ extension Sequence {
         return true
     }
     
-    /// Returns the number of objects in this array that return true when passed through `compute`.
-    func count(compute: (Iterator.Element) throws -> Bool) rethrows -> Int {
-        var count = 0
-        
-        for item in self {
-            if(try compute(item)) {
-                count += 1
-            }
-        }
-        
-        return count
-    }
-    
     /// Returns a dictionary containing elements grouped by a specified key,
     /// applying a trasnform on the elements along the way.
     /// Note that the 'key' closure is required to always return the same T key
@@ -128,7 +115,7 @@ extension Sequence {
 extension Sequence where Iterator.Element: Equatable {
     /// Returns the count of values in this sequence type that equal the given `value` element
     func count(value: Iterator.Element) -> Int {
-        return count { $0 == value }
+        return count(where: { $0 == value })
     }
 }
 
@@ -136,7 +123,7 @@ extension RangeReplaceableCollection {
     /// Removes an item from the collection, usign the given compute closure to specify which item to remove
     @discardableResult
     mutating func removeFirst(where compute: (Self.Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
-        if let index = try self.index(where: compute) {
+        if let index = try self.firstIndex(where: compute) {
             return self.remove(at: index)
         }
         
@@ -148,7 +135,7 @@ extension RangeReplaceableCollection {
     @discardableResult
     mutating func remove(where compute: (Self.Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
         var removed: [Iterator.Element] = []
-        while let index = try self.index(where: compute) {
+        while let index = try self.firstIndex(where: compute) {
             removed.append(self.remove(at: index))
         }
         return removed

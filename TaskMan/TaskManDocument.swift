@@ -23,8 +23,8 @@ class TaskManDocument: NSDocument {
     }
     
     override func makeWindowControllers() {
-        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-        let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document View Controller")) as! NSWindowController
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        let windowController = storyboard.instantiateController(withIdentifier: "Document View Controller") as! NSWindowController
         self.addWindowController(windowController)
     }
 
@@ -39,11 +39,7 @@ class TaskManDocument: NSDocument {
     }
     
     override func read(from data: Data, ofType typeName: String) throws {
-        var error: NSError? = nil
-        var json = JSON(data: data, error: &error)
-        if let error = error {
-            throw error
-        }
+        var json = try JSON(data: data)
         
         guard let version = json["version"].int else {
             throw ReadError.InvalidFormat

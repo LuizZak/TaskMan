@@ -91,18 +91,20 @@ class TaskTimelineManager {
         }
         
         let original = segment.range
-        segment.range.startDate = startDate ?? original.startDate
-        segment.range.endDate = endDate ?? original.endDate
+        let newRange = DateRange(startDate: startDate ?? original.startDate, endDate: endDate ?? original.endDate)
+        
+        // Only do work if a change is detected
+        if newRange == original {
+            return
+        }
+        
+        segment.range = newRange
         
         segmentsNode.removeSegment(withId: id)
         
         segmentsNode.insert(segment)
         
-        // Only notify delegate if a change was detected
-        if(segment.range != original) {
-            self.delegate?.taskTimelineManager(self, didUpdateSegment: segment)
-            return
-        }
+        self.delegate?.taskTimelineManager(self, didUpdateSegment: segment)
         
         /*
         for (i, segment) in segments.enumerated() {
@@ -235,7 +237,7 @@ class TaskTimelineManager {
                 node.insert(segment)
             }
             
-            return node.fastMergeSegmentRanges().reduce(0) { $0 + $1.timeInterval }
+            return node.fastMergeSegmentRanges().reduce(into: 0) { $0 += $1.timeInterval }
         }
         
         var time: TimeInterval = 0
@@ -249,13 +251,13 @@ class TaskTimelineManager {
     /// Returns the earliest task segment date on this timeline manager.
     /// Returns nil, if no task segment is currently registered
     func earliestDate() -> Date? {
-        return segments.earliestSegmentDate()
+        return segmentsNode.earliestSegmentDate()
     }
     
     /// Returns the latest task segment date on this timeline manager.
     /// Returns nil, if no task segment is currently registered
     func latestDate() -> Date? {
-        return segments.latestSegmentDate()
+        return segmentsNode.latestSegmentDate()
     }
     
     /// Generates a unique task segment ID
@@ -304,20 +306,18 @@ extension TaskTimelineManager {
         
         // Update segments one by one
         for item in result {
-            self.setSegmentDates(withId: item.id, startDate: item.range.startDate, endDate: item.range.endDate)
+            setSegmentDates(withId: item.id, startDate: item.range.startDate, endDate: item.range.endDate)
         }
         
         for id in removedIds {
             segmentsNode.removeSegment(withId: id)
         }
-        //segments.remove { removedIds.contains($0.id) }
         
         delegate?.taskTimelineManager(self, didRemoveSegments: removed)
         
         return
     }
 }
-
 
 extension Sequence where Iterator.Element == TaskSegment {
     
@@ -336,7 +336,7 @@ extension Sequence where Iterator.Element == TaskSegment {
     /// Returns a time interval that matches the sum of every date range of every
     /// segment on this sequence of segments
     func intervalSum() -> TimeInterval {
-        return self.reduce(0) { $0 + $1.range.timeInterval }
+        return self.reduce(into: 0) { $0 += $1.range.timeInterval }
     }
     
     /// Returns the total range that covers the start of the earliest segment to
@@ -360,4 +360,3 @@ extension Sequence where Iterator.Element == TaskSegment {
         return range
     }
 }
-

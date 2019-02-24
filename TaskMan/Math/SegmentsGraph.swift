@@ -641,6 +641,7 @@ extension SegmentsNode {
     /// - Returns: `true` if method returned after complete traversal, or `false`
     /// if `closure` returns false.
     /// - Throws: Rethrows any error from `closure`.
+    @discardableResult
     func iterateAllSegments(with closure: (TaskSegment) throws -> Bool) rethrows -> Bool {
         for segment in segments {
             if(try !closure(segment)) {
@@ -675,6 +676,96 @@ extension SegmentsNode {
         }
         
         return values
+    }
+    
+    /// Returns the earliest starting segment date on this graph.
+    ///
+    /// - Returns: A date corresponding to the earliest segment's start date on
+    /// this graph, or nil, if none was found.
+    func earliestSegmentDate() -> Date? {
+        if segmentsCount == 0 {
+            return nil
+        }
+        
+        let earliestHere = segments.min { $0.range.startDate < $1.range.startDate }?.range.startDate
+        
+        // If we have an earliest date to start working with, use it to trim the
+        // search space- otherwise, make a full sequential search from left to
+        // right
+        if let earliest = earliestHere {
+            let searchRange = DateRange(startDate: range.startDate, endDate: earliest)
+            var date = earliest
+            
+            querySegments(in: searchRange) { segment in
+                if segment.range.startDate < date {
+                    date = segment.range.startDate
+                }
+            }
+            
+            return date
+        }
+        
+        // Perform a simple traversal
+        var date: Date?
+        
+        iterateAllSegments { segment in
+            let segmentStart = segment.range.startDate
+            
+            if date == nil {
+                date = segmentStart
+            } else if let cur = date, cur > segmentStart {
+                date = segmentStart
+            }
+            
+            return true
+        }
+        
+        return date
+    }
+    
+    /// Returns the latest ending segment date on this graph.
+    ///
+    /// - Returns: A date corresponding to the latest segment's end date on
+    /// this graph, or nil, if none was found.
+    func latestSegmentDate() -> Date? {
+        if segmentsCount == 0 {
+            return nil
+        }
+        
+        let latestHere = segments.max { $0.range.endDate < $1.range.endDate }?.range.startDate
+        
+        // If we have an earliest date to start working with, use it to trim the
+        // search space- otherwise, make a full sequential search from left to
+        // right
+        if let latest = latestHere {
+            let searchRange = DateRange(startDate: latest, endDate: range.endDate)
+            var date = latest
+            
+            querySegments(in: searchRange) { segment in
+                if segment.range.endDate > date {
+                    date = segment.range.endDate
+                }
+            }
+            
+            return date
+        }
+        
+        // Perform a simple traversal
+        var date: Date?
+        
+        iterateAllSegments { segment in
+            let segmentEnd = segment.range.endDate
+            
+            if date == nil {
+                date = segmentEnd
+            } else if let cur = date, cur < segmentEnd {
+                date = segmentEnd
+            }
+            
+            return true
+        }
+        
+        return date
     }
 }
 
@@ -722,8 +813,8 @@ extension SegmentsNode {
         return ranges
     }
     
-    /// Returns a list of all date range gaps within this segments graph and all
-    /// children nodes recursively.
+    /// Returns the unoccupied ranges between the earliest to latest dates within
+    /// this segments graph.
     ///
     /// For example, a node configuration that spans (time is from left to right,
     /// each line is a segment represented in non-specific node depth):
@@ -888,7 +979,8 @@ extension SegmentsNode {
         return closest
     }
     
-    // Internal spatial query helper
+    // Internal spatial query helper - returns longest segment under a given
+    // point
     fileprivate func nextLongestSegment(on date: Date) -> TaskSegment? {
         var longest: TaskSegment?
         for segment in segments {

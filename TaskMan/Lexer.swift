@@ -444,7 +444,7 @@ class Lexer {
         }
         
         defer {
-            offset = inputString.characters.index(offset, offsetBy: 1)
+            offset = inputString.index(offset, offsetBy: 1)
         }
         
         return try peek()

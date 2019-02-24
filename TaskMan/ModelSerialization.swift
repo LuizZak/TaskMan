@@ -59,7 +59,7 @@ extension Sequence where Iterator.Element == JSON {
     /// Unserializes this array of JSON objects into a type provided through the generic T argument.
     /// This version returns an array of all successful initializations, ignoring any failed initializations
     func jsonUnserialize<T: JsonInitializable>(withType type: T.Type) -> [T] {
-        return self.flatMap { json in try? autoreleasepool { try T(json: json) } }
+        return self.compactMap { json in try? autoreleasepool { try T(json: json) } }
     }
 }
 

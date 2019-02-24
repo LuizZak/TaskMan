@@ -14,7 +14,7 @@ class TaskManStateConverter {
     
     /// Returns whether the given file version can be converted to the newest compatible format
     func canConvertFrom(version: Int) -> Bool {
-        if(version == 1) {
+        if version == 1 {
             return true
         }
         
@@ -24,7 +24,7 @@ class TaskManStateConverter {
     /// Converts the given JSON structure to the newest compatible format
     func convert(json: JSON, fromVersion version: Int) throws -> JSON {
         var json = json
-        if(version == 1) {
+        if version == 1 {
             // Pull running segment from the taskman state body to the list of running segments, and then
             // attach the segment ID to the json instead
             let segment = json["state", "running_segment"]

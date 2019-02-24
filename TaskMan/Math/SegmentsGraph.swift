@@ -169,21 +169,21 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     
     @discardableResult
     func insertIfFits(_ segment: TaskSegment) -> Bool {
-        if(!range.contains(range: segment.range)) {
+        if !range.contains(range: segment.range) {
             return false
         }
         
         // All paths bellow end up adding a segment
         segmentsCount += 1
         
-        if(segments.count < maxCountBeforeSplit || depth > maxDepth) {
+        if segments.count < maxCountBeforeSplit || depth > maxDepth {
             segments.append(segment)
             return true
         }
         
         subdivide()
         for node in subNodes {
-            if(node.insertIfFits(segment)) {
+            if node.insertIfFits(segment) {
                 return true
             }
         }
@@ -262,7 +262,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
         }
         
         for node in subNodes {
-            if(node.removeSegment(withId: id)) {
+            if node.removeSegment(withId: id) {
                 segmentsCount -= 1
                 squashEmptySubdivisions()
                 return true
@@ -340,7 +340,7 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     
     private func subdivide() {
         // Already split
-        if(subNodes.count > 0) {
+        if subNodes.count > 0 {
             return
         }
         
@@ -359,13 +359,13 @@ final class SegmentsNode: TaskSegmentsNodeGraph {
     
     private func squashEmptySubdivisions() {
         // Already squashed
-        if(subNodes.count == 0) {
+        if subNodes.count == 0 {
             return
         }
         
         // Verify if any of the sub-nodes is populated still
         for node in subNodes {
-            if(node.segmentsCount > 0) {
+            if node.segmentsCount > 0 {
                 return
             }
         }
@@ -468,14 +468,14 @@ extension SegmentsNode {
         }
         
         for segment in (reverseSearch ? segments.reversed() : segments) {
-            if(segment.range.contains(date: date)) {
+            if segment.range.contains(date: date) {
                 return segment
             }
         }
         
         if reverseSearch {
             for node in subNodes.reversed() {
-                if(node.range.contains(date: date)) {
+                if node.range.contains(date: date) {
                     if let segment = node.segment(on: date) {
                         return segment
                     }
@@ -483,7 +483,7 @@ extension SegmentsNode {
             }
         } else {
             for node in subNodes {
-                if(node.range.contains(date: date)) {
+                if node.range.contains(date: date) {
                     if let segment = node.segment(on: date) {
                         return segment
                     }
@@ -506,13 +506,13 @@ extension SegmentsNode {
         var count = 0
         
         for segment in segments {
-            if(segment.range.intersects(with: effectiveRange)) {
+            if segment.range.intersects(with: effectiveRange) {
                 count += 1
             }
         }
         
         for node in subNodes {
-            if(node.range.intersects(with: effectiveRange)) {
+            if node.range.intersects(with: effectiveRange) {
                 count += node.countOfSegments(intersecting: effectiveRange)
             }
         }
@@ -539,13 +539,13 @@ extension SegmentsNode {
     
     private func _appendAllSegments(intersecting range: DateRange, to array: inout [TaskSegment]) {
         for segment in segments {
-            if(segment.range.intersects(with: range)) {
+            if segment.range.intersects(with: range) {
                 array.append(segment)
             }
         }
         
         for node in subNodes {
-            if(node.range.intersects(with: range)) {
+            if node.range.intersects(with: range) {
                 node._appendAllSegments(intersecting: range, to: &array)
             }
         }
@@ -563,15 +563,15 @@ extension SegmentsNode {
     /// - Throws: Rethrows errors from `closure`.
     func firstSegment(on date: Date, where closure: (TaskSegment) throws -> Bool) rethrows -> TaskSegment? {
         for segment in segments {
-            if(segment.range.contains(date: date)) {
-                if(try closure(segment)) {
+            if segment.range.contains(date: date) {
+                if try closure(segment) {
                     return segment
                 }
             }
         }
         
         for node in subNodes {
-            if(node.range.contains(date: date)) {
+            if node.range.contains(date: date) {
                 if let segment = try node.firstSegment(on: date, where: closure) {
                     return segment
                 }
@@ -591,7 +591,7 @@ extension SegmentsNode {
     /// - Throws: Rethrows errors from `closure`.
     func firstSegment(where closure: (TaskSegment) throws -> Bool) rethrows -> TaskSegment? {
         for segment in segments {
-            if(try closure(segment)) {
+            if try closure(segment) {
                 return segment
             }
         }
@@ -620,13 +620,13 @@ extension SegmentsNode {
         }
         
         for segment in segments {
-            if(segment.range.intersects(with: effectiveRange)) {
+            if segment.range.intersects(with: effectiveRange) {
                 try closure(segment)
             }
         }
         
         for node in subNodes {
-            if(node.range.intersects(with: effectiveRange)) {
+            if node.range.intersects(with: effectiveRange) {
                 try node.querySegments(in: effectiveRange, with: closure)
             }
         }
@@ -644,13 +644,13 @@ extension SegmentsNode {
     @discardableResult
     func iterateAllSegments(with closure: (TaskSegment) throws -> Bool) rethrows -> Bool {
         for segment in segments {
-            if(try !closure(segment)) {
+            if try !closure(segment) {
                 return false
             }
         }
         
         for node in subNodes {
-            if(try !node.iterateAllSegments(with: closure)) {
+            if try !node.iterateAllSegments(with: closure) {
                 return false
             }
         }
@@ -872,7 +872,7 @@ extension SegmentsNode {
     /// - Returns: Leftmost dated segment that is closest to `date`, while ending
     /// earlier than it.
     func closestSegmentEndingEarlierThan(date: Date, nonEmptyOnly: Bool = false) -> TaskSegment? {
-        if(date < range.startDate) {
+        if date < range.startDate {
             return nil
         }
         
@@ -933,7 +933,7 @@ extension SegmentsNode {
         // If the node has a range ending earlier than the queried date, however,
         // it can't possibly contain a segment that starts later than it (nodes
         // must contain segments that can be entirely fitted within them).
-        if(date > range.endDate) {
+        if date > range.endDate {
             return nil
         }
         

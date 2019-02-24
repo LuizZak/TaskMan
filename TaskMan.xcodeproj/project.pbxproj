@@ -25,7 +25,6 @@
 		A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */; };
 		A055CC571E01A45E00A997D8 /* TaskManStateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055CC561E01A45E00A997D8 /* TaskManStateConverter.swift */; };
 		A06330011DF2004E003043A9 /* EditDateRangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06330001DF2004E003043A9 /* EditDateRangeViewController.swift */; };
-		A08280AC1EECC50C00562FE9 /* TaskManTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */; };
 		A0A6B6531DF5C49100F84863 /* ModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6501DF5C49100F84863 /* ModelObject.swift */; };
 		A0A6B6541DF5C49100F84863 /* IDModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6511DF5C49100F84863 /* IDModelObject.swift */; };
 		A0A6B6551DF5C49100F84863 /* ModelSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A6B6521DF5C49100F84863 /* ModelSerialization.swift */; };
@@ -112,7 +111,6 @@
 		A0FA92A11D8C6F7D00F3916D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A0FA92A31D8C6F7D00F3916D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A0FA92A81D8C6F7D00F3916D /* TaskManTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TaskManTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskManTests.swift; sourceTree = "<group>"; };
 		A0FA92AE1D8C6F7D00F3916D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A0FA92B91D8C703300F3916D /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		A0FA92BB1D8C70F000F3916D /* TaskController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskController.swift; sourceTree = "<group>"; };
@@ -269,7 +267,6 @@
 		A0FA92AB1D8C6F7D00F3916D /* TaskManTests */ = {
 			isa = PBXGroup;
 			children = (
-				A0FA92AC1D8C6F7D00F3916D /* TaskManTests.swift */,
 				A01F93971DF861D60080FF14 /* DateRangeTests.swift */,
 				A018D1301E0F173300FE7AD2 /* TaskTimelineManagerTests.swift */,
 				A055CC541E01A38E00A997D8 /* TaskManStateConverterTests.swift */,
@@ -516,7 +513,6 @@
 				A055CC551E01A38E00A997D8 /* TaskManStateConverterTests.swift in Sources */,
 				A018D1311E0F173300FE7AD2 /* TaskTimelineManagerTests.swift in Sources */,
 				A01F93981DF861D60080FF14 /* DateRangeTests.swift in Sources */,
-				A08280AC1EECC50C00562FE9 /* TaskManTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

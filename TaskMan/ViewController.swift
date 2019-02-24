@@ -137,14 +137,14 @@ class ViewController: NSViewController {
     
     @objc func timerDidFire() {
         // Update running segment and views
-        if(taskController.runningSegment != nil) {
+        if taskController.runningSegment != nil {
             lockFileChangedFlag {
                 taskController.updateRunningSegment(withEndDate: Date())
                 updateTaskViews(updateType: .RuntimeLabel)
                 updateTimelineViews()
                 
                 // Not notified yet
-                if(Date() > dateRange.endDate) {
+                if Date() > dateRange.endDate {
                     notifyExceeded()
                 }
             }
@@ -159,7 +159,7 @@ class ViewController: NSViewController {
         }
         if let last = lastNotificationDate {
             // Last notification fire time was less than a minute ago - ignore notification
-            if(abs(Date().timeIntervalSince(last)) < 60) {
+            if abs(Date().timeIntervalSince(last)) < 60 {
                 return
             }
         }
@@ -226,20 +226,20 @@ class ViewController: NSViewController {
         }
         
         for (i, view) in taskViews.enumerated() {
-            if(view.taskId == taskView.taskId) {
+            if view.taskId == taskView.taskId {
                 view.removeFromSuperview()
                 view.delegate = nil
                 taskViews.remove(at: i)
             }
         }
         
-        NSAnimationContext.runAnimationGroup({ context in
+        NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.20
             context.allowsImplicitAnimation = true
             self.updateTaskViews()
             self.tasksContainerView.layout()
             self.tasksScrollView.contentView.layout()
-        })
+        }
     }
     
     func selectViewForTask(task: Task) {
@@ -250,11 +250,11 @@ class ViewController: NSViewController {
     }
     
     func selectTaskView(taskView: TaskView) {
-        NSAnimationContext.runAnimationGroup({ context in
+        NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.20
             context.allowsImplicitAnimation = true
             self.tasksScrollView.contentView.scrollToVisible(taskView.frame)
-        })
+        }
         self.view.window?.makeFirstResponder(taskView.txtDescription)
     }
     
@@ -263,33 +263,33 @@ class ViewController: NSViewController {
     }
     
     fileprivate func updateTaskViews(updateType: TaskViewUpdateType = .Full) {
-        if(uiUpdatesLocked) {
+        if uiUpdatesLocked {
             uiTaskViewUpdates.formUnion(updateType)
             return
         }
         
         for (i, view) in taskViews.enumerated() {
-            if(updateType.contains(.Position)) {
+            if updateType.contains(.Position) {
                 view.frame.origin.y = CGFloat(i * 166)
                 view.frame.size.width = 650
                 view.frame.origin.x = tasksContainerView.frame.width / 2 - view.frame.width / 2
             }
-            if(updateType.contains(.DisplayState)) {
+            if updateType.contains(.DisplayState) {
                 view.displayState = taskController.runningTask?.id == view.taskId ? .running : .stopped
             }
-            if(updateType.contains(.RuntimeLabel)) {
+            if updateType.contains(.RuntimeLabel) {
                 view.lblRuntime.stringValue = formatTimestamp(taskController.timeline.totalTime(forTaskId: view.taskId))
             }
         }
         
-        if(updateType.contains(.Position)) {
+        if updateType.contains(.Position) {
             tasksHeightConstraint.constant = CGFloat(taskViews.count * 166)
             tasksContainerView.needsLayout = true
         }
     }
     
     func updateTimelineViews() {
-        if(uiUpdatesLocked) {
+        if uiUpdatesLocked {
             uiTimelineUpdatePending = true
             return
         }
@@ -309,7 +309,7 @@ class ViewController: NSViewController {
     private func addNewTask(running: Bool) -> Task {
         // Figure out a unique name for the task
         var num = 1
-        while(taskController.getTask(withName: "New Task #\(num)") != nil) {
+        while taskController.getTask(withName: "New Task #\(num)") != nil {
             num += 1
         }
         
@@ -418,7 +418,7 @@ class ViewController: NSViewController {
         delayUiUpdates {
             // Stop task if it's running
             var restartDate: Date?
-            if(taskController.runningTask?.id == taskView.taskId) {
+            if taskController.runningTask?.id == taskView.taskId {
                 restartDate = taskController.stopCurrentTask()?.range.startDate
             }
             
@@ -471,12 +471,12 @@ class ViewController: NSViewController {
             }
             
             // No change detected
-            if(task.id == sourceTask.id) {
+            if task.id == sourceTask.id {
                 controller.view.window?.performClose(nil)
                 return
             }
             
-            if(sSelf.confirmMoveSegment(segment, fromTask: sourceTask, toTask: task)) {
+            if sSelf.confirmMoveSegment(segment, fromTask: sourceTask, toTask: task) {
                 controller.view.window?.performClose(nil)
             }
         }
@@ -495,7 +495,7 @@ class ViewController: NSViewController {
         controller.date = segment.range.startDate
         
         controller.didTapOkCallback = { (controller) -> Void in
-            if(controller.date > Date()) {
+            if controller.date > Date() {
                 let alert = NSAlert()
                 alert.alertStyle = .informational
                 alert.messageText = "Please specify a date that is in the past for the running segment."
@@ -559,7 +559,7 @@ class ViewController: NSViewController {
         let isRunning = taskController.isSegmentRunning(segmentId: segment.id)
         
         // Add editing start/end dates
-        if(!isRunning) {
+        if !isRunning {
             // Delete
             let delete = NSMenuItem(title: "Delete Segment", action:#selector(ViewController.didTapRemoveSegment(_:)), keyEquivalent: "")
             delete.image = NSImage(named: "NSStopProgressFreestandingTemplate")
@@ -601,7 +601,7 @@ class ViewController: NSViewController {
     }
     
     func markChangesPending() {
-        if(fileChangedLocked) {
+        if fileChangedLocked {
             return
         }
         
@@ -638,11 +638,11 @@ class ViewController: NSViewController {
             uiUpdatesLocked = false
             
             // Flush updates
-            if(updateAfter) {
-                if(uiTaskViewUpdates != []) {
+            if updateAfter {
+                if uiTaskViewUpdates != [] {
                     updateTaskViews(updateType: uiTaskViewUpdates)
                 }
-                if(uiTimelineUpdatePending) {
+                if uiTimelineUpdatePending {
                     updateTimelineViews()
                 }
             }
@@ -672,20 +672,20 @@ class ViewController: NSViewController {
     static func defaultColors() -> [NSColor] {
         
         return [
-            NSColor(red: 39.0/255.0,    green: 78.0/255.0,  blue: 192.0/255.0,  alpha: 1),
-            NSColor(red: 209.0/255.0,   green: 36.0/255.0,  blue: 17.0/255.0,   alpha: 1),
-            NSColor(red: 253.0/255.0,   green: 134.0/255.0, blue: 9.0/255.0,    alpha: 1),
-            NSColor(red: 23.0/255.0,    green: 136.0/255.0, blue: 19.0/255.0,   alpha: 1),
-            NSColor(red: 133.0/255.0,   green: 0.0/255.0,   blue: 135.0/255.0,  alpha: 1),
-            NSColor(red: 17.0/255.0,    green: 135.0/255.0, blue: 185.0/255.0,  alpha: 1),
-            NSColor(red: 210.0/255.0,   green: 43.0/255.0,  blue: 100.0/255.0,  alpha: 1),
-            NSColor(red: 86.0/255.0,    green: 157.0/255.0, blue: 5.0/255.0,    alpha: 1),
-            NSColor(red: 167.0/255.0,   green: 28.0/255.0,  blue: 35.0/255.0,   alpha: 1),
-            NSColor(red: 39.0/255.0,    green: 79.0/255.0,  blue: 139.0/255.0,  alpha: 1),
-            NSColor(red: 134.0/255.0,   green: 45.0/255.0,  blue: 134.0/255.0,  alpha: 1),
-            NSColor(red: 33.0/255.0,    green: 155.0/255.0, blue: 135.0/255.0,  alpha: 1),
-            NSColor(red: 154.0/255.0,   green: 157.0/255.0, blue: 16.0/255.0,   alpha: 1),
-            NSColor(red: 82.0/255.0,    green: 22.0/255.0,  blue: 193.0/255.0,  alpha: 1)
+            NSColor(red: 39.0/255.0,  green: 78.0/255.0,  blue: 192.0/255.0, alpha: 1),
+            NSColor(red: 209.0/255.0, green: 36.0/255.0,  blue: 17.0/255.0,  alpha: 1),
+            NSColor(red: 253.0/255.0, green: 134.0/255.0, blue: 9.0/255.0,   alpha: 1),
+            NSColor(red: 23.0/255.0,  green: 136.0/255.0, blue: 19.0/255.0,  alpha: 1),
+            NSColor(red: 133.0/255.0, green: 0.0/255.0,   blue: 135.0/255.0, alpha: 1),
+            NSColor(red: 17.0/255.0,  green: 135.0/255.0, blue: 185.0/255.0, alpha: 1),
+            NSColor(red: 210.0/255.0, green: 43.0/255.0,  blue: 100.0/255.0, alpha: 1),
+            NSColor(red: 86.0/255.0,  green: 157.0/255.0, blue: 5.0/255.0,   alpha: 1),
+            NSColor(red: 167.0/255.0, green: 28.0/255.0,  blue: 35.0/255.0,  alpha: 1),
+            NSColor(red: 39.0/255.0,  green: 79.0/255.0,  blue: 139.0/255.0, alpha: 1),
+            NSColor(red: 134.0/255.0, green: 45.0/255.0,  blue: 134.0/255.0, alpha: 1),
+            NSColor(red: 33.0/255.0,  green: 155.0/255.0, blue: 135.0/255.0, alpha: 1),
+            NSColor(red: 154.0/255.0, green: 157.0/255.0, blue: 16.0/255.0,  alpha: 1),
+            NSColor(red: 82.0/255.0,  green: 22.0/255.0,  blue: 193.0/255.0, alpha: 1)
         ]
     }
 }
@@ -698,7 +698,7 @@ extension ViewController {
     /// Returns whether the user has tapped the YES button.
     func confirmRemoveTask(_ task: Task) -> Bool {
         let result = showYesNoDialog(withMessage: "Are you sure you want to remove the task '\(task.name)'?")
-        if(!result) {
+        if !result {
             return false
         }
         
@@ -709,15 +709,15 @@ extension ViewController {
         return true
     }
     
-    /// Shows an alert interface to confirm creation of a segment on a tasks, and creates it
-    /// if the user has selected 'Yes'.
+    /// Shows an alert interface to confirm creation of a segment on a tasks, and
+    /// creates it if the user has selected 'Yes'.
     /// Returns whether the user has tapped the YES button to move the task segment.
     func confirmAddSegment(_ segment: TaskSegment, toTask targetTask: Task) -> Bool {
         let startDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.startDate)
         let endDateString = tasksTimelineView.dateTimeFormatter.string(from: segment.range.endDate)
         
         let result = showYesNoDialog(withMessage: "Would you like to add the segment from \(startDateString) to \(endDateString) to task \(targetTask.name)?")
-        if(!result) {
+        if !result {
             return false
         }
         
@@ -727,12 +727,12 @@ extension ViewController {
         return true
     }
     
-    /// Shows an alert interface to confirm moving a segment between two tasks, and move it
-    /// if the user has selected 'Yes'.
+    /// Shows an alert interface to confirm moving a segment between two tasks,
+    /// and move it if the user has selected 'Yes'.
     /// Returns whether the user has tapped the YES button to move the task segment.
     func confirmMoveSegment(_ segment: TaskSegment, fromTask sourceTask: Task, toTask targetTask: Task) -> Bool {
         let result = showYesNoDialog(withMessage: "Would you like to send the segment from task \(sourceTask.name) to task \(targetTask.name)?")
-        if(!result) {
+        if !result {
             return false
         }
         
@@ -862,7 +862,7 @@ extension ViewController: TaskViewDelegate {
     
     func didTapStartStopButton(onTaskView taskView: TaskView) {
         // Check if task is running
-        if(taskController.runningTask?.id == taskView.taskId) {
+        if taskController.runningTask?.id == taskView.taskId {
             taskController.stopCurrentTask()
         } else {
             taskController.startTask(taskId: taskView.taskId)
@@ -900,7 +900,7 @@ extension ViewController: TaskViewDelegate {
         listMenuView.addItem(joinConnected)
         
         // If task is currently running, add option to split running segment and start a fresh one in this instant
-        if(taskController.runningTask?.id == taskView.taskId) {
+        if taskController.runningTask?.id == taskView.taskId {
             let splitSegment = NSMenuItem(title: "Split Running Segment", action: #selector(ViewController.didTapSplitRunningSegment(_:)), keyEquivalent: "")
             splitSegment.target = self
             splitSegment.representedObject = taskView
@@ -917,7 +917,7 @@ extension ViewController: TaskViewDelegate {
             var title = "Segment \(i + 1) \(start) to \(end)"
             let isRunning = taskController.isSegmentRunning(segmentId: segment.id)
             // Add label to segment to indicate it's currently running
-            if(isRunning) {
+            if isRunning {
                 title += " - running"
             }
             
@@ -958,12 +958,12 @@ extension ViewController: TaskViewDelegate {
     
     func taskView(_ taskView: TaskView, allowSegmentDrop segment: TaskSegment, withDragInfo dragInfo: NSDraggingInfo) -> (Bool, NSDragOperation) {
         // Segment comes from an external text source - allow copying
-        if(!(dragInfo.draggingSource is TimelineView)) {
+        if !(dragInfo.draggingSource is TimelineView) {
             return (true, .copy)
         }
         
         // Unrecognized source task ID
-        if(taskController.getTask(withId: segment.taskId) == nil) {
+        if taskController.getTask(withId: segment.taskId) == nil {
             return (false, NSDragOperation())
         }
         
@@ -978,7 +978,7 @@ extension ViewController: TaskViewDelegate {
         }
         
         // Segment comes from an external text source - copy segment data
-        if(!(dragInfo.draggingSource is TimelineView)) {
+        if !(dragInfo.draggingSource is TimelineView) {
             return confirmAddSegment(segment, toTask: targetTask)
         }
         
@@ -1011,7 +1011,7 @@ extension ViewController: TimelineViewDataSource {
     
     func timelineView(_ timelineView: TimelineView, willStartDraggingSegment segment: TaskSegment) -> Bool {
         // Only allow dragging segments that are owned by a timeline view, or coming from the general timeline view
-        if(timelineView.userTag == -1) {
+        if timelineView.userTag == -1 {
             return true
         }
         
@@ -1031,8 +1031,8 @@ extension ViewController: TimelineViewDelegate {
         
         let colors = ViewController.defaultColors()
         
-        if(timelineView.userTag != -1) {
-            if(segment.taskId != timelineView.userTag) {
+        if timelineView.userTag != -1 {
+            if segment.taskId != timelineView.userTag {
                 return colors[index % colors.count].withAlphaComponent(0.075)
             }
         }
@@ -1059,7 +1059,7 @@ extension ViewController: TimelineViewDelegate {
     }
     
     func timelineView(_ timelineView: TimelineView, didTapSegment segment: TaskSegment, with event: NSEvent) {
-        if(event.type == .rightMouseUp) {
+        if event.type == .rightMouseUp {
             let windowPoint = event.locationInWindow
             let point = timelineView.convert(windowPoint, from: nil)
             
@@ -1078,7 +1078,7 @@ extension ViewController: TimelineViewDelegate {
     }
     
     func timelineView(_ timelineView: TimelineView, didTapEmptyDate date: Date, with event: NSEvent) {
-        if(event.type == .rightMouseUp) {
+        if event.type == .rightMouseUp {
             let menu = NSMenu(title: "TestMenu")
             
             if let task = taskController.getTask(withId: timelineView.userTag) {

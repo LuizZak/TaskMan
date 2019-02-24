@@ -216,7 +216,7 @@ extension TaskView {
         
         let (allow, operation) = delegate.taskView(self, allowSegmentDrop: segment, withDragInfo: sender)
         
-        if(!allow) {
+        if !allow {
             return (.denied, NSDragOperation())
         }
         
@@ -246,7 +246,7 @@ extension TaskView {
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         dragAndDropDisplayState = .none
         
-        if(verifyDrag(sender).0 != .accepted) {
+        if verifyDrag(sender).0 != .accepted {
             return false
         }
         

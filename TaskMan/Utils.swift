@@ -54,7 +54,7 @@ extension Sequence {
     func last(where compute: (Iterator.Element) throws -> Bool) throws -> Iterator.Element {
         var last: Iterator.Element?
         for item in self {
-            if(try compute(item)) {
+            if try compute(item) {
                 last = item
             }
         }
@@ -72,7 +72,7 @@ extension Sequence {
     /// Succeeds fast on the first item that returns true
     func any(compute: (Iterator.Element) throws -> Bool) rethrows -> Bool {
         for item in self {
-            if(try compute(item)) {
+            if try compute(item) {
                 return true
             }
         }
@@ -84,7 +84,7 @@ extension Sequence {
     /// Fails fast on the first item that returns false
     func all(compute: (Iterator.Element) throws -> Bool) rethrows -> Bool {
         for item in self {
-            if(try !compute(item)) {
+            if try !compute(item) {
                 return false
             }
         }

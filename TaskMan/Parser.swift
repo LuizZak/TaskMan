@@ -21,7 +21,7 @@ class Parser {
         
         // Check if it's not EoF
         lexer.skipWhitespace()
-        if(!lexer.isEof()) {
+        if !lexer.isEof() {
             return ASTreeNode.invalidAST(error: "Expected EoF at \(lexer.offset), received \(lexer.nextTokenType())")
         }
         
@@ -44,8 +44,8 @@ class Parser {
     func expression() throws -> ASTreeNode {
         
         // Always start by reading a value
-        if(!lexer.isNextTokenValue()) {
-            if(!lexer.isNextTokenOperator(.OpenParenthesis)) {
+        if !lexer.isNextTokenValue() {
+            if !lexer.isNextTokenOperator(.OpenParenthesis) {
                 return ASTreeNode.invalidAST(error: "Expected value at index \(lexer.offset), received \(lexer.nextTokenType())")
             }
         }
@@ -70,7 +70,7 @@ class Parser {
             let op = try lexer.parseOperator()
             let rhs: ASTreeNode
             
-            if(lexer.isNextTokenOperator(.OpenParenthesis)) {
+            if lexer.isNextTokenOperator(.OpenParenthesis) {
                 // Consume open and close parenthesis and collect the inner expression
                 rhs = try parensExpression()
             } else {
@@ -93,7 +93,7 @@ class Parser {
     //      '(' expr ')'
     //
     func parensExpression() throws -> ASTreeNode {
-        if(!lexer.isNextTokenOperator(.OpenParenthesis)) {
+        if !lexer.isNextTokenOperator(.OpenParenthesis) {
             return ASTreeNode.invalidAST(error: "Expected open parens '(' at index \(self.lexer.offset), received \(self.lexer.nextTokenType())")
         }
         
@@ -101,7 +101,7 @@ class Parser {
         
         let exp = try expression()
         
-        if(!lexer.isNextTokenOperator(.CloseParenthesis)) {
+        if !lexer.isNextTokenOperator(.CloseParenthesis) {
             return ASTreeNode.invalidAST(error: "Expected closing parens ')' at index \(self.lexer.offset), received \(self.lexer.nextTokenType())")
         }
         
@@ -168,17 +168,17 @@ class Parser {
                                   .binaryExpression(_, let rOp, _)) = expression {
             
             // Operators already in order - skip
-            if(operandWeight(op) <= operandWeight(lOp) && operandWeight(op) <= operandWeight(rOp)) {
+            if operandWeight(op) <= operandWeight(lOp) && operandWeight(op) <= operandWeight(rOp) {
                 return expression
             }
             
             // Operator on left is higher precedence - on right is not
-            if(operandWeight(op) > operandWeight(lOp) && operandWeight(op) <= operandWeight(rOp)) {
+            if operandWeight(op) > operandWeight(lOp) && operandWeight(op) <= operandWeight(rOp) {
                 return orderOperatorsRecursive(expression.rotateRight())
             }
             
             // Operator on right is higher precedence - on left is not
-            if(operandWeight(op) <= operandWeight(lOp) && operandWeight(op) > operandWeight(rOp)) {
+            if operandWeight(op) <= operandWeight(lOp) && operandWeight(op) > operandWeight(rOp) {
                 return orderOperatorsRecursive(expression.rotateRight())
             }
             
@@ -191,7 +191,7 @@ class Parser {
                                   let op,
                                   _) = expression {
             
-            if(operandWeight(op) > operandWeight(lOp)) {
+            if operandWeight(op) > operandWeight(lOp) {
                 return orderOperatorsRecursive(expression.rotateRight())
             }
         }
@@ -201,7 +201,7 @@ class Parser {
                                   let op,
                                   .binaryExpression(_, let rOp, _)) = expression {
             
-            if(operandWeight(op) > operandWeight(rOp)) {
+            if operandWeight(op) > operandWeight(rOp) {
                 return orderOperatorsRecursive(expression.rotateLeft())
             }
         }

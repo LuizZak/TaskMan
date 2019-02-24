@@ -92,7 +92,7 @@ class Evaluator {
     }
     
     func formatTime(_ time: TimeInterval, format: String) -> String {
-        if(format.caseInsensitiveCompare("seconds") == .orderedSame) {
+        if format.caseInsensitiveCompare("seconds") == .orderedSame {
             return String(format: "%0.lf", time.rounded(.down))
         }
         

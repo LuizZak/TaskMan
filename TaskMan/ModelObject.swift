@@ -32,7 +32,7 @@ func ==<T: ModelObject>(lhs: T, rhs: T) -> Bool {
 
 func ==<T: ModelObject>(lhs: T, rhs: T) -> Bool where T: AnyObject {
     // Both objects are the same object - return true always
-    if(lhs === rhs) {
+    if lhs === rhs {
         return true
     }
     return lhs.equalsTo(rhs)

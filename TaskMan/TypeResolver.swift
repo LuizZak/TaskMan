@@ -114,11 +114,11 @@ final class TypeResolver {
         do {
             let lexer = Lexer(input: value.rawString)
             let peek = try lexer.peek()
-            if(lexer.isStringDelimiter(peek)) {
+            if lexer.isStringDelimiter(peek) {
                 return .string
             }
             _ = try lexer.parseFloatString()
-            if(lexer.isEof()) {
+            if lexer.isEof() {
                 return .float
             } else {
                 return .time

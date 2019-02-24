@@ -45,10 +45,10 @@ class TaskManDocument: NSDocument {
         }
         
         // Check conversion
-        if(version != FileFormatVersion) {
+        if version != FileFormatVersion {
             let converter = TaskManStateConverter()
             
-            if(!converter.canConvertFrom(version: version)) {
+            if !converter.canConvertFrom(version: version) {
                 throw ReadError.InvalidVersion
             }
             

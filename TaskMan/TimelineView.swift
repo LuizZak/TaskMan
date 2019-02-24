@@ -79,7 +79,7 @@ class TimelineView: NSView {
     /// Is nil, if the mouse is not within the bounds of this timeline view.
     fileprivate(set) var mouseDate: Date? {
         didSet {
-            if(oldValue != mouseDate) {
+            if oldValue != mouseDate {
                 needsDisplay = true
             }
         }
@@ -166,10 +166,10 @@ class TimelineView: NSView {
     /// Must be between 1 and 5
     var zoomLevel: CGFloat = 1 {
         didSet {
-            if(zoomLevel < 1) {
+            if zoomLevel < 1 {
                 zoomLevel = 1
             }
-            if(zoomLevel > 10) {
+            if zoomLevel > 10 {
                 zoomLevel = 10
             }
             
@@ -183,11 +183,11 @@ class TimelineView: NSView {
     /// y axis is ignored, x axis is locked to be > 0 && < bounds.width
     var contentOffset: NSPoint = NSPoint.zero {
         didSet {
-            if(contentOffset.x > 0) {
+            if contentOffset.x > 0 {
                 contentOffset.x = 0
             }
             let segBounds = boundsForSegments()
-            if(contentOffset.x < -(segBounds.width - bounds.width)) {
+            if contentOffset.x < -(segBounds.width - bounds.width) {
                 contentOffset.x = -(segBounds.width - bounds.width)
             }
             
@@ -297,12 +297,12 @@ class TimelineView: NSView {
         let point = self.convert(windowPoint, from: nil)
         
         // Dragging event
-        if(!dragging) {
+        if !dragging {
             // Detect move distance
             let distance = (dragStartPoint - point).magnitude
             
             // Ignore small drags
-            if(distance <= 3 || !delegate.timelineView(self, willStartDraggingSegment: mouseSegment)) {
+            if distance <= 3 || !delegate.timelineView(self, willStartDraggingSegment: mouseSegment) {
                 return
             }
             
@@ -345,8 +345,8 @@ class TimelineView: NSView {
         
         if dragging == false, let segment = segmentUnder(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
-        } else if(dragging == false) {
-            if(self.bounds.contains(point)) {
+        } else if dragging == false {
+            if self.bounds.contains(point) {
                 delegate?.timelineView(self, didTapEmptyDate: dateForOffset(at: point.x), with: event)
             }
         }
@@ -363,7 +363,7 @@ class TimelineView: NSView {
         if let segment = segmentUnder(point: point) {
             delegate?.timelineView(self, didTapSegment: segment, with: event)
         } else {
-            if(self.bounds.contains(point)) {
+            if self.bounds.contains(point) {
                 delegate?.timelineView(self, didTapEmptyDate: dateForOffset(at: point.x), with: event)
             }
         }
@@ -417,15 +417,15 @@ class TimelineView: NSView {
     
     override func scrollWheel(with event: NSEvent) {
         // Vertical scroll - ignore
-        if(!scrollLocked && abs(event.scrollingDeltaX) < abs(event.scrollingDeltaY)) {
+        if !scrollLocked && abs(event.scrollingDeltaX) < abs(event.scrollingDeltaY) {
             super.scrollWheel(with: event)
             return
         }
         // Lock scroll so we don't ignore vertical scrolls after the user has started scrolling this timeline view
         scrollLocked = true
-        if(event.phase == .changed) {
+        if event.phase == .changed {
             contentOffset.x += event.scrollingDeltaX
-        } else if(event.phase == .ended || event.phase == .cancelled) {
+        } else if event.phase == .ended || event.phase == .cancelled {
             scrollLocked = false
         }
         
@@ -477,7 +477,7 @@ class TimelineView: NSView {
             let frame = frameFor(segment: segment, withStartDate: start, endDate: end, inBounds: boundsForSegs)
             
             // Ignore if not visible
-            if(!dirtyRect.intersects(frame)) {
+            if !dirtyRect.intersects(frame) {
                 continue
             }
             
@@ -504,7 +504,7 @@ class TimelineView: NSView {
         if let mouseSeg = segments.first(where: { $0.id == mouseSegment?.id }) {
             let frame = frameFor(segment: mouseSeg, withStartDate: start, endDate: end, inBounds: boundsForSegs)
             
-            if(dirtyRect.intersects(frame)) {
+            if dirtyRect.intersects(frame) {
                 path.removeAllPoints()
                 
                 NSColor.black.setStroke()
@@ -516,7 +516,7 @@ class TimelineView: NSView {
             // Draw empty space, if mouse is over one
             let frame = frameForDateRange(dateRange: range, withStartDate: start, endDate: end, inBounds: boundsForSegs)
             
-            if(dirtyRect.intersects(frame)) {
+            if dirtyRect.intersects(frame) {
                 path.removeAllPoints()
                 
                 NSColor.selectedControlColor.highlight(withLevel: 0.3)?.setStroke()
@@ -527,7 +527,7 @@ class TimelineView: NSView {
         }
         
         // Draw current time
-        if(drawCurrentTime) {
+        if drawCurrentTime {
             renderTimeIndicator(context: context, onDate: Date(), clipRect: dirtyRect)
         }
     }
@@ -537,7 +537,7 @@ class TimelineView: NSView {
         let windowPoint = event.locationInWindow
         let point = self.convert(windowPoint, from: nil)
         
-        if(boundsForSegments().contains(point)) {
+        if boundsForSegments().contains(point) {
             mouseDate = dateForOffset(at: point.x)
         } else {
             mouseDate = nil
@@ -548,7 +548,7 @@ class TimelineView: NSView {
         let segment = segmentUnder(point: point)
         
         let isLastSegment = mouseSegment?.id == segment?.id
-        if(!isLastSegment && (mouseSegment == nil || segment == nil)) {
+        if !isLastSegment && (mouseSegment == nil || segment == nil) {
             needsDisplay = true
         }
         
@@ -562,7 +562,7 @@ class TimelineView: NSView {
     func imageForSegment(segment: TaskSegment) -> NSImage? {
         let frame = frameFor(segment: segment)
         
-        if(frame.width > 4096 || frame.height > 4096) {
+        if frame.width > 4096 || frame.height > 4096 {
             return nil
         }
         
@@ -610,7 +610,7 @@ class TimelineView: NSView {
         }
         
         // Ignore, if out of bounds
-        if(!boundsForSegments().contains(point)) {
+        if !boundsForSegments().contains(point) {
             return nil
         }
         
@@ -632,14 +632,14 @@ class TimelineView: NSView {
         let sDate = startDate
         let eDate = endDate
         
-        if(date < sDate || date > eDate) {
+        if date < sDate || date > eDate {
             return nil
         }
         
         let segmentsNode = SegmentsNode(with: segments, range: startDate...endDate)
         
         // Is on top of a segment
-        if(segmentsNode.segment(on: date) != nil) {
+        if segmentsNode.segment(on: date) != nil {
             return nil
         }
         
@@ -657,7 +657,7 @@ class TimelineView: NSView {
         let offset = offsetFor(date: date)
         
         // Time is not within the dirty region to redraw
-        if(!clipRect.contains(CGPoint(x: offset, y: clipRect.midY))) {
+        if !clipRect.contains(CGPoint(x: offset, y: clipRect.midY)) {
             return
         }
         
@@ -695,14 +695,14 @@ class TimelineView: NSView {
     
     
     fileprivate func renderHourBars(context: NSGraphicsContext, startDate: Date, endDate: Date, clipRect: NSRect, segmentBounds: NSRect) {
-        if(!clipRect.intersects(segmentBounds)) {
+        if !clipRect.intersects(segmentBounds) {
             return
         }
         
         let totalTime = endDate.timeIntervalSince(startDate)
         
         // Avoid drawing too many vertical lines (> 100)
-        if(totalTime > 100 * 3600) {
+        if totalTime > 100 * 3600 {
             return
         }
         
@@ -742,16 +742,16 @@ class TimelineView: NSView {
             x += hourWidth
             hoursAdded += 1
             
-            if(clipRect.minX >= x || segmentBounds.minX >= x) {
+            if clipRect.minX >= x || segmentBounds.minX >= x {
                 continue
             }
-            if(clipRect.maxX <= x) {
+            if clipRect.maxX <= x {
                 break
             }
             
             // Verify we are not at a 0h, if we are, draw a solid vertical bar instead of a dashed one
             let curDate = calendar.date(byAdding: .hour, value: hoursAdded, to: date)!
-            if(calendar.component(.hour, from: curDate) == 0) {
+            if calendar.component(.hour, from: curDate) == 0 {
                 path.setLineDash([], count: 0, phase: 0)
             } else {
                 path.setLineDash([5, 4], count: 2, phase: 0)

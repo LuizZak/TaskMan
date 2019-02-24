@@ -49,8 +49,8 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
         }
         
         // Validate duration text, if that tab's chosen
-        if(tabView.selectedTabViewItem == tabView.tabViewItems[1]) {
-            if(!isDurationTextValid()) {
+        if tabView.selectedTabViewItem == tabView.tabViewItems[1] {
+            if !isDurationTextValid() {
                 let alert = NSAlert()
                 alert.alertStyle = .critical
                 alert.messageText = "Please input a valid, positive time range for the duration."
@@ -61,7 +61,7 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
         
         updateDatesFromPickers()
         
-        if(startDate >= endDate) {
+        if startDate >= endDate {
             let alert = NSAlert()
             alert.alertStyle = .critical
             alert.messageText = "The start date must come before the end date"
@@ -83,7 +83,7 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
     
     func controlTextDidChange(_ obj: Notification) {
         // Try to evaluate time interval from text field
-        if(!isDurationTextValid()) {
+        if !isDurationTextValid() {
             txtDuration.toolTip = "The given text is not a valid time string"
             txtDuration.backgroundColor = NSColor(calibratedRed: 1, green: 0.75, blue: 0.75, alpha: 1)
         } else {
@@ -93,7 +93,7 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
     
     private func updateDatesFromPickers() {
         // Update before returning
-        if(tabView.selectedTabViewItem == tabView.tabViewItems.first) {
+        if tabView.selectedTabViewItem == tabView.tabViewItems.first {
             // Start/End date
             startDate = datePickerStart.dateValue
             endDate = datePickerEnd.dateValue
@@ -126,7 +126,7 @@ class EditDateRangeViewController: NSViewController, NSTabViewDelegate, NSTextFi
     func updateDisplay() {
         _ = view // Force view loading
         
-        if(tabView.selectedTabViewItem == tabView.tabViewItems.first) {
+        if tabView.selectedTabViewItem == tabView.tabViewItems.first {
             // Start/End date
             datePickerStart.dateValue = startDate
             datePickerEnd.dateValue = endDate

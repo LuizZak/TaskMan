@@ -114,8 +114,8 @@ class Lexer {
         
         skipWhitespace()
         
-        if(isNextTokenValue()) {
-            if(isNextTokenTime()) {
+        if isNextTokenValue() {
+            if isNextTokenTime() {
                 return .time(time: 0)
             }
             return .float(float: 0)
@@ -123,7 +123,7 @@ class Lexer {
         if isNextTokenOperator(), let type = try? operatorTypeForCharacter(peek()) {
             return .operator(operator: type)
         }
-        if(isNextTokenString()) {
+        if isNextTokenString() {
             return .string(string: "")
         }
         
@@ -151,7 +151,7 @@ class Lexer {
         
         skipWhitespace()
         
-        if(isEof() || !isOperator(try! peek())) {
+        if isEof() || !isOperator(try! peek()) {
             return false
         }
         
@@ -195,23 +195,23 @@ class Lexer {
         
         skipWhitespace()
         
-        if(isEof()) {
+        if isEof() {
             return false
         }
-        if(!isDigit(try! peek())) {
+        if !isDigit(try! peek()) {
             return false
         }
         // Consume all digits
-        if((try? parseIntString()) == nil) {
+        if (try? parseIntString()) == nil {
             return false
         }
         
         // Check if next token is ':' or a time label
-        if(isEof()) {
+        if isEof() {
             return false
         }
         let peekd = try! String(peek())
-        if(peekd == ":" || Lexer.timeLabels.contains(where: { $0.label == peekd })) {
+        if peekd == ":" || Lexer.timeLabels.contains(where: { $0.label == peekd }) {
             return true
         }
         
@@ -233,7 +233,7 @@ class Lexer {
     func parseOperator() throws -> (token: Token, op: OperatorType) {
         skipWhitespace()
         
-        if(!isOperator(try peek())) {
+        if !isOperator(try peek()) {
             throw invalidCharError("Expected operator but received '\(try peek())'")
         }
         
@@ -246,7 +246,7 @@ class Lexer {
     func parseValue() throws -> Token {
         skipWhitespace()
         
-        if(isNextTokenString()) {
+        if isNextTokenString() {
             return try parseString()
         }
         
@@ -255,14 +255,14 @@ class Lexer {
         var result = try parseFloatString()
         
         // Dot on number string - always float!
-        if(result.contains(".")) {
+        if result.contains(".") {
             return Token(tokenType: .float(float: Float(result)!), tokenString: result, inputRange: startOffset..<offset)
         }
         
         let resultDouble = TimeInterval(result)!
         var pendingLabel = false
         
-        if(try !isEof() && peek() == ":") {
+        if try !isEof() && peek() == ":" {
             _ = try next() // Consume ":"
             
             let minutes = try parseIntString()
@@ -277,7 +277,7 @@ class Lexer {
         }
         
         // No time label - integer value
-        if(isEof() || !(try! isTimeLabel(peekIdent()))) {
+        if isEof() || !(try! isTimeLabel(peekIdent())) {
             return Token(tokenType: .float(float: Float(resultDouble)), tokenString: result, inputRange: startOffset..<offset)
         }
         
@@ -324,7 +324,7 @@ class Lexer {
             pendingLabel = true
         }
         
-        if(pendingLabel) {
+        if pendingLabel {
             result += Lexer.timeLabels[lastLabel + 1].label
             timeTotal += lastValue * Lexer.timeLabels[lastLabel + 1].seconds
         }
@@ -340,7 +340,7 @@ class Lexer {
         
         let delimiter = try peek()
         
-        if(!isStringDelimiter(delimiter)) {
+        if !isStringDelimiter(delimiter) {
             throw try invalidCharError("Expected string delimiter \" or ' but received '\(peek())'")
         }
         
@@ -352,7 +352,7 @@ class Lexer {
         }
         
         // End delimiter
-        if(try peek() != delimiter) {
+        if try peek() != delimiter {
             throw try invalidCharError("Expected end of string delimiter \(delimiter) but received '\(peek())'")
         }
         _ = try next() // Consume delimiter
@@ -364,7 +364,7 @@ class Lexer {
     func parseIntString() throws -> String {
         skipWhitespace()
         
-        if(!isDigit(try peek())) {
+        if !isDigit(try peek()) {
             throw try invalidCharError("Expected integer but received '\(peek())'")
         }
         
@@ -382,7 +382,7 @@ class Lexer {
         skipWhitespace()
         
         // (0-9)+('.'(0..9)+)
-        if(!isDigit(try peek())) {
+        if !isDigit(try peek()) {
             throw try invalidCharError("Expected float but received '\(peek())'")
         }
         
@@ -393,11 +393,11 @@ class Lexer {
             try result.append(next())
         }
         
-        if(try !isEof() && peek() == ".") {
+        if try !isEof() && peek() == "." {
             try result.append(next())
             
             // Expect more digits
-            if(!isDigit(try peek())) {
+            if !isDigit(try peek()) {
                 throw try invalidCharError("Expected float but received '\(peek())'")
             }
             
@@ -416,7 +416,7 @@ class Lexer {
     }
     
     func peek() throws -> Character {
-        if(isEof()) {
+        if isEof() {
             throw endOfStringError()
         }
         
@@ -439,7 +439,7 @@ class Lexer {
     }
     
     func next() throws -> Character {
-        if(isEof()) {
+        if isEof() {
             throw endOfStringError()
         }
         
@@ -453,7 +453,7 @@ class Lexer {
     func nextIdent() throws -> String {
         var buffer = ""
         
-        if(isEof()) {
+        if isEof() {
             throw endOfStringError()
         }
         

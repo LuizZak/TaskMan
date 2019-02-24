@@ -108,13 +108,13 @@ class TaskTimelineManager {
         
         /*
         for (i, segment) in segments.enumerated() {
-            if(segment.id == id) {
+            if segment.id == id {
                 let original = segments[i].range
                 segments[i].range.startDate = startDate ?? original.startDate
                 segments[i].range.endDate = endDate ?? original.endDate
                 
                 // Only notify delegate if a change was detected
-                if(segments[i].range != original) {
+                if segments[i].range != original {
                     self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
                     return
                 }
@@ -138,7 +138,7 @@ class TaskTimelineManager {
         segmentsNode.insert(segment)
         /*
         for (i, segment) in segments.enumerated() {
-            if(segment.id == id && segments[i].taskId != taskId) {
+            if segment.id == id && segments[i].taskId != taskId {
                 segments[i].taskId = taskId
                 self.delegate?.taskTimelineManager(self, didUpdateSegment: segments[i])
                 break
@@ -153,7 +153,7 @@ class TaskTimelineManager {
         
         /*
         for (i, segment) in segments.enumerated() {
-            if(segment.id == id) {
+            if segment.id == id {
                 segments.remove(at: i)
                 self.delegate?.taskTimelineManager(self, didRemoveSegment: segment)
                 break
@@ -230,7 +230,7 @@ class TaskTimelineManager {
         }
         
         let node = SegmentsNode(startDate: start, endDate: end)
-        if(!withOverlap) {
+        if !withOverlap {
             // Insert all nodes into the segments node above for faster querying
             // of intersections
             for segment in segments {
@@ -284,7 +284,7 @@ extension TaskTimelineManager {
             
             // Combine with previous segment, then remove next segment on the
             // sequence
-            if(cur.range.intersects(with: next.range)) {
+            if cur.range.intersects(with: next.range) {
                 result[index].range = cur.range.union(with: next.range)
                 result.remove(at: index + 1)
                 changed = true
@@ -294,7 +294,7 @@ extension TaskTimelineManager {
         }
         
         // No change detected
-        if(!changed) {
+        if !changed {
             return
         }
         

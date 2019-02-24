@@ -96,7 +96,7 @@ class TaskController {
         
         currentTasks.append(task)
         
-        if(startRunning) {
+        if startRunning {
             startTask(taskId: task.id)
         }
         
@@ -166,14 +166,14 @@ class TaskController {
     /// Removes a task with a given id from this task controller
     func removeTask(withId id: Task.IDType) {
         // Stop the current task, if it's the one to be removed
-        if(runningSegment?.taskId == id) {
+        if runningSegment?.taskId == id {
             stopCurrentTask()
         }
         
         // Remove all segments of the task from the timeline
         timeline.removeSegmentsForTaskId(id)
         for (i, task) in currentTasks.enumerated() {
-            if(task.id == id) {
+            if task.id == id {
                 currentTasks.remove(at: i)
                 delegate?.taskController(self, didRemoveTask: task)
                 break
@@ -231,7 +231,7 @@ class TaskController {
     
     fileprivate func updateTask(_ task: Task) {
         for (i, t) in currentTasks.enumerated() {
-            if(t.id == task.id) {
+            if t.id == task.id {
                 currentTasks[i] = task
                 self.delegate?.taskController(self, didUpdateTask: currentTasks[i])
                 break

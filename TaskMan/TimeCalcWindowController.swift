@@ -65,7 +65,7 @@ class TimeCalcWindowController: NSWindowController {
     }
     
     func formatTime(_ interval: TimeInterval) -> String {
-        if(interval == 0) {
+        if interval == 0 {
             return "00h00m"
         }
         
@@ -78,23 +78,23 @@ class TimeCalcWindowController: NSWindowController {
         var output = ""
         
         // Days
-        if(absInterval >= day) {
+        if absInterval >= day {
             output += "\(String(format: "%02d", Int(floor(absInterval / day))))d"
         }
         // Hours
-        if(absInterval >= hour && floor((absInterval.truncatingRemainder(dividingBy: day)) / hour) > 0) {
+        if absInterval >= hour && floor((absInterval.truncatingRemainder(dividingBy: day)) / hour) > 0 {
             output += "\(String(format: "%02d", Int(floor((absInterval.truncatingRemainder(dividingBy: day)) / hour))))h"
         }
         // Minutes
-        if(absInterval >= minute && floor((absInterval.truncatingRemainder(dividingBy: hour)) / minute) > 0) {
+        if absInterval >= minute && floor((absInterval.truncatingRemainder(dividingBy: hour)) / minute) > 0 {
             output += "\(String(format: "%02d", Int(floor((absInterval.truncatingRemainder(dividingBy: hour)) / minute))))m"
         }
         // Seconds
-        if(floor(absInterval.truncatingRemainder(dividingBy: minute)) > 0) {
+        if floor(absInterval.truncatingRemainder(dividingBy: minute)) > 0 {
             output += "\(String(format: "%02d", Int(floor(absInterval.truncatingRemainder(dividingBy: minute)))))s"
         }
         // Milliseconds
-        if(absInterval - floor(absInterval) > 0) {
+        if absInterval - floor(absInterval) > 0 {
             let milliseconds = floor(absInterval * 1000).truncatingRemainder(dividingBy: 1000)
             output += "\(String(format: "%02d", Int(milliseconds)))ms"
         }

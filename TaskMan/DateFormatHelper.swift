@@ -56,18 +56,18 @@ func formatTimestampCompact(_ timestamp: TimeInterval) -> String {
     
     var output = ""
     
-    if(hours > 0) {
+    if hours > 0 {
         output += String(format: "%02dh", hours)
     }
-    if(minutes > 0) {
+    if minutes > 0 {
         output += String(format: "%02dm", minutes)
     }
-    if(seconds > 0) {
+    if seconds > 0 {
         output += String(format: "%02ds", seconds)
     }
     
     // Empty time - return 0s string
-    if(output == "") {
+    if output == "" {
         output = "0s"
     }
     

@@ -822,9 +822,15 @@ extension TimelineView {
 
 extension TimelineView : NSPasteboardItemDataProvider {
     func pasteboard(_ pasteboard: NSPasteboard?, item: NSPasteboardItem, provideDataForType type: NSPasteboard.PasteboardType) {
-        if(type == SegmentDragItemType || type == NSPasteboard.PasteboardType.string) {
-            if let mouseSegment = mouseSegment {
-                item.setString(mouseSegment.serialize().rawString()!, forType: type)
+        guard type == SegmentDragItemType || type == NSPasteboard.PasteboardType.string else {
+            return
+        }
+        
+        if let mouseSegment = mouseSegment {
+            let encoder = makeDefaultJSONEncoder()
+            
+            if let data = try? encoder.encode(mouseSegment), let string = String(data: data, encoding: .utf8) {
+                item.setString(string, forType: type)
             }
         }
     }

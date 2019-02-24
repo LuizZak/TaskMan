@@ -29,13 +29,12 @@ class TaskManDocument: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        var json = JSON([:])
-        let state = taskManState.serialize()
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted]
+        let data = FileData(version: FileFormatVersion, state: taskManState)
         
-        json["state"].object = state.object
-        json["version"].int = FileFormatVersion
-        
-        return try json.rawData(options: .prettyPrinted)
+        return try encoder.encode(data)
     }
     
     override func read(from data: Data, ofType typeName: String) throws {
@@ -56,7 +55,11 @@ class TaskManDocument: NSDocument {
             json = try converter.convert(json: json, fromVersion: version)
         }
         
-        self.taskManState = try TaskManState(json: json["state"])
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        let data = try decoder.decode(FileData.self, from: try json.rawData())
+        taskManState = data.state
     }
     
     override class var autosavesInPlace: Bool {
@@ -70,5 +73,10 @@ class TaskManDocument: NSDocument {
         
         /// Thrown when the file is from an unsuported/future/dated version of TaskMan
         case InvalidVersion
+    }
+    
+    private struct FileData: Codable {
+        var version: Int
+        var state: TaskManState
     }
 }

@@ -32,3 +32,5 @@ struct Task: Codable {
         self.description = description
     }
 }
+
+extension Task: Equatable { }

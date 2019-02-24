@@ -367,7 +367,7 @@ class ViewController: NSViewController {
             
             self.updateTimelineViews()
             
-            controller.dismiss(self)
+            controller.view.window?.performClose(nil)
         }
         
         presentAsModalWindow(controller)
@@ -404,7 +404,7 @@ class ViewController: NSViewController {
             self.updateTimelineViews()
             self.updateTaskViews(updateType: .RuntimeLabel)
             
-            controller.dismiss(self)
+            controller.view.window?.performClose(nil)
         }
         
         presentAsModalWindow(controller)
@@ -449,7 +449,7 @@ class ViewController: NSViewController {
         controller.didTapOkCallback = { (controller) -> Void in
             self.taskController.timeline.setSegmentDates(withId: segment.id, startDate: controller.startDate, endDate: controller.endDate)
             
-            controller.dismiss(self)
+            controller.view.window?.performClose(nil)
         }
         
         presentAsModalWindow(controller)
@@ -472,12 +472,12 @@ class ViewController: NSViewController {
             
             // No change detected
             if(task.id == sourceTask.id) {
-                controller.dismiss(sSelf)
+                controller.view.window?.performClose(nil)
                 return
             }
             
             if(sSelf.confirmMoveSegment(segment, fromTask: sourceTask, toTask: task)) {
-                controller.dismiss(sSelf)
+                controller.view.window?.performClose(nil)
             }
         }
         
@@ -510,7 +510,7 @@ class ViewController: NSViewController {
             self.updateTimelineViews()
             self.updateTaskViews(updateType: .RuntimeLabel)
             
-            controller.dismiss(self)
+            controller.view.window?.performClose(nil)
         }
         
         presentAsModalWindow(controller)
@@ -739,6 +739,20 @@ extension ViewController {
         // Perform the segment transfer
         taskController.timeline.setSegmentDates(withId: segment.id, startDate: segment.range.startDate, endDate: segment.range.endDate)
         taskController.timeline.changeTaskForSegment(segmentId: segment.id, toTaskId: targetTask.id)
+        
+        // If the current running task is the target task, and the segment that
+        // is running is the moved segment, make that task the running task.
+        if taskController.runningSegmentId == segment.id && taskController.runningTask?.id == targetTask.id,
+            let taskView = viewForTask(task: targetTask) {
+            
+            // Re-order views, bringing the selected view to the top
+            if let i = taskViews.firstIndex(of: taskView) {
+                taskViews.remove(at: i)
+                taskViews.append(taskView)
+            }
+            
+            updateTaskViews()
+        }
         
         return true
     }

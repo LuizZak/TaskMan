@@ -196,7 +196,7 @@ class TaskController {
         }
         
         // Check if the task has not changed its properties
-        if(task == original) {
+        if task == original {
             return
         }
         

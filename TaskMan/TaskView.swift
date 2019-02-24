@@ -204,7 +204,13 @@ extension TaskView {
             return (.none, NSDragOperation())
         }
         
-        guard let segment = try? TaskSegment(json: JSON(parseJSON: string)) else {
+        guard let data = string.data(using: .utf8) else {
+            return (.none, NSDragOperation())
+        }
+ 
+        let decoder = makeDefaultJSONDecoder()
+        
+        guard let segment = try? decoder.decode(TaskSegment.self, from: data) else {
             return (.none, NSDragOperation())
         }
         
@@ -248,7 +254,16 @@ extension TaskView {
         if (!pasteBoard.canReadItem(withDataConformingToTypes: [SegmentDragItemType.rawValue, NSPasteboard.PasteboardType.string.rawValue])) {
             return false
         }
-        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: .string), let segment = try? TaskSegment(json: JSON(parseJSON: string)) else {
+        guard let string = pasteBoard.string(forType: SegmentDragItemType) ?? pasteBoard.string(forType: .string) else {
+            return false
+        }
+        guard let data = string.data(using: .utf8) else {
+            return false
+        }
+        
+        let decoder = makeDefaultJSONDecoder()
+        
+        guard let segment = try? decoder.decode(TaskSegment.self, from: data) else {
             return false
         }
         

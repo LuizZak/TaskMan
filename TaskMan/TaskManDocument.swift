@@ -29,9 +29,9 @@ class TaskManDocument: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
+        let encoder = makeDefaultJSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
+        
         let data = FileData(version: FileFormatVersion, state: taskManState)
         
         return try encoder.encode(data)
@@ -55,11 +55,15 @@ class TaskManDocument: NSDocument {
             json = try converter.convert(json: json, fromVersion: version)
         }
         
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        let decoder = makeDefaultJSONDecoder()
         
-        let data = try decoder.decode(FileData.self, from: try json.rawData())
-        taskManState = data.state
+        do {
+            let fileData = try decoder.decode(FileData.self, from: try json.rawData())
+            taskManState = fileData.state
+        } catch {
+            Swift.print(error)
+            throw error
+        }
     }
     
     override class var autosavesInPlace: Bool {

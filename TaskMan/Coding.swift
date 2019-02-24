@@ -11,6 +11,7 @@ import Foundation
 func makeDefaultJSONEncoder() -> JSONEncoder {
     let encoder = JSONEncoder()
     encoder.dateEncodingStrategy = .iso8601
+    encoder.keyEncodingStrategy = .convertToSnakeCase
     
     return encoder
 }
@@ -18,6 +19,7 @@ func makeDefaultJSONEncoder() -> JSONEncoder {
 func makeDefaultJSONDecoder() -> JSONDecoder {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
     
     return decoder
 }

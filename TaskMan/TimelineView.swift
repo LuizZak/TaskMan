@@ -233,7 +233,7 @@ class TimelineView: NSView {
         self.addTrackingArea(area)
         
         self.wantsLayer = true
-        self.layer?.borderColor = NSColor.lightGray.cgColor
+        self.layer?.borderColor = NSColor.controlColor.cgColor
         self.layer?.borderWidth = 1
         self.layer?.masksToBounds = false
         
@@ -242,11 +242,13 @@ class TimelineView: NSView {
         lblStartTime.alignment = .left
         lblStartTime.stringValue = "09:00"
         lblStartTime.sizeToFit()
+        lblStartTime.textColor = NSColor.textColor
         
         configureLabel(label: lblEndTime)
         lblEndTime.stringValue = "18:00"
         lblEndTime.alignment = .right
         lblEndTime.sizeToFit()
+        lblEndTime.textColor = NSColor.textColor
         
         addSubview(lblStartTime)
         addSubview(lblEndTime)
@@ -432,14 +434,6 @@ class TimelineView: NSView {
         updateMouseDisplay(withEvent: event)
     }
     
-    func view(_ view: NSView, stringForToolTip tag: NSView.ToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
-        if let mouseSegment = mouseSegment, let label = self.delegate?.timelineView(self, labelForSegment: mouseSegment) {
-            return label
-        }
-        
-        return ""
-    }
-    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
@@ -451,7 +445,7 @@ class TimelineView: NSView {
         
         path.appendRect(bounds)
         
-        (delegate?.backgroundColorForTimelineView(self) ?? NSColor.white).setFill()
+        (delegate?.backgroundColorForTimelineView(self) ?? NSColor.controlBackgroundColor).setFill()
         
         path.fill()
         
@@ -730,13 +724,13 @@ class TimelineView: NSView {
         
         // Start from the left-most date, and scroll every hour drawing a vertical gray bar
         var x = segmentBounds.minX - (CGFloat(startDate.timeIntervalSince(date)) / CGFloat(hourSecs)) * hourWidth
-        let y = bounds.height
-        let h = -bounds.height
+        let y = bounds.height + 2
+        let h = -bounds.height - 2
         var hoursAdded = 0
         
         let path = NSBezierPath()
         
-        NSColor(white: 0.9, alpha: 1).setStroke()
+        NSColor.controlColor.setStroke()
         
         while x < segmentBounds.maxX {
             x += hourWidth
@@ -817,6 +811,16 @@ extension TimelineView {
         let timeInterval = endDate.timeIntervalSince(sDate)
         
         return sDate + (TimeInterval(ratio) * timeInterval)
+    }
+}
+
+extension TimelineView: NSViewToolTipOwner {
+    func view(_ view: NSView, stringForToolTip tag: NSView.ToolTipTag, point: NSPoint, userData data: UnsafeMutableRawPointer?) -> String {
+        if let mouseSegment = mouseSegment, let label = self.delegate?.timelineView(self, labelForSegment: mouseSegment) {
+            return label
+        }
+        
+        return ""
     }
 }
 

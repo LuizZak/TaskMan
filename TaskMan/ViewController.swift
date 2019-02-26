@@ -101,7 +101,7 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         tasksTimelineView.dataSource = self
         tasksTimelineView.delegate = self
@@ -1023,7 +1023,7 @@ extension ViewController: TimelineViewDataSource {
 extension ViewController: TimelineViewDelegate {
     
     func backgroundColorForTimelineView(_ timelineView: TimelineView) -> NSColor {
-        return NSColor.white
+        return NSColor.controlBackgroundColor
     }
     
     func timelineView(_ timelineView: TimelineView, colorForSegment segment: TaskSegment) -> NSColor {

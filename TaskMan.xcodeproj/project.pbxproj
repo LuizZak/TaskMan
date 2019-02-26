@@ -659,7 +659,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = luizFernandoSilva.TaskMan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;

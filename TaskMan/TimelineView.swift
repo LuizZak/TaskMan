@@ -764,7 +764,8 @@ extension TimelineView {
     func boundsForSegments() -> NSRect {
         let offY: CGFloat = 14
         
-        return NSRect(origin: contentOffset + NSPoint(x: 0, y: offY), size: NSSize(width: boundWidth(), height: bounds.height - offY))
+        return NSRect(origin: contentOffset + NSPoint(x: 0, y: offY),
+                      size: NSSize(width: boundWidth(), height: bounds.height - offY))
     }
     
     func boundWidth() -> CGFloat {

@@ -11,13 +11,16 @@ This may or may not be useful to you, as well.
 
 ### Requirements
 
-- Xcode 8.1
-- MacOS 10.11 (El Capitan) or higher
+- Xcode 10.1
+- MacOS 10.12 (Sierra) or higher
 - [Cocoapods 1.1.1](http://cocoapods.org/) (for package management; dependencies are already integrated in repository)
 
 
 Screenshot:
 
-![](http://i.imgur.com/dSLrrQ0.png)
+![](https://i.imgur.com/dSLrrQ0.png)
+
+Now supports dark mode, too!:
+![](https://i.imgur.com/mEUtcME.png)
 
 I accept issues and pull requests, if they feel like they contribute to the goal of the project stated above.
